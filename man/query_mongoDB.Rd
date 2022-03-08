@@ -58,6 +58,7 @@ Other database related:
 \code{\link{extract_gate_names}()},
 \code{\link{extract_gates_to_process}()},
 \code{\link{extract_jobtype}()},
+\code{\link{find_all_attributes_in_EDL}()},
 \code{\link{find_server_path}()}
 }
 \concept{database related}

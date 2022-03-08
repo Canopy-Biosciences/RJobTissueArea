@@ -76,7 +76,7 @@ usethis::use_mit_license("file LICENCE")
 usethis::edit_r_environ("project")
 
 #add to file
-_R_CHECK_DONTTEST_EXAMPLES_=FALSE
+#_R_CHECK_DONTTEST_EXAMPLES_=FALSE
 
 #__________________
 #git and github----
@@ -160,6 +160,7 @@ usethis::use_package("tictoc")
 usethis::use_package("tidyr")
 usethis::use_package("xml2")
 usethis::use_package("testthat")
+
 
 
 

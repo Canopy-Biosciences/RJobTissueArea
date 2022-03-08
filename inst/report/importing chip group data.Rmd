@@ -45,6 +45,13 @@ cat(readLines('inst/report/chipgroup_EDL.txt'), sep = '\n')
 
 ```{r}
 group_ID <- "P1761451"
+
+query_result <- query_mongoDB("limslager","UID",group_ID)
+
+EDL <- query_result%>%
+  RJobTissueArea:::get_EDL_from_query_result()
+
+attris <- RJobTissueArea:::find_all_attributes_in_EDL(EDL)
 ```
 
 
