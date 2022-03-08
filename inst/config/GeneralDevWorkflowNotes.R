@@ -11,8 +11,9 @@ devtools::install()
 usethis::use_package()
 usethis::use_namespace()
 usethis::use_version()
+renv::snapshot()
 
-1# daily work agreements
+# daily work agreements
 #======================
 # increment version at first each day and push
 #
