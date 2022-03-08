@@ -66,7 +66,9 @@ writeLines(
     "- query_UID_limslager()",
     "- write_lines_task()",
     "- find_RService_XML_on_imageserver()",
-    "- handle_trycache_error()"
+    "- handle_trycache_error()",
+    "- extract_chipIDs_from_groupEDL()",
+    "- find_valid_group_chip_IDs()"
     ))
 
 
@@ -83,16 +85,16 @@ writeLines(
 check_if_chip_data_exist <- function(chip_IDs){
 
   V <- 080322
-  #- added purrr::
+  #- added purrr::, stringr::
 
   server_path <- find_server_path()$server_path
 
   chip_path <- purrr::map_chr(chip_IDs,
                        ~find_chip_path(.x,server_path))
 
-  pathExist <- purrr::map_lgl(chip_path,~str_detect(.x,"error_",negate=TRUE))
+  pathExist <- purrr::map_lgl(chip_path,~stringr::str_detect(.x,"error_",negate=TRUE))
 
-  pathError <- purrr::map_lgl(chip_path,~str_detect(.x,"error_"))
+  pathError <- purrr::map_lgl(chip_path,~stringr::str_detect(.x,"error_"))
 
   writeLines(c("- found no data for chip_ID: ",
                paste0("  + ",chip_IDs[pathError])))
@@ -964,6 +966,22 @@ extract_chip_IDs <- function(xml_dir) {
   return(chip_IDs)
 }
 
+#' Title
+#'
+#' @param EDL
+#'
+#' @return
+#'
+#' @examples
+extract_chipIDs_from_groupEDL<- function(EDL){
+  EDL%>%
+    xml2::read_xml()%>%
+    xml2::xml_find_all("/Obj/EncapsulatedObjectsRef/ObjRef")%>%
+    xml2::xml_attr("UID")
+}
+
+
+
 #' Extract the names of the gates used for the job
 #'
 #' @param xml_dir Directory of the XML file
@@ -1367,6 +1385,30 @@ find_RService_XML_on_imageserver<- function(chipID,
   return(return_list)
 }
 
+#' Title
+#'
+#' @param group_ID
+#'
+#' @return
+#' @export
+#'
+#' @examples
+find_valid_group_chip_IDs <- function(group_ID){
+
+  query_result <- query_mongoDB("limslager","UID",group_ID)
+
+  EDL <- query_result%>%
+    get_EDL_from_query_result()
+
+  chip_IDs <- EDL%>%
+    extract_chipIDs_from_groupEDL()
+
+  valid_chipIDs <-chip_IDs%>%
+    check_if_chip_data_exist()
+
+  return(valid_chipIDs)
+
+}
 
 #' Title
 #'
