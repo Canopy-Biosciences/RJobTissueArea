@@ -41,8 +41,8 @@ usethis::use_description(fields=list(
   ),
   License = "file LICENSE",
   Language =  "ger",
-  Title = "RJobFDR",
-  Description =c("determination of chip area covered by tissue in selected positions"),
+  Title = "RJobTissueArea",
+  Description = "Determination of chip area covered by tissue in selected positions.",
   Version = "0.0.0.0"),
   check_name = TRUE,
   roxygen = TRUE)
@@ -58,7 +58,7 @@ usethis::use_mit_license("file LICENCE")
 #____
 # License
 
-Copyright (c) 2021 Zellkraftwerk
+Copyright (c) 2022 Zellkraftwerk
 
 PROPRIETARY
 Do not distribute outside Zellkraftwerk a BRUKER Company
@@ -156,7 +156,7 @@ usethis::use_package_doc()
 
 
 #check----
-usethis::use_github_action_check_standard()
+#usethis::use_github_action_check_standard()
 #von:
 #https://github.com/r-lib/actions/blob/master/examples/README.md
 #usethis::use_github_action("render-rmarkdown")
@@ -164,7 +164,7 @@ usethis::use_github_action_check_standard()
 #usethis::use_version("major")
 
 #partial warnings----
-usethis::use_partial_warnings()
+#usethis::use_partial_warnings()
 
 #usethis::use_test()
 #usethis::use_testthat()
@@ -203,6 +203,9 @@ devtools::document()
 devtools::check()
 devtools::build()
 
+#vignettes
+
+usethis::use_vignette("HowToUse")
 #_____________
 #dependency report----
 #add a pkgnet dependency report as vignette
