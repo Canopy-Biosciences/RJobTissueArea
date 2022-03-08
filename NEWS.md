@@ -1,3 +1,5 @@
-# RJobTissueArea 0.0.0.0
+# RJobTissueArea (development version)
 
-* Added a `NEWS.md` file to track changes to the package.
+# RJobTissueArea 0.0.0.1
+
+* Added helpers_GenerateInputData.R (from FDR project, new Version: 080322: bugfix dependencies)
