@@ -1,6 +1,6 @@
 Package: RJobTissueArea
 Title: RJobTissueArea
-Version: 0.0.0.0
+Version: 0.0.0.1
 Authors@R: 
     person("Julia", "Ortmann", , "julia.ortmann@bruker.com", role = c("aut", "cre"))
 Description: Determination of chip area covered by tissue in selected
@@ -14,12 +14,32 @@ RoxygenNote: 7.1.1
 URL: https://github.com/juleZWK/RJobTissueArea
 BugReports: https://github.com/juleZWK/RJobTissueArea/issues
 Imports: 
+    assertive,
     conflicted,
+    data.table,
     devtools,
+    dplyr,
+    logger,
+    lubridate,
     magrittr,
+    mongolite (>= 1.0),
+    openssl,
+    params,
+    pkgnet,
+    purrr,
+    qs,
+    R.utils,
+    readxl,
     reprex,
+    rlang,
     rmarkdown,
-    usethis
+    stringr,
+    testthat,
+    tictoc,
+    tidyr,
+    usethis,
+    XML,
+    xml2
 Suggests: 
     knitr
 VignetteBuilder: knitr
