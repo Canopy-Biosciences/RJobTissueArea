@@ -1,0 +1,98 @@
+---
+title: "HowToInstall"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{HowToInstall}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE}
+usethis::proj_set()
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  cache=FALSE
+)
+
+knitr::opts_knit$set(cache=FALSE,
+                     root.dir=file.path(getwd()),
+                     base.dir=file.path(getwd())
+)
+
+here::here()
+here::i_am("vignettes/HowToInstall.Rmd")
+
+```
+
+1.  setup your system:
+
+    > -   install R 3.6.3
+    >
+    >     <https://cran.r-project.org/bin/windows/base/old/3.6.3/>
+    >
+    > -   install RStudio
+    >
+    >     <https://www.rstudio.com/products/rstudio/download/#download>
+    >
+    > -   install the R packages needed for installation by executing the following code in RStudio:
+    >
+    >         install.packages(c("devtools","installr","remotes"))
+    >
+    > -   install RTools 35 by executing the following code in RStudio:
+    >
+    >         installr::install_rtools()
+    >
+    > -   install the R package mongolite 1.0 by executing the following code in RStudio:
+    >
+    >          remotes::install_version("mongolite","1.0")
+
+2.  get and install the actual version of the *ZKW distance calculation R package*:
+
+    > -   go to Github webpage: 
+    >
+    >     <https://github.com/juleZWK/RJobDistanceMetric/>
+    >
+    > -   klick on newest release and download it
+    >
+    >    <image src = "figures/GitHub_new_package_release.png" align="center" width="600"/>
+    >
+    > -   choose the tar.gz file and save it on your local disk
+    >
+    > -   in RStudio set the working directory to the folder where you have downloaded the tar.gz file, you may use the following R command:
+    >
+    >         setwd(choose.dir())
+    >
+    > -   install the ZKW distance calculation package by executing the following code in RStudio (edit filename and set it to the name of the downloaded tar.gz file, if necessary):
+    >
+    >         filename <- "RJobDistanceMetric_3.0.0.tar.gz"
+    >         tmpdir <- tempdir()
+    >         untar(filename, exdir = tmpdir)
+    >         devtools::install(file.path(tmpdir, "RJobDistanceMetric"), dependencies = TRUE)
+
+3.  start your analysis in RStudio:
+
+    > -   in RStudio create a “New Project” and name it approbiately or select a existing project, where you want to add the distance calculation
+    >
+    > -   create a “New File” and choose the “RMarkdown” file type
+    >
+    > -   select “From Template” and choose the “Distance Calculation” template
+    >
+    > -   save a copy into your project directory and follow instructions in the template
+
+💌 *please feedback any issues occurring during installation*
+
+### supporting notes
+
+-   The **developmental package** version can be installed from github repository directly. To do so, execute the following code in RStudio.:
+
+        devtools::install_github("juleZWK/RJobDistanceMetric")
+
+-   If you need to have the flowCore package installed:
+
+    ```{r,eval=FALSE}
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+        install.packages("BiocManager")
+
+    BiocManager::install("flowCore")
+    ```

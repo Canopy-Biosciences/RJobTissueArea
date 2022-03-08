@@ -23,6 +23,7 @@ Other database related:
 \code{\link{extract_gates_to_process}()},
 \code{\link{extract_jobtype}()},
 \code{\link{find_all_attributes_in_EDL}()},
+\code{\link{find_valid_group_chip_IDs}()},
 \code{\link{query_mongoDB}()}
 }
 \concept{database related}

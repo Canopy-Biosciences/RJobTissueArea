@@ -20,9 +20,9 @@ a console print produces by writeLines
 writes the print message for Start or Completion of a task, subtask name supplied
 }
 \examples{
-{
-  write_lines_task("task", type = "S")
-  write_lines_task("task", "subtask", "E")
+\donttest{
+write_lines_task("task", type = "S")
+write_lines_task("task", "subtask", "E")
 }
 }
 \concept{programming helpers}

@@ -17,3 +17,11 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(RJobTissueArea)
 ```
+
+- get all valid chip_IDs defined in chip_group 
+
+```{r,eval=FALSE}
+group_ID <- "P1761451"
+chip_IDs <- find_valid_group_chip_IDs(group_ID)
+```
+

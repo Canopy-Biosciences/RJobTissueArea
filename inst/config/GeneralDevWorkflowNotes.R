@@ -1,7 +1,9 @@
 #general dev workflow commands
 #=============================
 devtools::run_examples()
+renv::snapshot()
 devtools::document()
+usethis::use_namespace()
 devtools::build_vignettes()
 devtools::build_readme()
 devtools::check()
@@ -9,9 +11,9 @@ devtools::build()
 devtools::install()
 
 usethis::use_package()
-usethis::use_namespace()
+
 usethis::use_version()
-renv::snapshot()
+renv::restore()
 
 # daily work agreements
 #======================

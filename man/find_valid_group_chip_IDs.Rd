@@ -15,3 +15,16 @@ find_valid_group_chip_IDs(group_ID)
 \description{
 Title
 }
+\seealso{
+Other database related: 
+\code{\link{connect_mongoDB}()},
+\code{\link{extract_chip_IDs}()},
+\code{\link{extract_files_to_process}()},
+\code{\link{extract_gate_names}()},
+\code{\link{extract_gates_to_process}()},
+\code{\link{extract_jobtype}()},
+\code{\link{find_all_attributes_in_EDL}()},
+\code{\link{find_server_path}()},
+\code{\link{query_mongoDB}()}
+}
+\concept{database related}
