@@ -300,9 +300,9 @@ valid_chipIDs &lt;- RJobTissueArea:::check_if_chip_data_exist(chip_IDs)</code></
   xml2::xml_attr(&quot;UID&quot;)
 }</code></pre>
 <ul>
-<li>find_valid_chipIDs()</li>
+<li>find_valid_group_chip_IDs()</li>
 </ul>
-<pre class="r"><code>find_valid_chipIDs &lt;- function(group_ID){
+<pre class="r"><code>find_valid_group_chip_IDs &lt;- function(group_ID){
   
   query_result &lt;- query_mongoDB(&quot;limslager&quot;,&quot;UID&quot;,group_ID)
   
@@ -319,9 +319,9 @@ valid_chipIDs &lt;- RJobTissueArea:::check_if_chip_data_exist(chip_IDs)</code></
   
 }</code></pre>
 </div>
-<div id="apply-find_valid_chipids" class="section level2">
-<h2>apply find_valid_chipIDs</h2>
-<pre class="r"><code>find_valid_chipIDs(group_ID)</code></pre>
+<div id="apply-find_valid_group_chip_ids" class="section level2">
+<h2>apply find_valid_group_chip_IDs</h2>
+<pre class="r"><code>find_valid_group_chip_IDs(group_ID)</code></pre>
 <pre><code>## - found no data for chip_ID: 
 ##   + M1730414
 ##   + M1730418
