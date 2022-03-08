@@ -57,16 +57,16 @@ usethis::use_mit_license("file LICENCE")
 # -> LICENSE.md
 #____
 # License
-
-Copyright (c) 2022 Zellkraftwerk
-
-PROPRIETARY
-Do not distribute outside Zellkraftwerk a BRUKER Company
+#
+#Copyright (c) 2022 Zellkraftwerk
+#
+#PROPRIETARY
+#Do not distribute outside Zellkraftwerk a BRUKER Company
 
 # -> LICENSE
 #______
-YEAR: 2021
-COPYRIGHT HOLDER: Zellkraftwerk GmbH a BRUKER Company
+#YEAR: 2021
+#COPYRIGHT HOLDER: Zellkraftwerk GmbH a BRUKER Company
 #
 
 

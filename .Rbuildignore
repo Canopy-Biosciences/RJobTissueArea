@@ -1,3 +1,5 @@
+^renv$
+^renv\.lock$
 ^RJobTissueArea\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
