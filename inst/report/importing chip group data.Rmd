@@ -1,0 +1,51 @@
+---
+title: " documentation - importing chip group data"
+subtitle: "reportings on functional development"
+author: "Julia Ortmann"
+output: 
+  html_document:
+    code_folding: show
+    theme:
+      bg: "#202123"
+      fg: "#B8BCC2"
+      primary: "#EA80FC"
+      secondary: "#00DAC6"
+      base_font:
+        google: Prompt
+      heading_font:
+        google: Proza Libre
+abstract: The aim of this 
+knit: (function(input, ...) {
+    rmarkdown::render(
+      input,
+      output_file = "inst/report/dev report - importing chip group data.html",
+      envir = globalenv()
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+if (requireNamespace("thematic")) 
+  thematic::thematic_rmd(font = "auto")
+```
+
+# summary
+
+# introduction {.tabset .tabset-pills}
+
+## limslager EDL chipgroup
+
+```{r comment=''}
+cat(readLines('inst/report/chipgroup_EDL.txt'), sep = '\n')
+```
+
+## query certain chipgroup
+
+<img src='inst/report/group_ID.PNG' align="right" height="120" />
+
+```{r}
+group_ID <- "P1761451"
+```
+
+
+## Themed Plots {.tabset .tabset-pills}
