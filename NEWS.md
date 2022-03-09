@@ -1,4 +1,7 @@
-# RJobTissueArea (development version)
+
+# RJobTissueArea 0.0.0.3
+
+* NEW REPORT: investigations in scan and position metadata of chip group
 
 # RJobTissueArea 0.0.0.2
 
