@@ -1,5 +1,5 @@
 ---
-title: " documentation - import scan HDR data"
+title: " documentation - find_all_BlobImageFiles"
 subtitle: "reportings on functional development"
 author: "Julia Ortmann"
 output: 
@@ -21,7 +21,7 @@ abstract: The aim of this build functions for import of scan HDR images, defined
 knit: (function(input, ...) {
     rmarkdown::render(
       input,
-      output_file = "inst/report/dev report - import scan HDR image data.html",
+      output_file = "inst/report/dev report - find all Blob image files.html",
       envir = globalenv()
     )
   })
@@ -49,11 +49,11 @@ if (requireNamespace("thematic"))
 - count cells
 - export chipID cell_count tissue and position area 
 
-## import scan HDR image {.tabset .tabset-pills}
+# find_all_BlobImageFiles {.tabset .tabset-pills}
 
-### helpers finding paths
+## helpers finding paths {.tabset .tabset-pills}
 
-#### create_Position_posRefimage_filepath()
+### create_Position_posRefimage_filepath()
 
 ```{r}
 create_Position_posRefimage_filepath <- function(ScanBasePath,
@@ -66,7 +66,7 @@ create_Position_posRefimage_filepath <- function(ScanBasePath,
 }
 ```
 
-#### create_Position_FLimage_filepath()
+### create_Position_FLimage_filepath()
 
 ```{r}
 create_Position_FLimage_filepath <- function(ScanBasePath,
@@ -79,7 +79,7 @@ create_Position_FLimage_filepath <- function(ScanBasePath,
 }
 ```
 
-#### create_Position_deltaTL_filepath()
+### create_Position_deltaTL_filepath()
 
 ```{r}
 create_Position_deltaTLimage_filepath <- function(ScanBasePath,
@@ -92,7 +92,7 @@ create_Position_deltaTLimage_filepath <- function(ScanBasePath,
 }
 ```
 
-#### create_Position__deltaTL_focus_filepath()
+### create_Position__deltaTL_focus_filepath()
 
 ```{r}
 create_Position_focusimage_filepath <- function(ScanBasePath,
@@ -105,7 +105,7 @@ create_Position_focusimage_filepath <- function(ScanBasePath,
 }
 ```
 
-#### create_Position_HDRimage_filepath()
+### create_Position_HDRimage_filepath()
 
 ```{r}
 create_Position_HDRimage_filepath <- function(ScanBasePath,
@@ -118,7 +118,7 @@ create_Position_HDRimage_filepath <- function(ScanBasePath,
 }
 ```
 
-#### list_HDR_BlobFileName_in_filepath()
+### list_HDR_BlobFileName_in_filepath()
 
 ```{r}
 list_BlobFileName_in_filepath <- function(HDRimage_filepath){
@@ -131,9 +131,9 @@ list_BlobFileName_in_filepath <- function(HDRimage_filepath){
 }
 ```
 
-#### find_scan_basepath()
+### find_scan_basepath() {.tabset .tabset-pills}
 
-##### query_UID_scans()
+#### query_UID_scans()
 
 ```{r}
 # find basePath to the image folder
@@ -150,7 +150,7 @@ query_UID_scans<- function(scan_IDs){
 query_result <- query_UID_scans(scan_IDs)
 ```
 
-##### get_df_from_query_result()
+#### get_df_from_query_result()
 
 ```{r}
 get_df_from_query_result<- function(query_result){
@@ -166,7 +166,7 @@ df <- get_df_from_query_result(query_result)
 df%>%head()
 ```
 
-##### find_scan_basepath()
+#### find_scan_basepath()
 
 ```{r}
 find_scan_basepath <- function(scan_IDs){
@@ -181,7 +181,7 @@ IDs <- IDs%>%
 
 ```
 
-### find_all_BlobImageFiles 
+## find_all_BlobImageFiles {.tabset .tabset-pills}
 
 - define group_ID
 - find all valid chip_IDs in group
@@ -198,7 +198,7 @@ IDs <- IDs%>%
 - wrangle to df containing IDs and corresponding BlobFileNames of each scan
 - check for missing  scans
 
-#### worklfow
+### worklfow
 
 ```{r}
 # load library
@@ -321,7 +321,7 @@ BlobPaths_chip_group <- BlobPaths_chip_group%>%
   dplyr::filter(!is.na(BlobFileName))
 ```
 
-#### check scanIDs for missinng image data
+### check scanIDs for missinng image data
 
 ```{r}
 # check missing scanIDs
