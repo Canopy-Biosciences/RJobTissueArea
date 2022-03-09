@@ -63,7 +63,7 @@ group_ID <- "P1761451"
 chip_IDs <- find_valid_group_chip_IDs(group_ID)
 ```
 
-### create_MethodHistory_of_chipIDs
+### create_MethodHistory_of_chipIDs()
 
 ```{r}
 create_MethodHistory_of_chipIDs <- function(chip_IDs){
@@ -82,7 +82,7 @@ MethodHistory <- create_MethodHistory_of_chipIDs(chip_IDs)
 MethodHistory[[3]]
 ```
 
-### create_ScanHistory_of_chipIDs
+### create_ScanHistory_of_chipIDs()
 
 ```{r}
 create_ScanHistory_of_chipIDs<-function(MethodHistory){
@@ -103,7 +103,7 @@ ScanHistorys <- create_ScanHistory_of_chipIDs(MethodHistory)
 ScanHistorys[[3]]
 ```
 
-### extract_cycle_sequence_from_MethodHistory
+### extract_cycle_sequence_from_MethodHistory()
 
 ```{r}
 extract_cycle_sequence_from_MethodHistory <- function(MethodHistory){
@@ -126,7 +126,7 @@ cycle_sequence[[3]]
 
 ## get selected Positions {.tabset .tabset-pills}
 
-### get_pos_colnames_in_MethodHistory
+### get_pos_colnames_in_MethodHistory()
 
 ```{r}
 get_pos_colnames_in_MethodHistory <- function(MH){
@@ -144,7 +144,7 @@ pos_columns <- purrr::map(MethodHistory,
 pos_columns[[3]]
 ```
 
-### create_pos_df_from_MethodHistory
+### create_pos_df_from_MethodHistory()
 
 ```{r}
 create_pos_df_from_MethodHistory <- function(MethodHistory){
@@ -177,7 +177,7 @@ pos_df <- create_pos_df_from_MethodHistory(MethodHistory)
 pos_df[[3]]
 ```
 
-### extract_OK_pos_from_MethodHistory
+### extract_OK_pos_from_MethodHistory()
 
 ```{r}
 extract_OK_pos_from_MethodHistory <- function(MethodHistory){
@@ -219,7 +219,7 @@ test <- pos_df_OK%>%
 chip_IDs
 ```
 
-### extract_Ref_pos_from_MethodHistory
+### extract_Ref_pos_from_MethodHistory()
 
 ```{r}
 extract_Ref_pos_from_MethodHistory <- function(MethodHistory){
@@ -253,7 +253,7 @@ pos_df_Ref <- extract_Ref_pos_from_MethodHistory(MethodHistory)
 pos_df_Ref[[3]]
 ```
 
-### extract_XYvalues_pos_from_MethodHistory
+### extract_XYvalues_pos_from_MethodHistory()
 
 ```{r}
 extract_XYvalues_pos_from_MethodHistory <- function(MethodHistory){

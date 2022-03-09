@@ -1,3 +1,8 @@
+# RJobTissueArea (development version)
+
+# RJobTissueArea 0.0.0.4
+
+* NEW HELPERFUNCTIONS R file: MetadataScanPosition
 
 # RJobTissueArea 0.0.0.3
 

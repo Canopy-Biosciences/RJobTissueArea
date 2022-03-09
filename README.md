@@ -27,7 +27,7 @@ devtools::install_github("juleZWK/RJobTissueArea")
 library(RJobTissueArea)
 ```
 
--   get all valid chip\_IDs defined in chip\_group
+-   get all valid chip_IDs defined in chip_group
 
 ``` r
 group_ID <- "P1761451"
