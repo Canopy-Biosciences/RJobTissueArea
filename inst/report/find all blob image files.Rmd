@@ -49,81 +49,32 @@ if (requireNamespace("thematic"))
 - count cells
 - export chipID cell_count tissue and position area 
 
-# find_all_BlobImageFiles {.tabset .tabset-pills}
+## find all image pos of a scan {.tabset .tabset-pills}
 
-## helpers finding paths {.tabset .tabset-pills}
-
-### create_Position_posRefimage_filepath()
+### create_Pos_image_filepath()
 
 ```{r}
-create_Position_posRefimage_filepath <- function(ScanBasePath,
-                                              PositionFolder){
-  posRefimage_filepath <- file.path(ScanBasePath,
+create_Pos_image_filepath <- function(ScanBasePath,
+                                      PositionFolder,
+                                      Type){
+  Type <- match.arg(Type,choices = c("posRef",
+                                     "flimages",
+                                     "deltaTL",
+                                     "focus",
+                                     "hdr"))
+  image_filepath <- file.path(ScanBasePath,
                                  PositionFolder,
-                                 "posref") 
-  return(posRefimage_filepath)
-  
+                                 Type) 
+  return(image_filepath)
 }
 ```
 
-### create_Position_FLimage_filepath()
+### list_BlobFileName_in_filepath()
 
 ```{r}
-create_Position_FLimage_filepath <- function(ScanBasePath,
-                                              PositionFolder){
-  FLimage_filepath <- file.path(ScanBasePath,
-                                 PositionFolder,
-                                 "flimages") 
-  return(FLimage_filepath)
-  
-}
-```
-
-### create_Position_deltaTL_filepath()
-
-```{r}
-create_Position_deltaTLimage_filepath <- function(ScanBasePath,
-                                              PositionFolder){
-  deltaTLimage_filepath <- file.path(ScanBasePath,
-                                 PositionFolder,
-                                 "deltaTL") 
-  return(deltaTLimage_filepath)
-  
-}
-```
-
-### create_Position__deltaTL_focus_filepath()
-
-```{r}
-create_Position_focusimage_filepath <- function(ScanBasePath,
-                                              PositionFolder){
-  focusimage_filepath <- file.path(ScanBasePath,
-                                 PositionFolder,
-                                 "focus") 
-  return(focusimage_filepath)
-  
-}
-```
-
-### create_Position_HDRimage_filepath()
-
-```{r}
-create_Position_HDRimage_filepath <- function(ScanBasePath,
-                                              PositionFolder){
-  HDRimage_filepath <- file.path(ScanBasePath,
-                                 PositionFolder,
-                                 "hdr") 
-  return(HDRimage_filepath)
-  
-}
-```
-
-### list_HDR_BlobFileName_in_filepath()
-
-```{r}
-list_BlobFileName_in_filepath <- function(HDRimage_filepath){
-  HDRFiles<-list.files(HDRimage_filepath)
-  BlobFiles<-HDRFiles[stringr::str_detect(HDRFiles,".blob32$")]
+list_BlobFileName_in_filepath <- function(image_filepath){
+  Files<-list.files(image_filepath)
+  BlobFiles<-Files[stringr::str_detect(Files,".blob32$")]
   BlobFileName<-BlobFiles%>%stringr::str_remove(".blob32$")
   if(length(BlobFileName)==0){
     return(NA)
@@ -131,13 +82,23 @@ list_BlobFileName_in_filepath <- function(HDRimage_filepath){
 }
 ```
 
-### find_scan_basepath() {.tabset .tabset-pills}
+### list_posFolders_in_ScanBasePath()
 
-#### query_UID_scans()
+```{r}
+list_posFolders_in_ScanBasePath <- function(ScanBasePath){
+  positions<-list.files(path=ScanBasePath)
+  positions=positions[stringr::str_detect(positions,"pos")]
+  return(positions)
+}
+```
+
+## find_scan_basepath() {.tabset .tabset-pills}
+
+### query_UID_scans()
 
 ```{r}
 # find basePath to the image folder
-scan_IDs <- IDs$scan_ID[1:50]
+#scan_IDs <- IDs$scan_ID[1:50]
 
 query_UID_scans<- function(scan_IDs){
   result <- query_mongoDB("scans",
@@ -147,10 +108,10 @@ query_UID_scans<- function(scan_IDs){
   return(result)
 }
 
-query_result <- query_UID_scans(scan_IDs)
+#query_result <- query_UID_scans(scan_IDs)
 ```
 
-#### get_df_from_query_result()
+### get_df_from_query_result()
 
 ```{r}
 get_df_from_query_result<- function(query_result){
@@ -160,13 +121,12 @@ get_df_from_query_result<- function(query_result){
   return(result)
   
 }
+#df <- get_df_from_query_result(query_result)
 
-df <- get_df_from_query_result(query_result)
-
-df%>%head()
+#df%>%head()
 ```
 
-#### find_scan_basepath()
+### find_scan_basepath()
 
 ```{r}
 find_scan_basepath <- function(scan_IDs){
@@ -176,12 +136,12 @@ find_scan_basepath <- function(scan_IDs){
   
 }
 
-IDs <- IDs%>%
-  dplyr::mutate(ScanBasePath = find_scan_basepath(scan_ID))
+#IDs <- IDs%>%
+#  dplyr::mutate(ScanBasePath = find_scan_basepath(scan_ID))
 
 ```
 
-## find_all_BlobImageFiles {.tabset .tabset-pills}
+## find all Blob ImageFiles {.tabset .tabset-pills}
 
 - define group_ID
 - find all valid chip_IDs in group
@@ -192,7 +152,9 @@ IDs <- IDs%>%
 - add ScanHistory
 - filter excluded scans
 - add ScanBasePath, PositionFolders
-- add HDRimage_filepath, FLimage_filepath, posRefimage_filepath
+- query scanIDs in scans-collection
+- get image Type of each Scan
+- add HDRimage_filepath, FLimage_filepath, posRefimage_filepath depending on imageType
 - add BlobFileName
 - declare imageType (by available filepath of the available BlobFile of a given scanID)
 - wrangle to df containing IDs and corresponding BlobFileNames of each scan
@@ -216,6 +178,17 @@ MethodHistory <- create_MethodHistory_of_chipIDs(chip_IDs)
 # extract ScanHistory
 ScanHistory <- create_ScanHistory_of_chipIDs(MethodHistory)
 
+# query for all scan_IDs in scans-collection
+scan_IDs <- purrr::map(ScanHistory,~.x$scan_ID)%>%purrr::flatten_chr()
+query_result <- query_UID_scans(scan_IDs)
+result <- get_df_from_query_result(query_result)
+
+# get image type of each scan
+image_Type <- dplyr::tibble(
+  scan_ID = result$UID,
+  image_Type = result$jobType,
+  success = result$success)
+
 # df of chip_IDsand all scan_IDs
 IDs <- dplyr::tibble(
   chip_ID = chip_IDs)
@@ -231,6 +204,12 @@ IDs <- IDs%>%
 # unnest IDs
 IDs <- IDs%>%
   tidyr::unnest(cols="ScanHistory")
+
+# add imageType
+
+IDs <- IDs%>%
+  dplyr::left_join(image_Type,
+                   by = "scan_ID")
 
 # remove excluded scans
 IDs <- IDs%>%
@@ -252,33 +231,31 @@ IDs <- IDs%>%
   tidyr::unnest(cols="AllPositionFolders")%>%
   dplyr::rename("PositionFolder" = "AllPositionFolders")
 
+#IDs <- IDs%>%
+#  dplyr::mutate(
+#    BlobImage_filepath = dplyr::case_when(image_Type == )
+#  )
+
 # add HDRimage_filepath
 IDs <- IDs%>%
   dplyr::mutate(
-    HDRimage_filepath = create_Position_HDRimage_filepath(ScanBasePath,
-                                                         PositionFolder))
+    HDRimage_filepath = create_Pos_image_filepath(ScanBasePath,PositionFolder,"hdr"))
 # add FLimage_filepath
 IDs <- IDs%>%
   dplyr::mutate(
-    FLimage_filepath = create_Position_FLimage_filepath(ScanBasePath,
-                                                        PositionFolder))
+    FLimage_filepath = create_Pos_image_filepath(ScanBasePath,PositionFolder,"flimages"))
 # add posRefimage_filepath
 IDs <- IDs%>%
   dplyr::mutate(
-    posRefimage_filepath = create_Position_posRefimage_filepath(ScanBasePath,
-                                                        PositionFolder))
-
+    posRefimage_filepath = create_Pos_image_filepath(ScanBasePath,PositionFolder,"posRef"))
 # add deltaTL_filepath
 IDs <- IDs%>%
   dplyr::mutate(
-    deltaTL_image_filepath = create_Position_deltaTLimage_filepath(ScanBasePath,
-                                                        PositionFolder))
-
+    deltaTLimage_filepath = create_Pos_image_filepath(ScanBasePath,PositionFolder,"deltaTL"))
 # add focus_filepath
 IDs <- IDs%>%
   dplyr::mutate(
-    focus_image_filepath = create_Position_focusimage_filepath(ScanBasePath,
-                                                        PositionFolder))
+    focusimage_filepath = create_Pos_image_filepath(ScanBasePath,PositionFolder,"focus"))
 
 # add BlobFileName of HDR, FL and posRef images
 IDs <- IDs%>%
@@ -321,19 +298,71 @@ BlobPaths_chip_group <- BlobPaths_chip_group%>%
   dplyr::filter(!is.na(BlobFileName))
 ```
 
-### check scanIDs for missinng image data
+### check scanIDs for missinng image data() 
+
+#### get_pos_colnames_in_MethodHistory()
+```{r}
+get_pos_colnames_in_MethodHistory <- function(MH){
+  cols <- colnames(MH)
+  col_pos <- which(stringr::str_detect(cols,"pos")==TRUE)
+  col_scanID <- which(cols %in% c("UID","CycleUID","Taq","Excluded","PreparedForDataviz"))
+  return(c(col_scanID,col_pos))
+}
+```
+
+#### create_pos_df_from_MethodHistory()
+
+```{r}
+create_pos_df_from_MethodHistory <- function(MethodHistory){
+  columns <- purrr::map(MethodHistory,
+                          ~.x%>%get_pos_colnames_in_MethodHistory)
+  df <- purrr::map2(MethodHistory,
+                    columns,
+                    ~.x[,.y])
+  df <- purrr::map(df,
+                   ~.x%>%
+                     tidyr::gather("column",
+                                   "value",
+                                   -UID,
+                                   -CycleUID,
+                                   -Excluded,
+                                   -PreparedForDataviz))
+  df <- purrr::map(df,
+                   ~if(dim(.x)[2] == 4){
+                     .x$column <- rep(NA,times=dim(.x)[1])
+                     .x$value <- rep(NA,times=dim(.x)[1])
+                     return(.x)
+                   }else{return(.x)})
+  return(df)
+}
+```
 
 ```{r}
 # check missing scanIDs
-missing_scans <- which(! result$UID %in% BlobPaths_chip_group$scan_ID)
 
+#query_result <- query_UID_scans(scan_IDs)
+#result <- get_df_from_query_result(query_result)
+
+missing_scans <- which(!result$UID %in% BlobPaths_chip_group$scan_ID)
+test <- result[missing_scans,]
 missing_scan_IDs <-unique(result$UID[missing_scans])
 
 
-MH <- MethodHistory%>%data.table::rbindlist(,fill=TRUE)
 
-MH%>%dplyr::filter(UID %in% missing_scan_IDs)
-result%>%dplyr::filter(UID%in% missing_scan_IDs)
+MH <- MethodHistory%>%
+  create_pos_df_from_MethodHistory()%>%
+  data.table::rbindlist(fill=TRUE)%>%
+  dplyr::filter(UID %in% missing_scan_IDs)
+
+result%>%
+  dplyr::filter(UID %in% missing_scan_IDs)%>%
+  dplyr::pull(channelUID)%>%
+  table()
+
+result%>%
+  dplyr::filter(UID %in% missing_scan_IDs)%>%
+  dplyr::pull(jobType)%>%
+  table()
 ```
 
 # supplement

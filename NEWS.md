@@ -1,4 +1,6 @@
-# RJobTissueArea (development version)
+# RJobTissueArea 0.0.0.5
+
+* NEW report: find all Blob image files (hdr, FLimages, deltaTL, posRef, focus) of all chip group scanIDs 
 
 # RJobTissueArea 0.0.0.4
 
