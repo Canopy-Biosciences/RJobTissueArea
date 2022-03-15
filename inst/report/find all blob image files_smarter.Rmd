@@ -1,10 +1,10 @@
 ---
-title: " documentation - find_all_BlobImageFiles"
+title: " documentation - find_all_ImageFiles"
 subtitle: "reportings on functional development"
 author: "Julia Ortmann"
 output: 
   html_document:
-    code_folding: hide
+    code_folding: show
     number_sections: yes
     toc: yes
     toc_depth: '3'
@@ -21,7 +21,7 @@ abstract: The aim of this build functions for import of scan HDR images, defined
 knit: (function(input, ...) {
     rmarkdown::render(
       input,
-      output_file = "inst/report/dev report - find all Blob image files.html",
+      output_file = "inst/report/dev report - find all image files.html",
       envir = globalenv()
     )
   })
@@ -96,10 +96,10 @@ result <-query_mongoDB("scans",
     
 ## functions {.tabset .tabset-pills}
 
-### list_folder_in_path
+### create_pos_foldername
 
 ```{r}
-create_image_foldername <- function(imageServer_path,basePath,pos_ID){
+create_pos_foldername <- function(imageServer_path,basePath,pos_ID){
   
   file.path(imageServer_path,basePath,
                     paste0("pos",pos_ID))
@@ -169,6 +169,9 @@ query_UID_limsproc<- function(chip_IDs){
 ## workflow
 
 ```{r}
+
+tictoc::tic("find image files complete workflow")
+
 # load library
 library(RJobTissueArea)
 
@@ -177,7 +180,7 @@ group_ID <- "P1761451"
 
 # find valid group chip_IDs
 chip_IDs <- find_valid_group_chip_IDs(group_ID)
-chip_IDs <- chip_IDs[1:2]
+chip_IDs <- chip_IDs
 
 # find server paths
 server_paths <- find_server_path()
@@ -250,7 +253,7 @@ result_paths <- dplyr::left_join(results_chip_scans,
 
 # add pos_path
 result_paths <- result_paths%>%
-  dplyr::mutate(pos_path = create_image_foldername(imageServer_path,
+  dplyr::mutate(pos_path = create_pos_foldername(imageServer_path,
                                                    basePath,
                                                    pos_ID))
 
@@ -295,4 +298,6 @@ blob_result_files <- result_files%>%
 # filter png files
 png_result_files <- result_files%>%
   dplyr::filter(filetype %in% c("png"))
+
+tictoc::toc()
 ```

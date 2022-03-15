@@ -1,3 +1,9 @@
+#RProfile commands
+#=================
+source("renv/activate.R")
+usethis::proj_set()
+utils::file.edit("NEWS.md")
+
 #general dev workflow commands
 #=============================
 devtools::run_examples()
@@ -8,7 +14,7 @@ devtools::build_vignettes()
 devtools::build_readme()
 devtools::check()
 devtools::build()
-devtools::install()
+devtools::install(dependencies =TRUE, build_vignettes = TRUE)
 
 usethis::use_package()
 
