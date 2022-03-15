@@ -1,0 +1,298 @@
+---
+title: " documentation - find_all_BlobImageFiles"
+subtitle: "reportings on functional development"
+author: "Julia Ortmann"
+output: 
+  html_document:
+    code_folding: hide
+    number_sections: yes
+    toc: yes
+    toc_depth: '3'
+    theme:
+      bg: "#202123"
+      fg: "#B8BCC2"
+      primary: "#EA80FC"
+      secondary: "#00DAC6"
+      base_font:
+        google: Prompt
+      heading_font:
+        google: Proza Libre
+abstract: The aim of this build functions for import of scan HDR images, defined by scan_ID
+knit: (function(input, ...) {
+    rmarkdown::render(
+      input,
+      output_file = "inst/report/dev report - find all Blob image files.html",
+      envir = globalenv()
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+if (requireNamespace("thematic")) 
+  thematic::thematic_rmd(font = "auto")
+```
+
+# summary
+
+... 
+
+# introduction 
+
+- map over chip_IDs
+- find scan_IDs 
+- find positions measured and subselected (TO DISCUSS)
+- select approbriate scan images
+- import blob files
+- set grey value threshold
+- sum tissue-pixels and position-pixel
+- calculate tissue AREA and POSITION AREA
+- count cells
+- export chipID cell_count tissue and position area 
+
+# find all Blob ImageFiles {.tabset .tabset-pills}
+
+- define group_ID
+- find all valid chip_IDs in group
+- create MethodHistory for each valid chip in group
+- extract ScanHistories from MethodHistories
+(- wrangle to IDs and remove Excluded Scans)
+- add chip_path and imageServer_path
+- add ScanHistory
+(- filter excluded scans)
+- add ScanBasePath, PositionFolders
+- query scanIDs in scans-collection
+- get image Type of each Scan
+- add HDRimage_filepath, FLimage_filepath, posRefimage_filepath depending on imageType
+- add BlobFileName
+- declare imageType (by available filepath of the available BlobFile of a given scanID)
+- wrangle to df containing IDs and corresponding BlobFileNames of each scan
+- check for missing  scans
+
+**querry scan_ID in collection scans results in**
+
+```{r,eval=FALSE}
+result <-query_mongoDB("scans",
+              "channelUID",
+              chip_IDs)
+```
+
+- a dataframe without EDL field filled
+- important containing columns:
+
+    + basepath= chip_path
+    + jobType either TL or FL 
+    + UID = scan_ID
+    + channelUID = chip_ID
+
+- good to know columns: 
+
+    + imageRotation
+    + positionCount
+    + hardware, df containing columns: "camera-serial", "camera-model", "camera-vendor", "camera-exposure"   "camera-binning", "camera-gain", "microscope-serial" "microscope-model"  "microscope-vendor" "objective-unq", "objective-name", "reflector-unq", "reflector-name", "optovar-unq",  "optovar-name", "sideport-unq", "sideport-name", "lightsources"
+    + positions, df containing columns: "posid", "focusOffset", "enabled", "focusInterpolated" "chipx", "chipy", "stageX", "stageY", "stageZ", "imagePixDX", "imagePixDY", "imageRotation", "posref", "hdr", "focus","filimages",deltaTL", "bleach-time"  
+    
+    + columns "posref" and "focus" are df's, containing the columns: "img-ref", "datahash", "hashtype", "filename", "filepath", "pbytes"
+    column "deltaTL"is a list of df's, each containg the columns: "img-ref", "datahash", "hashtype", "filename", "filepath", "pbytes", "deltaZ"
+    
+## functions {.tabset .tabset-pills}
+
+### list_folder_in_path
+
+```{r}
+create_image_foldername <- function(imageServer_path,basePath,pos_ID){
+  
+  file.path(imageServer_path,basePath,
+                    paste0("pos",pos_ID))
+}
+```
+
+### query_filterset_of_scanIDs()
+
+```{r}
+
+query_filterset_of_scanIDs <- function(scan_IDs){
+  
+  # query scanIDs in scans
+  query_scan_scans <- query_UID_limsproc(scan_IDs)
+
+  # get EDL
+  EDL <-get_EDL_from_query_result(query_scan_scans)
+  
+  # select node: Active Filterset-ID
+  filterset <- purrr::map_chr(EDL,
+                              ~.x%>%xml2::read_xml()%>%
+                                xml2::xml_find_all('/Method/Machine/SpecificParameters/SpecificParameter[@Name = "Active Filterset-ID"]')%>%
+                                xml2::xml_attr("Value"))
+  
+  return(filterset)
+  
+}
+```
+
+### create_ScanHistory_of_chipIDs()
+
+```{r}
+create_ScanHistory_of_chipIDs<-function(chip_IDs){
+
+  MethodHistory <- create_MethodHistory_of_chipIDs(chip_IDs)
+
+  ScanHistorys <- purrr::map(MethodHistory,
+                             ~.x%>%
+                               dplyr::rename("scan_ID" = "UID")%>%
+                               dplyr::rename("cycle_ID" = "CycleUID")%>%
+                               tidyr::fill(cycle_ID,  .direction = "up")%>%
+                               dplyr::filter(Type == "Chipcytometry-Scan")%>%
+                               dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
+  return(ScanHistorys)
+}
+```
+
+### query_UID_limsproc()
+
+```{r}
+
+query_UID_limsproc<- function(chip_IDs){
+
+  V <- 130222 # initial Version
+  V <- 080322
+  #- added return(result)
+  #____________________________
+
+  result <- query_mongoDB("limsproc",
+                          "UID",
+                          chip_IDs)
+
+  return(result)
+}
+```
+
+## workflow
+
+```{r}
+# load library
+library(RJobTissueArea)
+
+# define group ID
+group_ID <- "P1761451"
+
+# find valid group chip_IDs
+chip_IDs <- find_valid_group_chip_IDs(group_ID)
+chip_IDs <- chip_IDs[1:2]
+
+# find server paths
+server_paths <- find_server_path()
+server_paths <- server_paths$server_path
+
+# find chip_path
+chip_paths <- purrr::map_chr(chip_IDs,
+                         ~find_chip_path(.x,server_paths))
+
+# wrangle to imageServer_path
+imageServer_paths <- purrr::map2_chr(chip_paths,chip_IDs,
+                    ~stringr::str_remove(.x,.y))
+
+IDs <- dplyr::tibble(
+  chip_ID = chip_IDs,
+  chip_path = chip_paths,
+  imageServer_path = imageServer_paths)
+
+# create scanHistory
+ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)%>%
+  dplyr::bind_rows()
+
+# add filterset
+ScanHistory <- ScanHistory%>%
+  dplyr::mutate(filterset = query_filterset_of_scanIDs(scan_ID))
+
+# query result chipID ins scans
+query_chip_scans <- query_mongoDB("scans",
+                                  "channelUID",
+                                  chip_IDs)
+
+# select columns
+results_chip_scans <- purrr::map(query_chip_scans$result,
+                  ~.x%>%
+                    dplyr::select("chip_ID" = "channelUID",
+                                  "scan_ID" = "UID",
+                                  jobType,
+                                  basePath,
+                                  "Status" = "jobEndState",
+                                  positions,
+                                  `enabled-count`))
+
+# subselect columns position
+results_chip_scans <- purrr::map(
+  results_chip_scans,
+  ~.x%>%
+    tidyr::unnest(cols="positions")%>%
+    dplyr::select(
+      dplyr::any_of(c("chip_ID", 
+                  "scan_ID", 
+                  "pos_ID" = "posid", 
+                  "jobType", 
+                  "basePath", 
+                  "Status", 
+                  "chipx", 
+                  "chipy", 
+                  "enabled",
+                  "bleach-time",
+                  "enabled-count"))))
+
+results_chip_scans <- results_chip_scans%>%
+  dplyr::bind_rows()
+
+results_chip_scans%>%head()
+
+# join imageServer_path
+result_paths <- dplyr::left_join(results_chip_scans,
+                           IDs,
+                           by = "chip_ID")
+
+# add pos_path
+result_paths <- result_paths%>%
+  dplyr::mutate(pos_path = create_image_foldername(imageServer_path,
+                                                   basePath,
+                                                   pos_ID))
+
+# add dirs in pos_path
+result_paths <- result_paths%>%
+  dplyr::mutate(image_folder = purrr::map(pos_path,
+                                          ~list.dirs(.x,
+                                                     full.names = FALSE,
+                                                     recursive = FALSE)))%>%
+  tidyr::unnest(cols="image_folder")%>%
+  dplyr::mutate(image_path = file.path(pos_path,image_folder))
+
+# list files in image_folder
+result_files <- result_paths%>%
+  dplyr::mutate(blob_filename = purrr::map(image_path,
+                                          ~list.files(.x)))%>%
+  tidyr::unnest(cols="blob_filename")
+
+# add filetype
+result_files <- result_files%>%
+  dplyr::mutate(filetype = tools::file_ext(blob_filename))
+
+head(result_files)
+
+# join ScanHistory
+result_files <- dplyr::left_join(
+  result_files,
+  ScanHistory,
+  by = c("scan_ID", "Status"))
+
+head(result_files)
+
+# remove excluded scans
+result_files <- result_files%>%
+  dplyr::filter(Excluded %in% c(NA, "FALSE"))%>%
+  dplyr::filter(Status == "Finished")
+
+# filter blob files
+blob_result_files <- result_files%>%
+  dplyr::filter(filetype %in% c("blob","blob32"))
+
+# filter png files
+png_result_files <- result_files%>%
+  dplyr::filter(filetype %in% c("png"))
+```

@@ -1,4 +1,7 @@
-# RJobTissueArea (development version)
+# RJobTissueArea 0.0.0.6
+
+* NEW helperfunctions_ImportBlobFiles (first selection) added
+* update FINAL report: find all image files (including blob, blob32, png which are existing)
 
 # RJobTissueArea 0.0.0.5
 

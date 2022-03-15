@@ -1,35 +1,17 @@
-V <- "130322"
-helpers <- "MetadataScanPosition"
+---
+title: "functions backup"
+output: html_document
+---
 
-assign(paste0("version.helpers.", helpers), V)
-writeLines("_____________________________________________________________")
-writeLines(paste0("Start loading helper functions - ", helpers, ", Version ", V))
-writeLines("")
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-writeLines(
-  c(
-    "---------------------",
-    "functions: ",
-    "- create_ScanHistory_from_MethodHistory()",
-    "- create_MethodHistory_of_chipIDs()",
-    "- create_ScanHistory_of_chipIDs()",
-    "- create_pos_df_from_MethodHistory()",
-    "- extract_cycle_sequence_from_MethodHistory()",
-    "- extract_OK_pos_from_MethodHistory()",
-    "- extract_Ref_pos_from_MethodHistory()",
-    "- extract_XYvalues_pos_from_MethodHistory()",
-    "- get_pos_colnames_in_MethodHistory()"
-  ))
+# MethodHistory, ScanHistory and pos-columns
 
+## create_MethodHistory_of_chipIDs
 
-#' create_MethodHistory_of_chipIDs
-#'
-#' @param chip_IDs
-#'
-#' @return
-#' @export
-#'
-#' @examples
+```{r}
 create_MethodHistory_of_chipIDs <- function(chip_IDs){
 
   query_results <- query_UID_limslager(chip_IDs = chip_IDs)
@@ -38,14 +20,11 @@ create_MethodHistory_of_chipIDs <- function(chip_IDs){
 
   return(MethodHistory)
 }
+```
 
-#' create_pos_df_from_MethodHistory
-#'
-#' @param MethodHistory
-#'
-#' @return
-#'
-#' @examples
+## create_pos_df_from_MethodHistory
+
+```{r}
 create_pos_df_from_MethodHistory <- function(MethodHistory){
   columns <- purrr::map(MethodHistory,
                         ~.x%>%get_pos_colnames_in_MethodHistory)
@@ -69,17 +48,14 @@ create_pos_df_from_MethodHistory <- function(MethodHistory){
   return(df)
 }
 
-#' create_ScanHistory_of_chipIDs
-#'
-#' @param MethodHistory
-#'
-#' @return
-#' @export
-#'
-#' @examples
+```
+
+## create_ScanHistory_of_chipIDs
+
+```{r}
 create_ScanHistory_of_chipIDs<-function(chip_IDs){
 
-  MethodHistory <- create_MethodHistory_of_chipIDs(chip_IDs)
+  Method_History <- create_MethodHistory_of_chipIDs(chip_IDs)
 
   ScanHistorys <- purrr::map(MethodHistory,
                              ~.x%>%
@@ -90,15 +66,11 @@ create_ScanHistory_of_chipIDs<-function(chip_IDs){
                                dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
   return(ScanHistorys)
 }
+```
 
-#' create_ScanHistory_from_MethodHistory
-#'
-#' @param MethodHistory
-#'
-#' @return
-#' @export
-#'
-#' @examples
+## create_ScanHistory_from_MethodHistory
+
+```{r}
 create_ScanHistory_from_MethodHistory<-function(MethodHistory){
 
   ScanHistorys <- purrr::map(MethodHistory,
@@ -111,14 +83,11 @@ create_ScanHistory_from_MethodHistory<-function(MethodHistory){
   return(ScanHistorys)
 }
 
+```
 
-#' extract_cycle_sequence_from_MethodHistory
-#'
-#' @param MethodHistory
-#'
-#' @return
-#'
-#' @examples
+## extract_cycle_sequence_from_MethodHistory
+
+```{r}
 extract_cycle_sequence_from_MethodHistory <- function(MethodHistory){
 
   cycle_sequence <- purrr::map(MethodHistory,
@@ -129,14 +98,11 @@ extract_cycle_sequence_from_MethodHistory <- function(MethodHistory){
                                  dplyr::select(cycle_pos,cycle_ID,Status,PreparedForDataviz))
   return(cycle_sequence)
 }
+```
 
-#' extract_OK_pos_from_MethodHistory
-#'
-#' @param MethodHistory
-#'
-#' @return
-#'
-#' @examples
+## extract_OK_pos_from_MethodHistory
+
+```{r}
 extract_OK_pos_from_MethodHistory <- function(MethodHistory){
 
   df <- create_pos_df_from_MethodHistory(MethodHistory)
@@ -159,14 +125,11 @@ extract_OK_pos_from_MethodHistory <- function(MethodHistory){
 
   return(pos_df_OK)
 }
+```
 
-#' extract_Ref_pos_from_MethodHistory
-#'
-#' @param MethodHistory
-#'
-#' @return
-#'
-#' @examples
+## extract_Ref_pos_from_MethodHistory
+
+```{r}
 extract_Ref_pos_from_MethodHistory <- function(MethodHistory){
 
   result <- create_pos_df_from_MethodHistory(MethodHistory)
@@ -190,14 +153,11 @@ extract_Ref_pos_from_MethodHistory <- function(MethodHistory){
 
   return(pos_df_Ref)
 }
+```
 
-#' extract_XYvalues_pos_from_MethodHistory
-#'
-#' @param MethodHistory
-#'
-#' @return
-#'
-#' @examples
+## extract_XYvalues_pos_from_MethodHistory
+
+```{r}
 extract_XYvalues_pos_from_MethodHistory <- function(MethodHistory){
 
   df <- create_pos_df_from_MethodHistory(MethodHistory)
@@ -247,18 +207,246 @@ extract_XYvalues_pos_from_MethodHistory <- function(MethodHistory){
 
 }
 
+```
 
+## get_pos_colnames_in_MethodHistory
 
-#' get_pos_colnames_in_MethodHistory
-#'
-#' @param MH
-#'
-#' @return
-#'
-#' @examples
+```{r}
 get_pos_colnames_in_MethodHistory <- function(MH){
   cols <- colnames(MH)
   col_pos <- which(stringr::str_detect(cols,"pos")==TRUE)
   col_scanID <- which(cols %in% c("UID","CycleUID","Taq","Excluded","PreparedForDataviz"))
   return(c(col_scanID,col_pos))
 }
+```
+
+# find all image pos of a scan {.tabset .tabset-pills}
+
+## create_Pos_image_filepath()
+
+```{r}
+create_Pos_image_filepath <- function(ScanBasePath,
+                                      PositionFolder,
+                                      Type){
+  Type <- match.arg(Type,choices = c("posRef",
+                                     "flimages",
+                                     "deltaTL",
+                                     "focus",
+                                     "hdr"))
+  image_filepath <- file.path(ScanBasePath,
+                                 PositionFolder,
+                                 Type) 
+  return(image_filepath)
+}
+```
+
+## list_BlobFileName_in_filepath()
+
+```{r}
+list_BlobFileName_in_filepath <- function(image_filepath){
+  
+  #filetype <- tools::file_ext(filename)
+  #filetype <- stringr::str_remove(filename, 
+  #                                 "[^.]+")
+  #test <- "hahaha.blob32"
+  #test2 <- stringr::str_extract(test,"[^.blob]+")
+
+# get_BLOB_filetype()
+stringr::str_remove(test,test2)
+  Files<-list.files(image_filepath)
+  BlobFiles<-Files[stringr::str_detect(Files,".blob32$")]
+  BlobFileName<-BlobFiles%>%stringr::str_remove(".blob32$")
+  
+
+  if(length(BlobFileName)==0){
+     BlobFiles<-Files[stringr::str_detect(Files,".blob$")]
+     BlobFileName<-BlobFiles%>%stringr::str_remove(".blob$")
+  }
+  
+  if(length(BlobFileName)==0){return(NA)
+  }else{return(BlobFileName)}
+}
+```
+
+## list_posFolders_in_ScanBasePath()
+
+```{r}
+list_posFolders_in_ScanBasePath <- function(ScanBasePath){
+  positions<-list.files(path=ScanBasePath)
+  positions=positions[stringr::str_detect(positions,"pos")]
+  return(positions)
+}
+```
+
+# find_scan_basepath() {.tabset .tabset-pills}
+
+## query_UID_scans()
+
+```{r}
+# find basePath to the image folder
+#scan_IDs <- IDs$scan_ID[1:50]
+
+query_UID_scans<- function(scan_IDs){
+  result <- query_mongoDB("scans",
+                          "UID",
+                          scan_IDs)
+  
+  return(result)
+}
+
+#query_result <- query_UID_scans(scan_IDs)
+```
+
+## get_df_from_query_result()
+
+```{r}
+get_df_from_query_result<- function(query_result){
+  
+  result <- purrr::map_df(query_result$result, ~.x)
+  
+  return(result)
+  
+}
+#df <- get_df_from_query_result(query_result)
+
+#df%>%head()
+```
+
+## find_scan_basepath()
+
+```{r}
+find_scan_basepath <- function(scan_IDs){
+  query_result <- query_UID_scans(scan_IDs)
+  df <- get_df_from_query_result(query_result)
+  return(df$basePath)
+  
+}
+
+#IDs <- IDs%>%
+#  dplyr::mutate(ScanBasePath = find_scan_basepath(scan_ID))
+
+```
+
+# check scanIDs for missinng image data() 
+
+## get_pos_colnames_in_MethodHistory()
+
+```{r}
+get_pos_colnames_in_MethodHistory <- function(MH){
+  cols <- colnames(MH)
+  col_pos <- which(stringr::str_detect(cols,"pos")==TRUE)
+  col_scanID <- which(cols %in% c("UID","CycleUID","Taq","Excluded","PreparedForDataviz"))
+  return(c(col_scanID,col_pos))
+}
+```
+
+## create_pos_df_from_MethodHistory()
+
+```{r}
+create_pos_df_from_MethodHistory <- function(MethodHistory){
+  columns <- purrr::map(MethodHistory,
+                          ~.x%>%get_pos_colnames_in_MethodHistory)
+  df <- purrr::map2(MethodHistory,
+                    columns,
+                    ~.x[,.y])
+  df <- purrr::map(df,
+                   ~.x%>%
+                     tidyr::gather("column",
+                                   "value",
+                                   -UID,
+                                   -CycleUID,
+                                   -Excluded,
+                                   -PreparedForDataviz))
+  df <- purrr::map(df,
+                   ~if(dim(.x)[2] == 4){
+                     .x$column <- rep(NA,times=dim(.x)[1])
+                     .x$value <- rep(NA,times=dim(.x)[1])
+                     return(.x)
+                   }else{return(.x)})
+  return(df)
+}
+```
+
+# helpers finding paths
+
+## create_Position_posRefimage_filepath()
+
+```{r}
+create_Position_posRefimage_filepath <- function(ScanBasePath,
+                                              PositionFolder){
+  posRefimage_filepath <- file.path(ScanBasePath,
+                                 PositionFolder,
+                                 "posref") 
+  return(posRefimage_filepath)
+  
+}
+```
+
+## create_Position_FLimage_filepath()
+
+```{r}
+create_Position_FLimage_filepath <- function(ScanBasePath,
+                                              PositionFolder){
+  FLimage_filepath <- file.path(ScanBasePath,
+                                 PositionFolder,
+                                 "flimages") 
+  return(FLimage_filepath)
+  
+}
+```
+
+## create_Position_deltaTL_filepath()
+
+```{r}
+create_Position_deltaTLimage_filepath <- function(ScanBasePath,
+                                              PositionFolder){
+  deltaTLimage_filepath <- file.path(ScanBasePath,
+                                 PositionFolder,
+                                 "deltaTL") 
+  return(deltaTLimage_filepath)
+  
+}
+```
+
+## create_Position__deltaTL_focus_filepath()
+
+```{r}
+create_Position_focusimage_filepath <- function(ScanBasePath,
+                                              PositionFolder){
+  focusimage_filepath <- file.path(ScanBasePath,
+                                 PositionFolder,
+                                 "focus") 
+  return(focusimage_filepath)
+  
+}
+```
+
+## create_Position_HDRimage_filepath()
+
+```{r}
+create_Position_HDRimage_filepath <- function(ScanBasePath,
+                                              PositionFolder){
+  HDRimage_filepath <- file.path(ScanBasePath,
+                                 PositionFolder,
+                                 "hdr") 
+  return(HDRimage_filepath)
+  
+}
+```
+
+## list_HDR_BlobFileName_in_filepath()
+
+```{r}
+list_BlobFileName_in_filepath <- function(HDRimage_filepath){
+  HDRFiles<-list.files(HDRimage_filepath)
+  BlobFiles<-HDRFiles[stringr::str_detect(HDRFiles,".blob32$")]
+  BlobFileName<-BlobFiles%>%stringr::str_remove(".blob32$")
+  if(length(BlobFileName)==0){
+    return(NA)
+    }else{return(BlobFileName)}
+}
+```
+
+
+
+

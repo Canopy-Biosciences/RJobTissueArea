@@ -193,34 +193,17 @@ The aim of this build functions for import of scan HDR images, defined by scan_I
 <div id="TOC">
 <ul>
 <li><a href="#summary"><span class="toc-section-number">1</span> summary</a></li>
-<li><a href="#introduction"><span class="toc-section-number">2</span> introduction</a>
+<li><a href="#introduction"><span class="toc-section-number">2</span> introduction</a></li>
+<li><a href="#find-all-blob-imagefiles"><span class="toc-section-number">3</span> find all Blob ImageFiles</a>
 <ul>
-<li><a href="#find-all-image-pos-of-a-scan"><span class="toc-section-number">2.1</span> find all image pos of a scan</a>
+<li><a href="#functions"><span class="toc-section-number">3.1</span> functions</a>
 <ul>
-<li><a href="#create_pos_image_filepath"><span class="toc-section-number">2.1.1</span> create_Pos_image_filepath()</a></li>
-<li><a href="#list_blobfilename_in_filepath"><span class="toc-section-number">2.1.2</span> list_BlobFileName_in_filepath()</a></li>
-<li><a href="#list_posfolders_in_scanbasepath"><span class="toc-section-number">2.1.3</span> list_posFolders_in_ScanBasePath()</a></li>
+<li><a href="#list_folder_in_path"><span class="toc-section-number">3.1.1</span> list_folder_in_path</a></li>
+<li><a href="#query_filterset_of_scanids"><span class="toc-section-number">3.1.2</span> query_filterset_of_scanIDs()</a></li>
+<li><a href="#create_scanhistory_of_chipids"><span class="toc-section-number">3.1.3</span> create_ScanHistory_of_chipIDs()</a></li>
+<li><a href="#query_uid_limsproc"><span class="toc-section-number">3.1.4</span> query_UID_limsproc()</a></li>
 </ul></li>
-<li><a href="#find_scan_basepath"><span class="toc-section-number">2.2</span> find_scan_basepath()</a>
-<ul>
-<li><a href="#query_uid_scans"><span class="toc-section-number">2.2.1</span> query_UID_scans()</a></li>
-<li><a href="#get_df_from_query_result"><span class="toc-section-number">2.2.2</span> get_df_from_query_result()</a></li>
-<li><a href="#find_scan_basepath-1"><span class="toc-section-number">2.2.3</span> find_scan_basepath()</a></li>
-</ul></li>
-<li><a href="#find-all-blob-imagefiles"><span class="toc-section-number">2.3</span> find all Blob ImageFiles</a>
-<ul>
-<li><a href="#worklfow"><span class="toc-section-number">2.3.1</span> worklfow</a></li>
-<li><a href="#check-scanids-for-missinng-image-data"><span class="toc-section-number">2.3.2</span> check scanIDs for missinng image data()</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#supplement"><span class="toc-section-number">3</span> supplement</a>
-<ul>
-<li><a href="#add-picture-characteristics-to-positions-df"><span class="toc-section-number">3.1</span> add picture characteristics to positions df</a></li>
-<li><a href="#add-list-column-to-positions-df-containing-intensitys-per-pixel"><span class="toc-section-number">3.2</span> add list column to positions df, containing intensitys per pixel</a></li>
-<li><a href="#collect-data-from-all-scans"><span class="toc-section-number">3.3</span> collect data from all Scans</a></li>
-<li><a href="#list-all"><span class="toc-section-number">3.4</span> list all</a></li>
-<li><a href="#check-data-import"><span class="toc-section-number">3.5</span> check data import</a></li>
-<li><a href="#check-data-import-1"><span class="toc-section-number">3.6</span> check data import</a></li>
+<li><a href="#workflow"><span class="toc-section-number">3.2</span> workflow</a></li>
 </ul></li>
 </ul>
 </div>
@@ -243,98 +226,16 @@ The aim of this build functions for import of scan HDR images, defined by scan_I
 <li>count cells</li>
 <li>export chipID cell_count tissue and position area</li>
 </ul>
-<div id="find-all-image-pos-of-a-scan" class="section level2 tabset tabset-pills" number="2.1">
-<h2 class="tabset tabset-pills"><span class="header-section-number">2.1</span> find all image pos of a scan</h2>
-<div id="create_pos_image_filepath" class="section level3" number="2.1.1">
-<h3><span class="header-section-number">2.1.1</span> create_Pos_image_filepath()</h3>
-<pre class="r"><code>create_Pos_image_filepath &lt;- function(ScanBasePath,
-                                      PositionFolder,
-                                      Type){
-  Type &lt;- match.arg(Type,choices = c(&quot;posRef&quot;,
-                                     &quot;flimages&quot;,
-                                     &quot;deltaTL&quot;,
-                                     &quot;focus&quot;,
-                                     &quot;hdr&quot;))
-  image_filepath &lt;- file.path(ScanBasePath,
-                                 PositionFolder,
-                                 Type) 
-  return(image_filepath)
-}</code></pre>
 </div>
-<div id="list_blobfilename_in_filepath" class="section level3" number="2.1.2">
-<h3><span class="header-section-number">2.1.2</span> list_BlobFileName_in_filepath()</h3>
-<pre class="r"><code>list_BlobFileName_in_filepath &lt;- function(image_filepath){
-  Files&lt;-list.files(image_filepath)
-  BlobFiles&lt;-Files[stringr::str_detect(Files,&quot;.blob32$&quot;)]
-  BlobFileName&lt;-BlobFiles%&gt;%stringr::str_remove(&quot;.blob32$&quot;)
-  if(length(BlobFileName)==0){
-    return(NA)
-    }else{return(BlobFileName)}
-}</code></pre>
-</div>
-<div id="list_posfolders_in_scanbasepath" class="section level3" number="2.1.3">
-<h3><span class="header-section-number">2.1.3</span> list_posFolders_in_ScanBasePath()</h3>
-<pre class="r"><code>list_posFolders_in_ScanBasePath &lt;- function(ScanBasePath){
-  positions&lt;-list.files(path=ScanBasePath)
-  positions=positions[stringr::str_detect(positions,&quot;pos&quot;)]
-  return(positions)
-}</code></pre>
-</div>
-</div>
-<div id="find_scan_basepath" class="section level2 tabset tabset-pills" number="2.2">
-<h2 class="tabset tabset-pills"><span class="header-section-number">2.2</span> find_scan_basepath()</h2>
-<div id="query_uid_scans" class="section level3" number="2.2.1">
-<h3><span class="header-section-number">2.2.1</span> query_UID_scans()</h3>
-<pre class="r"><code># find basePath to the image folder
-#scan_IDs &lt;- IDs$scan_ID[1:50]
-
-query_UID_scans&lt;- function(scan_IDs){
-  result &lt;- query_mongoDB(&quot;scans&quot;,
-                          &quot;UID&quot;,
-                          scan_IDs)
-  
-  return(result)
-}
-
-#query_result &lt;- query_UID_scans(scan_IDs)</code></pre>
-</div>
-<div id="get_df_from_query_result" class="section level3" number="2.2.2">
-<h3><span class="header-section-number">2.2.2</span> get_df_from_query_result()</h3>
-<pre class="r"><code>get_df_from_query_result&lt;- function(query_result){
-  
-  result &lt;- purrr::map_df(query_result$result, ~.x)
-  
-  return(result)
-  
-}
-#df &lt;- get_df_from_query_result(query_result)
-
-#df%&gt;%head()</code></pre>
-</div>
-<div id="find_scan_basepath-1" class="section level3" number="2.2.3">
-<h3><span class="header-section-number">2.2.3</span> find_scan_basepath()</h3>
-<pre class="r"><code>find_scan_basepath &lt;- function(scan_IDs){
-  query_result &lt;- query_UID_scans(scan_IDs)
-  df &lt;- get_df_from_query_result(query_result)
-  return(df$basePath)
-  
-}
-
-#IDs &lt;- IDs%&gt;%
-#  dplyr::mutate(ScanBasePath = find_scan_basepath(scan_ID))</code></pre>
-</div>
-</div>
-<div id="find-all-blob-imagefiles" class="section level2 tabset tabset-pills" number="2.3">
-<h2 class="tabset tabset-pills"><span class="header-section-number">2.3</span> find all Blob ImageFiles</h2>
+<div id="find-all-blob-imagefiles" class="section level1 tabset tabset-pills" number="3">
+<h1 class="tabset tabset-pills"><span class="header-section-number">3</span> find all Blob ImageFiles</h1>
 <ul>
 <li>define group_ID</li>
 <li>find all valid chip_IDs in group</li>
 <li>create MethodHistory for each valid chip in group</li>
-<li>extract ScanHistories from MethodHistories</li>
-<li>wrangle to IDs and remove Excluded Scans</li>
-<li>add chip_path</li>
-<li>add ScanHistory</li>
-<li>filter excluded scans</li>
+<li>extract ScanHistories from MethodHistories (- wrangle to IDs and remove Excluded Scans)</li>
+<li>add chip_path and imageServer_path</li>
+<li>add ScanHistory (- filter excluded scans)</li>
 <li>add ScanBasePath, PositionFolders</li>
 <li>query scanIDs in scans-collection</li>
 <li>get image Type of each Scan</li>
@@ -344,12 +245,101 @@ query_UID_scans&lt;- function(scan_IDs){
 <li>wrangle to df containing IDs and corresponding BlobFileNames of each scan</li>
 <li>check for missing scans</li>
 </ul>
-<div id="worklfow" class="section level3" number="2.3.1">
-<h3><span class="header-section-number">2.3.1</span> worklfow</h3>
-<pre class="r"><code># load library
-library(RJobTissueArea)
+<p><strong>querry scan_ID in collection scans results in</strong></p>
+<pre class="r"><code>result &lt;-query_mongoDB(&quot;scans&quot;,
+              &quot;channelUID&quot;,
+              chip_IDs)</code></pre>
+<ul>
+<li><p>a dataframe without EDL field filled</p></li>
+<li><p>important containing columns:</p>
+<ul>
+<li>basepath= chip_path</li>
+<li>jobType either TL or FL</li>
+<li>UID = scan_ID</li>
+<li>channelUID = chip_ID</li>
+</ul></li>
+<li><p>good to know columns:</p>
+<ul>
+<li><p>imageRotation</p></li>
+<li><p>positionCount</p></li>
+<li><p>hardware, df containing columns: “camera-serial”, “camera-model”, “camera-vendor”, “camera-exposure” “camera-binning”, “camera-gain”, “microscope-serial” “microscope-model” “microscope-vendor” “objective-unq”, “objective-name”, “reflector-unq”, “reflector-name”, “optovar-unq”, “optovar-name”, “sideport-unq”, “sideport-name”, “lightsources”</p></li>
+<li><p>positions, df containing columns: “posid”, “focusOffset”, “enabled”, “focusInterpolated” “chipx”, “chipy”, “stageX”, “stageY”, “stageZ”, “imagePixDX”, “imagePixDY”, “imageRotation”, “posref”, “hdr”, “focus”,“filimages”,deltaTL”, “bleach-time”</p></li>
+<li><p>columns “posref” and “focus” are df’s, containing the columns: “img-ref”, “datahash”, “hashtype”, “filename”, “filepath”, “pbytes” column “deltaTL”is a list of df’s, each containg the columns: “img-ref”, “datahash”, “hashtype”, “filename”, “filepath”, “pbytes”, “deltaZ”</p></li>
+</ul></li>
+</ul>
+<div id="functions" class="section level2 tabset tabset-pills" number="3.1">
+<h2 class="tabset tabset-pills"><span class="header-section-number">3.1</span> functions</h2>
+<div id="list_folder_in_path" class="section level3" number="3.1.1">
+<h3><span class="header-section-number">3.1.1</span> list_folder_in_path</h3>
+<pre class="r"><code>create_image_foldername &lt;- function(imageServer_path,basePath,pos_ID){
+  
+  file.path(imageServer_path,basePath,
+                    paste0(&quot;pos&quot;,pos_ID))
+}</code></pre>
+</div>
+<div id="query_filterset_of_scanids" class="section level3" number="3.1.2">
+<h3><span class="header-section-number">3.1.2</span> query_filterset_of_scanIDs()</h3>
+<pre class="r"><code>query_filterset_of_scanIDs &lt;- function(scan_IDs){
+  
+  # query scanIDs in scans
+  query_scan_scans &lt;- query_UID_limsproc(scan_IDs)
 
-# define group ID
+  # get EDL
+  EDL &lt;-get_EDL_from_query_result(query_scan_scans)
+  
+  # select node: Active Filterset-ID
+  filterset &lt;- purrr::map_chr(EDL,
+                              ~.x%&gt;%xml2::read_xml()%&gt;%
+                                xml2::xml_find_all(&#39;/Method/Machine/SpecificParameters/SpecificParameter[@Name = &quot;Active Filterset-ID&quot;]&#39;)%&gt;%
+                                xml2::xml_attr(&quot;Value&quot;))
+  
+  return(filterset)
+  
+}</code></pre>
+</div>
+<div id="create_scanhistory_of_chipids" class="section level3" number="3.1.3">
+<h3><span class="header-section-number">3.1.3</span> create_ScanHistory_of_chipIDs()</h3>
+<pre class="r"><code>create_ScanHistory_of_chipIDs&lt;-function(chip_IDs){
+
+  MethodHistory &lt;- create_MethodHistory_of_chipIDs(chip_IDs)
+
+  ScanHistorys &lt;- purrr::map(MethodHistory,
+                             ~.x%&gt;%
+                               dplyr::rename(&quot;scan_ID&quot; = &quot;UID&quot;)%&gt;%
+                               dplyr::rename(&quot;cycle_ID&quot; = &quot;CycleUID&quot;)%&gt;%
+                               tidyr::fill(cycle_ID,  .direction = &quot;up&quot;)%&gt;%
+                               dplyr::filter(Type == &quot;Chipcytometry-Scan&quot;)%&gt;%
+                               dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
+  return(ScanHistorys)
+}</code></pre>
+</div>
+<div id="query_uid_limsproc" class="section level3" number="3.1.4">
+<h3><span class="header-section-number">3.1.4</span> query_UID_limsproc()</h3>
+<pre class="r"><code>query_UID_limsproc&lt;- function(chip_IDs){
+
+  V &lt;- 130222 # initial Version
+  V &lt;- 080322
+  #- added return(result)
+  #____________________________
+
+  result &lt;- query_mongoDB(&quot;limsproc&quot;,
+                          &quot;UID&quot;,
+                          chip_IDs)
+
+  return(result)
+}</code></pre>
+</div>
+</div>
+<div id="workflow" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> workflow</h2>
+<pre class="r"><code># load library
+library(RJobTissueArea)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;RJobTissueArea&#39;</code></pre>
+<pre><code>## The following object is masked _by_ &#39;.GlobalEnv&#39;:
+## 
+##     create_ScanHistory_of_chipIDs</code></pre>
+<pre class="r"><code># define group ID
 group_ID &lt;- &quot;P1761451&quot;
 
 # find valid group chip_IDs
@@ -381,468 +371,157 @@ chip_IDs &lt;- find_valid_group_chip_IDs(group_ID)</code></pre>
 ##   + M1730404
 ##   + M1730406
 ##   + M1764730</code></pre>
-<pre class="r"><code># create chip&#39;s MethodHistory
-MethodHistory &lt;- create_MethodHistory_of_chipIDs(chip_IDs)
+<pre class="r"><code>chip_IDs &lt;- chip_IDs[1:2]
 
-# extract ScanHistory
-ScanHistory &lt;- create_ScanHistory_of_chipIDs(MethodHistory)
+# find server paths
+server_paths &lt;- find_server_path()
+server_paths &lt;- server_paths$server_path
 
-# query for all scan_IDs in scans-collection
-scan_IDs &lt;- purrr::map(ScanHistory,~.x$scan_ID)%&gt;%purrr::flatten_chr()
-query_result &lt;- query_UID_scans(scan_IDs)
-result &lt;- get_df_from_query_result(query_result)
+# find chip_path
+chip_paths &lt;- purrr::map_chr(chip_IDs,
+                         ~find_chip_path(.x,server_paths))
 
-# get image type of each scan
-image_Type &lt;- dplyr::tibble(
-  scan_ID = result$UID,
-  image_Type = result$jobType,
-  success = result$success)
+# wrangle to imageServer_path
+imageServer_paths &lt;- purrr::map2_chr(chip_paths,chip_IDs,
+                    ~stringr::str_remove(.x,.y))
 
-# df of chip_IDsand all scan_IDs
 IDs &lt;- dplyr::tibble(
-  chip_ID = chip_IDs)
+  chip_ID = chip_IDs,
+  chip_path = chip_paths,
+  imageServer_path = imageServer_paths)
 
-# add chip_path
-IDs &lt;- IDs%&gt;%
-  dplyr::mutate(chip_path = purrr::map_chr(chip_ID,
-                                    ~find_chip_path(.x)))
-# add ScanHistory
-IDs &lt;- IDs%&gt;%
-  dplyr::mutate(ScanHistory = purrr::map(ScanHistory,~.x))
+# create scanHistory
+ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)%&gt;%
+  dplyr::bind_rows()
 
-# unnest IDs
-IDs &lt;- IDs%&gt;%
-  tidyr::unnest(cols=&quot;ScanHistory&quot;)
+# add filterset
+ScanHistory &lt;- ScanHistory%&gt;%
+  dplyr::mutate(filterset = query_filterset_of_scanIDs(scan_ID))
 
-# add imageType
+# query result chipID ins scans
+query_chip_scans &lt;- query_mongoDB(&quot;scans&quot;,
+                                  &quot;channelUID&quot;,
+                                  chip_IDs)
 
-IDs &lt;- IDs%&gt;%
-  dplyr::left_join(image_Type,
-                   by = &quot;scan_ID&quot;)
+# select columns
+results_chip_scans &lt;- purrr::map(query_chip_scans$result,
+                  ~.x%&gt;%
+                    dplyr::select(&quot;chip_ID&quot; = &quot;channelUID&quot;,
+                                  &quot;scan_ID&quot; = &quot;UID&quot;,
+                                  jobType,
+                                  basePath,
+                                  &quot;Status&quot; = &quot;jobEndState&quot;,
+                                  positions,
+                                  `enabled-count`))
 
-# remove excluded scans
-IDs &lt;- IDs%&gt;%
+# subselect columns position
+results_chip_scans &lt;- purrr::map(
+  results_chip_scans,
+  ~.x%&gt;%
+    tidyr::unnest(cols=&quot;positions&quot;)%&gt;%
+    dplyr::select(
+      dplyr::any_of(c(&quot;chip_ID&quot;, 
+                  &quot;scan_ID&quot;, 
+                  &quot;pos_ID&quot; = &quot;posid&quot;, 
+                  &quot;jobType&quot;, 
+                  &quot;basePath&quot;, 
+                  &quot;Status&quot;, 
+                  &quot;chipx&quot;, 
+                  &quot;chipy&quot;, 
+                  &quot;enabled&quot;,
+                  &quot;bleach-time&quot;,
+                  &quot;enabled-count&quot;))))
+
+results_chip_scans &lt;- results_chip_scans%&gt;%
+  dplyr::bind_rows()
+
+results_chip_scans%&gt;%head()</code></pre>
+<pre><code>## # A tibble: 6 x 11
+##   chip_ID  scan_ID  pos_ID jobType basePath         Status  chipx  chipy enabled
+##   &lt;chr&gt;    &lt;chr&gt;     &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;            &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;int&gt;
+## 1 M1730408 E1767816      5 BLEACH  &quot;M1730408\\scan~ Finis~ 30584. 11150.      NA
+## 2 M1730408 E1767816      6 BLEACH  &quot;M1730408\\scan~ Finis~ 30584. 11824.      NA
+## 3 M1730408 E1767816      8 BLEACH  &quot;M1730408\\scan~ Finis~ 31056. 11150.      NA
+## 4 M1730408 E1767816      9 BLEACH  &quot;M1730408\\scan~ Finis~ 31056. 11824.      NA
+## 5 M1730408 E1767816     11 BLEACH  &quot;M1730408\\scan~ Finis~ 31530. 11150.      NA
+## 6 M1730408 E1767816     12 BLEACH  &quot;M1730408\\scan~ Finis~ 31530. 11824.      NA
+## # ... with 2 more variables: bleach-time &lt;dbl&gt;, enabled-count &lt;int&gt;</code></pre>
+<pre class="r"><code># join imageServer_path
+result_paths &lt;- dplyr::left_join(results_chip_scans,
+                           IDs,
+                           by = &quot;chip_ID&quot;)
+
+# add pos_path
+result_paths &lt;- result_paths%&gt;%
+  dplyr::mutate(pos_path = create_image_foldername(imageServer_path,
+                                                   basePath,
+                                                   pos_ID))
+
+# add dirs in pos_path
+result_paths &lt;- result_paths%&gt;%
+  dplyr::mutate(image_folder = purrr::map(pos_path,
+                                          ~list.dirs(.x,
+                                                     full.names = FALSE,
+                                                     recursive = FALSE)))%&gt;%
+  tidyr::unnest(cols=&quot;image_folder&quot;)%&gt;%
+  dplyr::mutate(image_path = file.path(pos_path,image_folder))
+
+# list files in image_folder
+result_files &lt;- result_paths%&gt;%
+  dplyr::mutate(blob_filename = purrr::map(image_path,
+                                          ~list.files(.x)))%&gt;%
+  tidyr::unnest(cols=&quot;blob_filename&quot;)
+
+# add filetype
+result_files &lt;- result_files%&gt;%
+  dplyr::mutate(filetype = tools::file_ext(blob_filename))
+
+head(result_files)</code></pre>
+<pre><code>## # A tibble: 6 x 18
+##   chip_ID  scan_ID  pos_ID jobType basePath         Status  chipx  chipy enabled
+##   &lt;chr&gt;    &lt;chr&gt;     &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;            &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;int&gt;
+## 1 M1730408 E1767816     11 BLEACH  &quot;M1730408\\scan~ Finis~ 31530. 11150.      NA
+## 2 M1730408 E1767816     11 BLEACH  &quot;M1730408\\scan~ Finis~ 31530. 11150.      NA
+## 3 M1730408 E1767816     11 BLEACH  &quot;M1730408\\scan~ Finis~ 31530. 11150.      NA
+## 4 M1730408 E1767816     11 BLEACH  &quot;M1730408\\scan~ Finis~ 31530. 11150.      NA
+## 5 M1730408 E1767816     11 BLEACH  &quot;M1730408\\scan~ Finis~ 31530. 11150.      NA
+## 6 M1730408 E1767816     11 BLEACH  &quot;M1730408\\scan~ Finis~ 31530. 11150.      NA
+## # ... with 9 more variables: bleach-time &lt;dbl&gt;, enabled-count &lt;int&gt;,
+## #   chip_path &lt;chr&gt;, imageServer_path &lt;chr&gt;, pos_path &lt;chr&gt;,
+## #   image_folder &lt;chr&gt;, image_path &lt;chr&gt;, blob_filename &lt;chr&gt;, filetype &lt;chr&gt;</code></pre>
+<pre class="r"><code># join ScanHistory
+result_files &lt;- dplyr::left_join(
+  result_files,
+  ScanHistory,
+  by = c(&quot;scan_ID&quot;, &quot;Status&quot;))
+
+head(result_files)</code></pre>
+<pre><code>## # A tibble: 6 x 23
+##   chip_ID  scan_ID  pos_ID jobType basePath         Status  chipx  chipy enabled
+##   &lt;chr&gt;    &lt;chr&gt;     &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;            &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;int&gt;
+## 1 M1730408 E1767816     11 BLEACH  &quot;M1730408\\scan~ Finis~ 31530. 11150.      NA
+## 2 M1730408 E1767816     11 BLEACH  &quot;M1730408\\scan~ Finis~ 31530. 11150.      NA
+## 3 M1730408 E1767816     11 BLEACH  &quot;M1730408\\scan~ Finis~ 31530. 11150.      NA
+## 4 M1730408 E1767816     11 BLEACH  &quot;M1730408\\scan~ Finis~ 31530. 11150.      NA
+## 5 M1730408 E1767816     11 BLEACH  &quot;M1730408\\scan~ Finis~ 31530. 11150.      NA
+## 6 M1730408 E1767816     11 BLEACH  &quot;M1730408\\scan~ Finis~ 31530. 11150.      NA
+## # ... with 14 more variables: bleach-time &lt;dbl&gt;, enabled-count &lt;int&gt;,
+## #   chip_path &lt;chr&gt;, imageServer_path &lt;chr&gt;, pos_path &lt;chr&gt;,
+## #   image_folder &lt;chr&gt;, image_path &lt;chr&gt;, blob_filename &lt;chr&gt;, filetype &lt;chr&gt;,
+## #   cycle_ID &lt;chr&gt;, Tag &lt;chr&gt;, Excluded &lt;chr&gt;, PreparedForDataviz &lt;chr&gt;,
+## #   filterset &lt;chr&gt;</code></pre>
+<pre class="r"><code># remove excluded scans
+result_files &lt;- result_files%&gt;%
   dplyr::filter(Excluded %in% c(NA, &quot;FALSE&quot;))%&gt;%
   dplyr::filter(Status == &quot;Finished&quot;)
 
-# add ScanBasePath
-IDs &lt;- IDs%&gt;%
-  dplyr::mutate(ScanBasePath = file.path(chip_path,&quot;scanjobs&quot;,scan_ID))
+# filter blob files
+blob_result_files &lt;- result_files%&gt;%
+  dplyr::filter(filetype %in% c(&quot;blob&quot;,&quot;blob32&quot;))
 
-# add all PositionFolders found in ScanPath
-IDs &lt;- IDs%&gt;%
-  dplyr::mutate(
-    AllPositionFolders = purrr::map(ScanBasePath,
-                                    ~list_posFolders_in_ScanBasePath(.x)))
-
-# unnest AllPositionsFolders
-IDs &lt;- IDs%&gt;%
-  tidyr::unnest(cols=&quot;AllPositionFolders&quot;)%&gt;%
-  dplyr::rename(&quot;PositionFolder&quot; = &quot;AllPositionFolders&quot;)
-
-#IDs &lt;- IDs%&gt;%
-#  dplyr::mutate(
-#    BlobImage_filepath = dplyr::case_when(image_Type == )
-#  )
-
-# add HDRimage_filepath
-IDs &lt;- IDs%&gt;%
-  dplyr::mutate(
-    HDRimage_filepath = create_Pos_image_filepath(ScanBasePath,PositionFolder,&quot;hdr&quot;))
-# add FLimage_filepath
-IDs &lt;- IDs%&gt;%
-  dplyr::mutate(
-    FLimage_filepath = create_Pos_image_filepath(ScanBasePath,PositionFolder,&quot;flimages&quot;))
-# add posRefimage_filepath
-IDs &lt;- IDs%&gt;%
-  dplyr::mutate(
-    posRefimage_filepath = create_Pos_image_filepath(ScanBasePath,PositionFolder,&quot;posRef&quot;))
-# add deltaTL_filepath
-IDs &lt;- IDs%&gt;%
-  dplyr::mutate(
-    deltaTLimage_filepath = create_Pos_image_filepath(ScanBasePath,PositionFolder,&quot;deltaTL&quot;))
-# add focus_filepath
-IDs &lt;- IDs%&gt;%
-  dplyr::mutate(
-    focusimage_filepath = create_Pos_image_filepath(ScanBasePath,PositionFolder,&quot;focus&quot;))
-
-# add BlobFileName of HDR, FL and posRef images
-IDs &lt;- IDs%&gt;%
-  dplyr::mutate(
-    HDR_BlobFileName = purrr::map_chr(HDRimage_filepath,
-                                      ~ list_BlobFileName_in_filepath(.x)),
-    FL_BlobFileName = purrr::map_chr(FLimage_filepath,
-                                     ~ list_BlobFileName_in_filepath(.x)),
-    posRef_BlobFileName = purrr::map_chr(posRefimage_filepath,
-                                         ~ list_BlobFileName_in_filepath(.x)),
-    deltaTL_BlobFileName = purrr::map_chr(deltaTLimage_filepath,
-                                         ~ list_BlobFileName_in_filepath(.x)),
-    focus_BlobFileName = purrr::map_chr(focusimage_filepath,
-                                         ~ list_BlobFileName_in_filepath(.x)))
-
-# create df of all scans and corresponding blob filenames
-BlobPaths_chip_group &lt;- IDs%&gt;%
-  dplyr::select(chip_ID,
-                scan_ID,
-                cycle_ID,
-                Status,
-                Excluded,
-                HDR_BlobFileName,
-                FL_BlobFileName,
-                posRef_BlobFileName,
-                deltaTL_BlobFileName,
-                focus_BlobFileName
-                )
-
-# reduce BlobFileNames to ImageType of a certain scanID
-BlobPaths_chip_group &lt;- BlobPaths_chip_group%&gt;%
-  tidyr::pivot_longer(cols=c(&quot;HDR_BlobFileName&quot;,
-                             &quot;FL_BlobFileName&quot;,
-                             &quot;posRef_BlobFileName&quot;,
-                             &quot;deltaTL_BlobFileName&quot;,
-                             &quot;focus_BlobFileName&quot;),
-                      names_to = &quot;ImageType&quot;,
-                      values_to = &quot;BlobFileName&quot;)%&gt;%
-  dplyr::mutate(ImageType = stringr::str_split(ImageType,&quot;_&quot;,simplify = TRUE)[,1])%&gt;%
-  dplyr::filter(!is.na(BlobFileName))</code></pre>
-</div>
-<div id="check-scanids-for-missinng-image-data" class="section level3" number="2.3.2">
-<h3><span class="header-section-number">2.3.2</span> check scanIDs for missinng image data()</h3>
-<div id="get_pos_colnames_in_methodhistory" class="section level4" number="2.3.2.1">
-<h4><span class="header-section-number">2.3.2.1</span> get_pos_colnames_in_MethodHistory()</h4>
-<pre class="r"><code>get_pos_colnames_in_MethodHistory &lt;- function(MH){
-  cols &lt;- colnames(MH)
-  col_pos &lt;- which(stringr::str_detect(cols,&quot;pos&quot;)==TRUE)
-  col_scanID &lt;- which(cols %in% c(&quot;UID&quot;,&quot;CycleUID&quot;,&quot;Taq&quot;,&quot;Excluded&quot;,&quot;PreparedForDataviz&quot;))
-  return(c(col_scanID,col_pos))
-}</code></pre>
-</div>
-<div id="create_pos_df_from_methodhistory" class="section level4" number="2.3.2.2">
-<h4><span class="header-section-number">2.3.2.2</span> create_pos_df_from_MethodHistory()</h4>
-<pre class="r"><code>create_pos_df_from_MethodHistory &lt;- function(MethodHistory){
-  columns &lt;- purrr::map(MethodHistory,
-                          ~.x%&gt;%get_pos_colnames_in_MethodHistory)
-  df &lt;- purrr::map2(MethodHistory,
-                    columns,
-                    ~.x[,.y])
-  df &lt;- purrr::map(df,
-                   ~.x%&gt;%
-                     tidyr::gather(&quot;column&quot;,
-                                   &quot;value&quot;,
-                                   -UID,
-                                   -CycleUID,
-                                   -Excluded,
-                                   -PreparedForDataviz))
-  df &lt;- purrr::map(df,
-                   ~if(dim(.x)[2] == 4){
-                     .x$column &lt;- rep(NA,times=dim(.x)[1])
-                     .x$value &lt;- rep(NA,times=dim(.x)[1])
-                     return(.x)
-                   }else{return(.x)})
-  return(df)
-}</code></pre>
-<pre class="r"><code># check missing scanIDs
-
-#query_result &lt;- query_UID_scans(scan_IDs)
-#result &lt;- get_df_from_query_result(query_result)
-
-missing_scans &lt;- which(!result$UID %in% BlobPaths_chip_group$scan_ID)
-test &lt;- result[missing_scans,]
-missing_scan_IDs &lt;-unique(result$UID[missing_scans])
-
-
-
-MH &lt;- MethodHistory%&gt;%
-  create_pos_df_from_MethodHistory()%&gt;%
-  data.table::rbindlist(fill=TRUE)%&gt;%
-  dplyr::filter(UID %in% missing_scan_IDs)
-
-result%&gt;%
-  dplyr::filter(UID %in% missing_scan_IDs)%&gt;%
-  dplyr::pull(channelUID)%&gt;%
-  table()</code></pre>
-<pre><code>## .
-## M1708167 M1708169 M1708175 M1708177 M1708179 M1708181 M1730404 M1730406 
-##       17       17        1        1        1       18       17       17 
-## M1730408 M1730410 M1730412 M1730416 M1730420 M1730422 M1730424 M1730426 
-##       21        1       17        1        1        1       21        1 
-## M1730444 M1730446 M1764682 M1764730 
-##        1       21        1       19</code></pre>
-<pre class="r"><code>result%&gt;%
-  dplyr::filter(UID %in% missing_scan_IDs)%&gt;%
-  dplyr::pull(jobType)%&gt;%
-  table()</code></pre>
-<pre><code>## .
-##  FL  TL 
-##   9 186</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div id="supplement" class="section level1" number="3">
-<h1><span class="header-section-number">3</span> supplement</h1>
-<div id="add-picture-characteristics-to-positions-df" class="section level2" number="3.1">
-<h2><span class="header-section-number">3.1</span> add picture characteristics to positions df</h2>
-<pre class="r"><code>#for testing
-image_path&lt;-&quot;M619946\\scanjobs\\EZKL150741&quot;
-
-# suche für jede Position aus der XML die notwendigen Infos heraus, damit die HDR Blob eingelesen werden kann
-#width=1392
-#height=1040
-#encoding=&quot;32bit-little-endian&quot;
-
-# statistic parameter um den Einlesevorgang zu überprüfen
-# min
-# max
-# distinct
-# median
-
-find_picture_informations&lt;- function(image_path, blob_file_name, positions) {
-  
-#  path&lt;-paste0(&#39;\\\\ZKWSCANSRV2\\imagedata\\leipzig_volume0\\&#39;,image_path,&#39;\\&#39;,positions[1,&quot;positions&quot;],&#39;\\hdr\\&#39;,positions[1,&quot;blob_file_name&quot;],&quot;.blob32.xml&quot;)%&gt;%
-    path&lt;-paste0(&#39;\\\\ZKWSCANSRV2\\imagedata\\leipzig_volume0\\&#39;,image_path,&#39;\\&#39;,positions,&#39;\\hdr\\&#39;,blob_file_name,&quot;.blob32.xml&quot;)%&gt;%
-      file.path()
-  
-  file&lt;-read_xml(path)
-  
-  size&lt;-file%&gt;%xml_child(&quot;size&quot;)%&gt;%xml_attrs(&quot;size&quot;)
-  structure&lt;-file%&gt;%xml_child(&quot;data-structure&quot;)%&gt;%xml_attrs(&quot;data-structure&quot;)
-  statistics&lt;-file%&gt;%xml_child(&quot;metadata&quot;)%&gt;%xml_child(&quot;statistics&quot;)%&gt;%xml_attrs(&quot;statistics&quot;)
-  picture_size&lt;-file%&gt;%xml_child(&quot;metadata&quot;)%&gt;%xml_child(&quot;extent&quot;)%&gt;%xml_attrs(&quot;extent&quot;) 
-  
-  #parameter&lt;-tibble(value=c(size,structure,statistics),
-  #                  name=c(names(size),names(structure),names(statistics)))
-  #names(parameter) &lt;- c(names(size),names(structure),names(statistics))
-  
-  parameter&lt;-c(size,structure,statistics,picture_size)
-  
-  return(parameter)
-}</code></pre>
-</div>
-<div id="add-list-column-to-positions-df-containing-intensitys-per-pixel" class="section level2" number="3.2">
-<h2><span class="header-section-number">3.2</span> add list column to positions df, containing intensitys per pixel</h2>
-<pre class="r"><code>read_image_bin &lt;- function(image_path, position, blob_file_name, parameter) {
-  
-  #parameter&lt;-pos[&#39;parameter&#39;]%&gt;%flatten()
-  parameter&lt;-parameter%&gt;%flatten()
-  encoding&lt;-parameter[[&quot;parameter&quot;]][[&quot;encoding&quot;]]
-  
-  bin_size&lt;-case_when(encoding == &quot;32bit-little-endian&quot; ~ 4,
-                      encoding == &quot;16bit-little-endian&quot; ~ 2)
-  
-  width&lt;-parameter[[&quot;parameter&quot;]][[&quot;width&quot;]]%&gt;%as.numeric()
-  height&lt;-parameter[[&quot;parameter&quot;]][[&quot;height&quot;]]%&gt;%as.numeric()
-  n_pixels&lt;-width * height
-  
-  #path&lt;-paste0(&#39;\\\\ZKWSCANSRV2\\imagedata\\leipzig_volume0\\&#39;,image_path,&#39;\\&#39;,pos$positions,&#39;\\hdr\\&#39;,pos$blob_file_name,&quot;.blob32&quot;)%&gt;%
-  path&lt;-paste0(&#39;\\\\ZKWSCANSRV2\\imagedata\\leipzig_volume0\\&#39;,image_path,&#39;\\&#39;,position,&#39;\\hdr\\&#39;,blob_file_name,&quot;.blob32&quot;)%&gt;%
-    file.path()
-  
-  data&lt;-readBin(path,
-                integer(),
-                n=n_pixels,
-                size=bin_size)
-  
-  return (data)
-} </code></pre>
-</div>
-<div id="collect-data-from-all-scans" class="section level2" number="3.3">
-<h2><span class="header-section-number">3.3</span> collect data from all Scans</h2>
-<pre class="r"><code># rename data according to ScanID
-
-# add attributes to </code></pre>
-</div>
-<div id="list-all" class="section level2" number="3.4">
-<h2><span class="header-section-number">3.4</span> list all</h2>
-</div>
-<div id="check-data-import" class="section level2" number="3.5">
-<h2><span class="header-section-number">3.5</span> check data import</h2>
-<pre class="r"><code>find_picture_informations&lt;- function(image_path, blob_file_name, positions) {
-  
-  #  path&lt;-paste0(&#39;\\\\ZKWSCANSRV2\\imagedata\\leipzig_volume0\\&#39;,image_path,&#39;\\&#39;,positions[1,&quot;positions&quot;],&#39;\\hdr\\&#39;,positions[1,&quot;blob_file_name&quot;],&quot;.blob32.xml&quot;)%&gt;%
-  path&lt;-paste0(position_path,&#39;\\&#39;,positions,&#39;\\hdr\\&#39;,blob_file_name,&quot;.blob32.xml&quot;)%&gt;%
-    file.path()
-  
-  file&lt;-read_xml(path)
-  
-  size&lt;-file%&gt;%xml_child(&quot;size&quot;)%&gt;%xml_attrs(&quot;size&quot;)
-  structure&lt;-file%&gt;%xml_child(&quot;data-structure&quot;)%&gt;%xml_attrs(&quot;data-structure&quot;)
-  statistics&lt;-file%&gt;%xml_child(&quot;metadata&quot;)%&gt;%xml_child(&quot;statistics&quot;)%&gt;%xml_attrs(&quot;statistics&quot;)  
-  picture_size&lt;-file%&gt;%xml_child(&quot;metadata&quot;)%&gt;%xml_child(&quot;extent&quot;)%&gt;%xml_attrs(&quot;extent&quot;)
-  
-  parameter&lt;-c(size,structure,statistics,picture_size)
-  
-  return(parameter)
-}
-
-read_image_bin &lt;- function(image_path, position, blob_file_name, parameter) {
-  
-  #parameter&lt;-pos[&#39;parameter&#39;]%&gt;%flatten()
-  parameter&lt;-parameter%&gt;%flatten()
-  encoding&lt;-parameter[[&quot;parameter&quot;]][[&quot;encoding&quot;]]
-  
-  bin_size&lt;-case_when(encoding == &quot;32bit-little-endian&quot; ~ 4,
-                      encoding == &quot;16bit-little-endian&quot; ~ 2)
-  
-  width&lt;-parameter[[&quot;parameter&quot;]][[&quot;width&quot;]]%&gt;%as.numeric()
-  height&lt;-parameter[[&quot;parameter&quot;]][[&quot;height&quot;]]%&gt;%as.numeric()
-  n_pixels&lt;-width * height
-  
-  #path&lt;-paste0(&#39;\\\\ZKWSCANSRV2\\imagedata\\leipzig_volume0\\&#39;,image_path,&#39;\\&#39;,pos$positions,&#39;\\hdr\\&#39;,pos$blob_file_name,&quot;.blob32&quot;)%&gt;%
-  path&lt;-paste0(image_path,&#39;\\&#39;,position,&#39;\\hdr\\&#39;,blob_file_name,&quot;.blob32&quot;)%&gt;%
-    file.path()
-  
-  data&lt;-readBin(path,
-                integer(),
-                n=n_pixels,
-                size=bin_size)
-  
-  return (data)
-}
-
-
-find_hdr_data&lt;-function(scan_IDs){
-  
-  
-  # find all local server_path (where data could be)
-  ##################################################
-  
-  server_path&lt;-query_mongoDB(search_value=&quot;ImageServerPath&quot;,
-                             mongo_collection = &quot;limslager&quot;,
-                             search_object = &quot;EDLType&quot;,
-                             return_columns = c(&quot;FlagEmpty&quot;,&quot;EDLName&quot;))%&gt;% #,&quot;Do_Not_Check&quot; gibts gar nicht
-    filter(FlagEmpty == 0)
-  
-  # find basePath to the image folder
-  ###################################
-  
-  file_path&lt;-scan_IDs%&gt;%
-    mutate(file_path=map(ScanID,
-                         ~ query_mongoDB(search_value=.x,
-                                         mongo_collection = &quot;scans&quot;,
-                                         search_object = &quot;UID&quot;,
-                                         return_columns = &quot;basePath&quot;)))%&gt;%
-    unnest(file_path)%&gt;%
-    select(basePath,everything())
-  
-  # find for ech ScanID the server_path, where the data could be found and add a new column server_path
-  #####################################################################################################
-  
-  file_path$server_path&lt;-NA
-  file_path&lt;-file_path%&gt;%
-    select(server_path,everything())
-  
-  for (k in 1:dim(file_path)[1]){
-    
-    file_path[k,&#39;server_path&#39;]&lt;-find_server_path(server_path = server_path$EDLName,
-                                                 file_path = file_path[k,&#39;basePath&#39;])
-    
-  }
-  
-  
-  # loop through all ScanID
-  #########################
-  
-  data_collection&lt;-list()
-  
-  for (j in 1:dim(file_path)[1]){
-    
-    
-    # find all positions of a scan
-    ###############################
-    
-    #image_path&lt;-&quot;M619946\\scanjobs\\EZKL150741&quot;  #basePath
-    
-    position_path&lt;-paste0(file_path[j,&quot;server_path&quot;],&#39;\\&#39;,file_path[j,&quot;basePath&quot;])
-    
-    positions&lt;-list.files(path=position_path)
-    
-    positions&lt;-tibble(positions=positions[str_detect(positions,&quot;pos&quot;)],)
-    
-    
-    # finde für jede Position den Namen der binären hdr und der XML Datei
-    #####################################################################
-      
-    positions&lt;-positions%&gt;%
-      mutate(blob_file_name=map2_chr(position_path,positions,~get_blob_name(.x,.y)))
-    
-    
-    # add picture characteristics of each hdr picture to positions df
-    #################################################################
-    
-    positions&lt;-positions%&gt;%
-      mutate(parameter = map2(blob_file_name,
-                              positions,
-                              ~ find_picture_informations(position_path, .x ,.y)))
-    
-    
-    # read in the binary hdr image data and add column to positions
-    ###############################################################
-    
-    data&lt;-list()
-    for(i in 1: dim(positions)[1]){
-      
-      data_read&lt;-read_image_bin(position_path,positions[i,&#39;positions&#39;],positions[i,&#39;blob_file_name&#39;],positions[i,&#39;parameter&#39;])
-      data_read&lt;-list(meta_data=positions[i,],data=data_read)
-      data&lt;-c(data,list(data_read))
-    }
-    
-    names(data)&lt;-positions$positions
-    data_collection&lt;-c(data_collection,list(data))
-    #rm(positions,position_path)
-  }
-  
-  
-  names(data_collection)&lt;-scan_IDs$ScanID
-  return(data_collection)
-}</code></pre>
-</div>
-<div id="check-data-import-1" class="section level2" number="3.6">
-<h2><span class="header-section-number">3.6</span> check data import</h2>
-<ol style="list-style-type: decimal">
-<li>calculate pixel statistics: mean, median, min, max, n_distinct values</li>
-<li>compare with metadata</li>
-</ol>
-<pre class="r"><code>check_hdr_import&lt;-function(hdr_data){
-  
-  # extract statistic metadata from blob file
-  data&lt;-hdr_data$metadata
-  
-  statistics_metadata&lt;-tibble::tibble(positions = hdr_data$positions)%&gt;%
-    mutate(mean_pixel=purrr::map_dbl(.x=data,~ .x[&quot;mean&quot;]%&gt;%as.numeric),
-           median_pixel=purrr::map_dbl(.x=data,~ .x[&quot;median&quot;]%&gt;%as.numeric),
-           min_pixel=purrr::map_dbl(.x=data,~ .x[&quot;min&quot;]%&gt;%as.numeric),
-           max_pixel=purrr::map_dbl(.x=data,~ .x[&quot;max&quot;]%&gt;%as.numeric),
-           n_distinct_pixel=purrr::map_dbl(.x=data,~ .x[&#39;distinct-values&#39;]%&gt;%as.numeric))%&gt;%
-    tidyr::gather(&quot;parameter&quot;,&quot;value&quot;,-positions)%&gt;%
-    dplyr::mutate(origin =&quot;metadata&quot;)
-
-  # map through all positions and calculate statistics for imported hdr_data
-  data&lt;-hdr_data$data
-  
-  statistics_calculated&lt;-tibble::tibble(positions = hdr_data$positions)%&gt;%
-    mutate(mean_pixel=purrr::map_dbl(.x=data,~ mean(.x)))%&gt;%
-    mutate(median_pixel=purrr::map_dbl(.x=data,~ median(.x)))%&gt;%
-    mutate(min_pixel=purrr::map_dbl(.x=data,~ min(.x)))%&gt;%
-    mutate(max_pixel=purrr::map_dbl(.x=data,~ max(.x)))%&gt;%
-    mutate(n_distinct_pixel=purrr::map_dbl(.x=data,~ length(unique(.x))))%&gt;%
-    tidyr::gather(&quot;parameter&quot;,&quot;value&quot;,-positions)%&gt;%
-    dplyr::mutate(origin =&quot;calculated&quot;)%&gt;%
-    dplyr::mutate(value=round(value,digits=0))
-  
-  # join both statistic dataframes and compare values
-  
-  statistics &lt;- rbind(statistics_calculated,statistics_metadata)%&gt;%
-    tidyr::spread(origin,value)
-  
-  quality &lt;- dplyr::case_when(any(statistics$calculated != statistics$metadata) == FALSE ~ &quot;OK&quot;,
-                              # at least one parameter value differs (metadata compared to calculation)
-                              any(statistics$calculated != statistics$metadata) == TRUE ~ &quot;not OK&quot;, 
-                              # if there where NA&#39;s
-                              TRUE ~ &quot;functional error&quot;) 
-  return(quality)
-}</code></pre>
-<pre class="r"><code>sapply(hdr_data,check_hdr_import)</code></pre>
+# filter png files
+png_result_files &lt;- result_files%&gt;%
+  dplyr::filter(filetype %in% c(&quot;png&quot;))</code></pre>
 </div>
 </div>
 

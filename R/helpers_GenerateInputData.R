@@ -64,6 +64,7 @@ writeLines(
     "- query_mongoDB()",
     "- query_segment_ID()",
     "- query_UID_limslager()",
+    "- query_UID_limsproc()",
     "- write_lines_task()",
     "- find_RService_XML_on_imageserver()",
     "- handle_trycache_error()",
@@ -2554,6 +2555,23 @@ query_UID_limslager<- function(chip_IDs){
   #____________________________
 
   result <- query_mongoDB("limslager",
+                          "UID",
+                          chip_IDs)
+
+  return(result)
+}
+
+### **query_UID_limslager()**
+
+#```{r}
+query_UID_limsproc<- function(chip_IDs){
+
+  V <- 130222 # initial Version
+  V <- 080322
+  #- added return(result)
+  #____________________________
+
+  result <- query_mongoDB("limsproc",
                           "UID",
                           chip_IDs)
 
