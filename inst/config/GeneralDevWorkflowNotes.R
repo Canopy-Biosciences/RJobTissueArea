@@ -4,6 +4,15 @@ source("renv/activate.R")
 usethis::proj_set()
 utils::file.edit("NEWS.md")
 
+# install packages
+#=================
+#renv::install("")
+#renv::install("bioc::imager")
+#usethis::use_package()
+#devtools::install_bioc()
+#devtools::install_github()
+#devtools::install()
+
 #general dev workflow commands
 #=============================
 devtools::run_examples()
