@@ -1,10 +1,7 @@
 library(pixmap)
-
+library(magrittr)
 library(image.LineSegmentDetector)
-
-
 library(image.ContourDetector)
-
 library(image.CannyEdges)
 
 file <- file.path("inst/data","data_sum_M1730408_pos11.csv")
