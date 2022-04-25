@@ -1,5 +1,5 @@
- source("renv/activate.R")
-usethis::proj_set()
+# source("renv/activate.R")
+#usethis::proj_set()
 #utils::file.edit("NEWS.md")
 
 if (interactive()) {

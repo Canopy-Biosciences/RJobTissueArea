@@ -1,9 +1,8 @@
-^renv$
-^renv\.lock$
 ^RJobTissueArea\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^README\.Rmd$
 ^doc$
 ^Meta$
-^C:/Users/Ortmann/Documents/Zellkraftwerk/packages/RJobTissueArea/renv$
+^devel
+.Rprofile$
