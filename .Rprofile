@@ -1,4 +1,4 @@
-# source("renv/activate.R")
+#source("renv/activate.R")
 #usethis::proj_set()
 #utils::file.edit("NEWS.md")
 

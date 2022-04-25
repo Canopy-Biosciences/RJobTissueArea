@@ -1,3 +1,4 @@
+^renv\.lock$
 ^RJobTissueArea\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
@@ -6,3 +7,6 @@
 ^Meta$
 ^devel$
 .Rprofile$
+^renv$
+^renv.lock$
+^inst\data$
