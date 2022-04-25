@@ -1,4 +1,4 @@
-V <- "150322"
+V <- "250422"
 helpers <- "ImportBlobFiles"
 
 assign(paste0("version.helpers.", helpers), V)
@@ -19,8 +19,194 @@ writeLines(
     "- list_posFolders_in_ScanBasePath()",
     "- query_filterset_of_scanIDs()",
     "- query_UID_limsproc()",
-    "- query_UID_scans()"
+    "- query_UID_scans()",
+    "- list_all_image_files()",
+    "- select_valid_image_files()"
   ))
+
+#' list_all_image_files
+#'
+#' @param chip_IDs
+#' @param type
+#'
+#' @return
+#' @export
+#'
+#' @examples
+list_all_image_files <- function(chip_IDs, type){
+
+  # workflow function
+  # based on workflow documented in report: "find all blob image files_smarter.Rmd"
+  Version <- "250422"
+
+  tictoc::tic("find image files complete workflow")
+
+  #_____________________
+  # 1) find server paths----
+  server_paths <- find_server_path()
+  server_paths <- server_paths$server_path
+
+  #__________________
+  # 2) find chip_path----
+  chip_paths <- purrr::map_chr(chip_IDs,
+                               ~find_chip_path(.x,server_paths))
+
+  #__________________________
+  # 3) create imageServer_path----
+  imageServer_paths <- purrr::map2_chr(chip_paths,chip_IDs,
+                                       ~stringr::str_remove(.x,.y))
+
+  #______________________
+  # 4) combine to df: IDs----
+  IDs <- dplyr::tibble(
+    chip_ID = chip_IDs,
+    chip_path = chip_paths,
+    imageServer_path = imageServer_paths)
+
+  #______________________
+  # 5) create scanHistory----
+  ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)%>%
+    dplyr::bind_rows()
+
+  #_________________
+  # 6) add filterset----
+  ScanHistory <- ScanHistory%>%
+    dplyr::mutate(filterset = query_filterset_of_scanIDs(scan_ID))
+
+  #___________________________
+  # 7) query chipIDs ins scans----
+  query_chip_scans <- query_mongoDB("scans",
+                                    "channelUID",
+                                    chip_IDs)
+
+  #________________________
+  # 8) wrangle query result----
+  # 8a) select query columns
+  results_chip_scans <- purrr::map(query_chip_scans$result,
+                                   ~.x%>%
+                                     dplyr::select("chip_ID" = "channelUID",
+                                                   "scan_ID" = "UID",
+                                                   jobType,
+                                                   basePath,
+                                                   "Status" = "jobEndState",
+                                                   positions,
+                                                   `enabled-count`))
+
+  # 8b) subselect positions
+  results_chip_scans <- purrr::map(
+    results_chip_scans,
+    ~.x%>%
+      tidyr::unnest(cols="positions")%>%
+      dplyr::select(
+        dplyr::any_of(c("chip_ID",
+                        "scan_ID",
+                        "pos_ID" = "posid",
+                        "jobType",
+                        "basePath",
+                        "Status",
+                        "chipx",
+                        "chipy",
+                        "enabled",
+                        "bleach-time",
+                        "enabled-count"))))
+
+  # 8c) bind rows
+  results_chip_scans <- results_chip_scans%>%
+    dplyr::bind_rows()
+
+  #_________________________
+  # 9) join imageServer_path----
+  result_paths <- dplyr::left_join(results_chip_scans,
+                                   IDs,
+                                   by = "chip_ID")
+
+  #_________________
+  # 10) add pos_path----
+  result_paths <- result_paths%>%
+    dplyr::mutate(pos_path = create_pos_foldername(imageServer_path,
+                                                   basePath,
+                                                   pos_ID))
+
+  #_________________________
+  # 11) add dirs in pos_path----
+  result_paths <- result_paths%>%
+    dplyr::mutate(image_folder = purrr::map(pos_path,
+                                            ~list.dirs(.x,
+                                                       full.names = FALSE,
+                                                       recursive = FALSE)))%>%
+    tidyr::unnest(cols="image_folder")%>%
+    dplyr::mutate(image_path = file.path(pos_path,image_folder))
+
+  #_______________________________
+  # 12) list files in image_folder----
+  result_files <- result_paths%>%
+    dplyr::mutate(blob_filename = purrr::map(image_path,
+                                             ~list.files(.x)))%>%
+    tidyr::unnest(cols="blob_filename")
+
+  #_________________
+  # 13) add filetype----
+  result_files <- result_files%>%
+    dplyr::mutate(filetype = tools::file_ext(blob_filename))
+
+  #_____________________
+  # 14) join ScanHistory----
+  result_files <- dplyr::left_join(
+    result_files,
+    ScanHistory,
+    by = c("scan_ID", "Status"))
+
+  #________________________
+  # 15) return result_files----
+  tictoc::toc()
+  return(result_files)
+}
+
+#' select_valid_image_files
+#'
+#' @param result_files
+#' @param type
+#'
+#' @return
+#' @export
+#'
+#' @examples
+select_valid_image_files <- function(result_files, type){
+
+  Version <- "250422"
+
+  #_______________
+  # 0) check input----
+  type <- match.arg(type, choices =c("blob","blob32","png"))
+
+  #_________________________
+  # 1) remove excluded scans----
+  result_files <- result_files%>%
+    dplyr::filter(Excluded %in% c(NA, "FALSE"))%>%
+    dplyr::filter(Status == "Finished")
+
+  #_______________________________
+  # 2) select image type to return----
+  # __2a) .blob----
+  if(type == "blob"){
+    result_files <- result_files%>%
+      dplyr::filter(filetype == "blob")
+  }
+  # __2b) .blob32----
+  if(type == "blob32"){
+    result_files <- result_files%>%
+      dplyr::filter(filetype == "blob32")
+  }
+  # __2c) .png----
+  if(type == "png"){
+    result_files <- result_files%>%
+      dplyr::filter(filetype == "png")
+  }
+
+  #_________________
+  # 3) return result----
+  return(result_files)
+}
 
 #' create_pos_foldername
 #'

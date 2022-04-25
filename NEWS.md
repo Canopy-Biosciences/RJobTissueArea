@@ -1,5 +1,11 @@
 # RJobTissueArea 0.0.0.7
 
+* NEW Functions for image processing
+* NEW FUNCTIONS for finding all image files:
+    - list_all_image_files()
+    - select_valid_image_files()
+* reports on tissue detection parametersettings
+
 # RJobTissueArea 0.0.0.6
 
 * NEW helperfunctions_ImportBlobFiles (first selection) added

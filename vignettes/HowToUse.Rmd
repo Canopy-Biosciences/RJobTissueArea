@@ -36,3 +36,16 @@ group_ID <- "P1761451"
 chip_IDs <- find_valid_group_chip_IDs(group_ID)
 ```
 
+- get all image files
+
+```{r}
+image_files <- list_all_image_files(chipIDs)
+```
+
+- select valid bolb32 files
+
+```{r}
+blob32_files <- select_valid_image_files(image_files,
+                                         type = "blob32")
+```
+
