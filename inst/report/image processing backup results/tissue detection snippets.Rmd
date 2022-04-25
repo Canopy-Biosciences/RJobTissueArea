@@ -1,0 +1,178 @@
+---
+title: " documentation - detect tissue area"
+subtitle: "reportings on functional development"
+author: "Julia Ortmann"
+output: 
+  html_document:
+    code_folding: hide
+    number_sections: yes
+    toc: yes
+    toc_depth: '3'
+    theme:
+      bg: "#202123"
+      fg: "#B8BCC2"
+      primary: "#EA80FC"
+      secondary: "#00DAC6"
+      base_font:
+        google: Prompt
+      heading_font:
+        google: Proza Libre
+abstract: The aim of this build functions for import of scan HDR images, defined by scan_ID
+knit: (function(input, ...) {
+    rmarkdown::render(
+      input,
+      output_file = "inst/report/dev report - detect tissue area.html",
+      envir = globalenv()
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+if (requireNamespace("thematic")) 
+  thematic::thematic_rmd(font = "auto")
+```
+
+# summary
+
+... 
+
+# introduction 
+
+# supplement
+
+## 
+
+- pos 11 of chip M1730408, load all hdr's
+- sum pixel intensities
+- export data matrix as data.table 
+```{r}
+#for testing
+library(magrittr)
+library(ggplot2)
+library(imager)
+library(EBImage)
+#renv::install("bioc::EBImage")
+#BiocManager::install("EBImage")
+file <- file.path("C:/Users/Ortmann/Documents/Zellkraftwerk/packages/RJobTissueArea/inst/data","data_sum_M1730408_pos11.csv")
+data.sum <- data.table::fread(file)
+#plot(data.sum)
+m.data_sum <- data.sum%>% as.matrix()
+
+c.m.data<-m.data_sum%>%as.cimg()
+
+image(m.data_sum)
+#png("data_sum_M1730408_pos11.png")
+#dev.off()
+
+
+```
+```{r}
+library(data.table)
+img <- Image(m.data_sum)
+
+# 1. define filter for edge detection
+hfilt <- matrix(c(1, 2, 1, 0, 0, 0, -1, -2, -1), nrow = 3) # sobel
+
+# rotate horizontal filter to obtain vertical filter
+vfilt <- t(hfilt)
+
+# get horizontal and vertical edges
+imgH <- filter2(img, hfilt, boundary="replicate")
+imgV <- filter2(img, vfilt, boundary="replicate")
+
+# combine edge pixel data to get overall edge data
+hdata <- imageData(imgH)
+vdata <- imageData(imgV)
+edata <- sqrt(hdata^2 + vdata^2)
+
+# transform edge data to image
+imgE <- Image(edata)
+#print(display(combine(img, imgH, imgV, imgE), method = "raster", all = T))
+
+display(imgE, method = "raster", all = T)
+
+
+# 2. Enhance edges with low pass filter
+
+hfilt <- matrix(c(1, 1, 1, 1, 1, 1, 1, 1, 1), nrow = 3) # low pass
+```
+
+```{r}
+img2 <- img
+# Set up plots for 96 dpi images
+  library(EBImage)
+  dm <- dim(img2)/96
+  dev.new(width = dm[1], height = dm[2])
+# Low pass filter with gblur and make binary
+  xb <- gblur(img2, 3)
+  xt <- thresh(xb, offset = 0.0001)
+  plot(xt) # thresh.jpg
+# dev.print(jpeg, "thresh.jpg", width = dm[1], unit = "in", res = 96) 
+
+```
+```{r}
+# 2. Enhance edges with low pass filter
+
+hfilt <- matrix(c(1, 1, 1, 1, 1, 1, 1, 1, 1), nrow = 3) # low pass
+
+# rotate horizontal filter to obtain vertical filter
+vfilt <- t(hfilt)
+
+# get horizontal and vertical edges
+imgH <- filter2(imgE, hfilt, boundary="replicate")
+imgV <- filter2(imgE, vfilt, boundary="replicate")
+
+# combine edge pixel data to get overall edge data
+hdata <- imageData(imgH)
+vdata <- imageData(imgV)
+edata <- sqrt(hdata^2 + vdata^2)
+
+
+# transform edge data to image
+imgE <- Image(edata)
+plot(imgE)
+```
+```{r}
+# Set up plots for 96 dpi images
+  library(EBImage)
+  dm <- dim(img2)/96
+ # dev.new(width = dm[1], height = dm[2])
+dev.new(width = 1392, height = 1040)
+  #Low pass filter with gblur and make binary
+  xb <- gblur(img2, 1)
+  xt <- thresh(xb, offset = 0.0001)
+  plot(xt) # thresh.jpg
+# dev.print(jpeg, "thresh.jpg", width = dm[1], unit = "in", res = 96) 
+
+```
+
+```{r}
+# Keep only "large" objects
+  xm <- bwlabel(xt)
+  FS <- computeFeatures.shape(xm)
+  sel <- which(FS[,"s.area"] < 800)
+  xe <- rmObjects(xm, sel)
+
+# Make binary again and plot
+  xe <- thresh(xe)
+  plot(xe) # trimmed.jpg
+#  dev.print(jpeg, "trimmed.jpg", width = dm[1], unit = "in", res = 96)
+
+
+```
+
+```{r}
+library(imager)
+library(image.LineSegmentDetector)
+
+im <- load.image(system.file('extdata/parrots.png', package='imager'))
+
+im_pnm <- im %>%
+  grayscale() %>%
+  multiply_by(255)
+im_pnm <- im_pnm[ , , 1, 1]
+
+nounion <- image_line_segment_detector(im_pnm)
+withunion <- image_line_segment_detector(im_pnm, union = T)
+```
+
