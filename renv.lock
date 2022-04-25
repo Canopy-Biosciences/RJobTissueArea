@@ -373,13 +373,6 @@
       "Repository": "CRAN",
       "Hash": "d1b8b1a821ee564a3515fa6c6d5c52dc"
     },
-    "dbscan": {
-      "Package": "dbscan",
-      "Version": "1.1-10",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "a41eed892d408fda44afe96f7df2885e"
-    },
     "desc": {
       "Package": "desc",
       "Version": "1.4.0",
@@ -576,6 +569,27 @@
       "Repository": "CRAN",
       "Hash": "7b1f856410253d56ea67ad808f7cdff6"
     },
+    "image.CannyEdges": {
+      "Package": "image.CannyEdges",
+      "Version": "0.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "8d1a86e07d7ec709a6c95b9fb69660de"
+    },
+    "image.ContourDetector": {
+      "Package": "image.ContourDetector",
+      "Version": "0.1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "617df6ced4e709a48d09ff1b18797ad7"
+    },
+    "image.LineSegmentDetector": {
+      "Package": "image.LineSegmentDetector",
+      "Version": "0.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "cc0e2f81c18d5af266455f965d9c4593"
+    },
     "ini": {
       "Package": "ini",
       "Version": "0.3.1",
@@ -737,6 +751,13 @@
       "Repository": "CRAN",
       "Hash": "60200b6aa32314ac457d3efbb5ccbd98"
     },
+    "pixmap": {
+      "Package": "pixmap",
+      "Version": "0.4-12",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "ff0e0b97265ced0db4d13d0005334d78"
+    },
     "pkgbuild": {
       "Package": "pkgbuild",
       "Version": "1.2.0",
@@ -764,13 +785,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "f61078b03d6536c5f64c53bfcfda56f7"
-    },
-    "plyr": {
-      "Package": "plyr",
-      "Version": "1.8.6",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "ec0e5ab4e5f851f6ef32cd1d1984957f"
     },
     "praise": {
       "Package": "praise",
@@ -891,13 +905,6 @@
       "Repository": "CRAN",
       "Hash": "8482bbeef0c194ac236aef7c51ee375f"
     },
-    "reshape": {
-      "Package": "reshape",
-      "Version": "0.8.8",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "0f4d941129e00ed34a7d192b1da7ccef"
-    },
     "rex": {
       "Package": "rex",
       "Version": "1.2.0",
@@ -960,6 +967,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "308013098befe37484df72c39cf90d6e"
+    },
+    "sp": {
+      "Package": "sp",
+      "Version": "1.4-6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "ce8613f4e8c84ef4da9eba65b874ebe9"
     },
     "stringfish": {
       "Package": "stringfish",
