@@ -3,7 +3,6 @@
 .Rdata
 .httr-oauth
 .DS_Store
-inst/doc
-inst/data
+devel/data
 /doc/
 /Meta/
