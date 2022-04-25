@@ -4,5 +4,5 @@
 ^README\.Rmd$
 ^doc$
 ^Meta$
-^devel
+^devel$
 .Rprofile$
