@@ -1,7 +1,9 @@
+# RJobTissueArea (development version)
+
 # RJobTissueArea 0.0.0.7
 
 * NEW FUNCTIONS for finding all image files:
-    - list_all_image_files()
+    - export_list_all_image_files()
     - select_valid_image_files()
 * reports on tissue detection parametersettings
 * reports on image processing
@@ -31,4 +33,5 @@
 # RJobTissueArea 0.0.0.1
 
 * Added helpers_GenerateInputData.R (from FDR project, new Version: 080322: bugfix dependencies)
+
 

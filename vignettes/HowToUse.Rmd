@@ -61,7 +61,7 @@ image_files <- data.table::fread(file)
 
 - select valid bolb32 files
 
-```{r,eval=FALSE}
+```{r}
 blob32_files <- select_valid_image_files(image_files,
                                          type = "blob32")
 ```
