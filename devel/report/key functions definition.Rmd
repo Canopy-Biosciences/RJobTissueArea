@@ -62,11 +62,50 @@ D) estimation of tissue size
 
 ## import chip group
 
+- find_valid_group_chip_IDs() in helpers: 
 
+```{r}
+group_ID <- "P1761451"
+chip_IDs <- find_valid_group_chip_IDs(group_ID)
+```
 
 ## find all image files
 
+- create_working_directory() in helpers:
+
+```{r}
+output_dir <- "devel/data/data_output"
+RJobTissueArea:::create_working_directory(output_dir)
+```
+
+- export_list_all_image_files() in helpers: 
+
+```{r}
+image_files <- export_list_all_image_files(chip_IDs,
+                                           group_ID,
+                                           output_dir)
+```
+
+- create_result_filepath() in helpers:
+
+```{r}
+file <- create_result_filepath(output_dir,
+                               name_string = "all_image_files_of_groupID",
+                               result_ID=group_ID,
+                               type = ".csv")
+image_files <- data.table::fread(file)
+```
+
+- select_valid_image_files() in helpers:
+
+```{r}
+blob32_files <- select_valid_image_files(image_files,
+                                         type = "blob32")
+```
+
 ## image processing
+
+
 
 ### variables
 
@@ -168,6 +207,7 @@ perform_image_processing <- function(data_sum,
   
 }
 ```
+
 #### **export_image_result_tiffs()**
 
 ```{r}
@@ -222,6 +262,7 @@ export_image_result_tiffs <- function(image,
     ))
 }
 ```
+
 #### **create_name_result_ID()**
 
 ```{r}
@@ -238,6 +279,7 @@ create_name_result_ID <- function(chip_ID,
 ```
 
 #### **create_result_filepath()**
+
 ```{r}
 create_result_filepath <- function(output_dir,
                                    name_string,

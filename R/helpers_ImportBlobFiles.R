@@ -166,7 +166,7 @@ export_list_all_image_files <- function(chip_IDs,
                                  result_ID,
                                  type = ".csv")
   #__15b) export file
-  data.table::fwrite(image_files,
+  data.table::fwrite(result_files,
                      file)
 
   #________________________
