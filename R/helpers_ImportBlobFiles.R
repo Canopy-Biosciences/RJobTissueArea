@@ -20,7 +20,7 @@ writeLines(
     "- query_filterset_of_scanIDs()",
     "- query_UID_limsproc()",
     "- query_UID_scans()",
-    "- list_all_image_files()",
+    "- export_list_all_image_files()",
     "- select_valid_image_files()"
   ))
 
@@ -33,7 +33,9 @@ writeLines(
 #' @export
 #'
 #' @examples
-list_all_image_files <- function(chip_IDs, type){
+export_list_all_image_files <- function(chip_IDs,
+                                        result_ID,
+                                        output_dir){
 
   # workflow function
   # based on workflow documented in report: "find all blob image files_smarter.Rmd"
@@ -156,8 +158,19 @@ list_all_image_files <- function(chip_IDs, type){
     ScanHistory,
     by = c("scan_ID", "Status"))
 
+  #___________
+  # 15) export----
+  # __15a) create name of result file
+  file <- create_result_filepath(output_dir,
+                                 name_string = "all_image_files_of_groupID",
+                                 result_ID,
+                                 type = ".csv")
+  #__15b) export file
+  data.table::fwrite(image_files,
+                     file)
+
   #________________________
-  # 15) return result_files----
+  # 16) return result_files----
   tictoc::toc()
   return(result_files)
 }
