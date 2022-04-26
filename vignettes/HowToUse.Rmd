@@ -39,8 +39,8 @@ chip_IDs <- find_valid_group_chip_IDs(group_ID)
 - set and check output directory
 
 ```{r,eval=FALSE}
-output_dir <- "inst/data_output"
-check_working_directory(output_dir)
+output_dir <- "devel/data/data_output"
+RJobTissueArea:::create_working_directory(output_dir)
 ```
 
 - create and export list of all chip group image files
@@ -51,7 +51,7 @@ image_files <- export_list_all_image_files(chip_IDs)
 
 - load list of all image files
 
-```{r, eval=FALSE}
+```{r}
 file <- create_result_filepath(output_dir,
                                name_string = "all_image_files_of_groupID",
                                result_ID=group_ID,
