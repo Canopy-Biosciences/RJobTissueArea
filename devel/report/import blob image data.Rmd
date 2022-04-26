@@ -123,20 +123,48 @@ read_image_bin <- function(image_path, position, blob_file_name, parameter) {
 # read_BLOB_parameter_from_XML()
 
 ```{r}
-read_BLOB_parameter_from_XML<- function(image_path, blob_file_name,blob_filetype) {
+read_BLOB_parameter_from_XML<- function(image_path, blob_filename) {
+
+  Version <- "260422"
+
+  path<-purrr::map2(
+    image_path,
+    blob_filename,
+    ~file.path(.x,
+              paste0(.y,".xml"))
+    )
+
+  XML<-purrr::map(path,
+                   ~xml2::read_xml(.x))
+
+  size<-purrr::map_df(
+    XML,
+    ~.x%>%
+    xml2::xml_find_all('/image/size')%>%
+    xml2::xml_attrs())
+
+  structure<-purrr::map_df(
+    XML,
+    ~.x%>%
+      xml2::xml_find_all('/image/data-structure')%>%
+      xml2::xml_attrs())
   
-  path<-file.path(image_path,blob_file_name,blob_filetype,".xml")
+  statistics <- purrr::map_df(
+    XML,
+    ~.x%>%
+      xml2::xml_find_all('/image/metadata/statistics')%>%
+      xml2::xml_attrs())
   
-  file<-xml2::read_xml(path)
-  
-  size<-file%>%xml2::xml_child("size")%>%xml2::xml_attrs("size")
-  structure<-file%>%xml2::xml_child("data-structure")%>%xml2::xml_attrs("data-structure")
-  statistics<-file%>%xml2::xml_child("metadata")%>%xml2::xml_child("statistics")%>%xml2::xml_attrs("statistics")  
-  picture_size<-file%>%xml2::xml_child("metadata")%>%xml2::xml_child("extent")%>%xml2::xml_attrs("extent")
-  
-  parameter<-c(size,structure,statistics,picture_size)
-  
-  return(parameter)
+  extend <- purrr::map_df(
+    XML,
+    ~.x%>%
+      xml2::xml_find_all('/image/metadata/extent')%>%
+      xml2::xml_attrs())
+
+
+  XML_parameter <- 
+
+  return(XML_parameter)
 }
 
 ```

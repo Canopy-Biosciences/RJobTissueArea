@@ -55,7 +55,7 @@ image_files <- export_list_all_image_files(chip_IDs)
 file <- create_result_filepath(output_dir,
                                name_string = "all_image_files_of_groupID",
                                result_ID=group_ID,
-                               type = ".csv")
+                               type = "csv")
 image_files <- data.table::fread(file)
 ```
 

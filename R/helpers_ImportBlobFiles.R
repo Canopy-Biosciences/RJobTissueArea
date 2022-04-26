@@ -1,4 +1,4 @@
-V <- "250422"
+V <- "260422"
 helpers <- "ImportBlobFiles"
 
 assign(paste0("version.helpers.", helpers), V)
@@ -21,10 +21,80 @@ writeLines(
     "- query_UID_limsproc()",
     "- query_UID_scans()",
     "- export_list_all_image_files()",
-    "- select_valid_image_files()"
+    "- select_valid_image_files()",
+    "- read_BLOB_parameter_from_XML()",
+    "- read_image_binary_file()"
   ))
 
-#' list_all_image_files
+
+
+#' create_pos_foldername
+#'
+#' @param imageServer_path
+#' @param basePath
+#' @param pos_ID
+#'
+#' @return
+#' @export
+#'
+#' @examples
+create_pos_foldername <- function(imageServer_path,basePath,pos_ID){
+
+  file.path(imageServer_path,basePath,
+            paste0("pos",pos_ID))
+}
+
+
+
+#' create_Pos_image_filepath
+#'
+#' @param ScanBasePath
+#' @param PositionFolder
+#' @param Type
+#'
+#' @return
+#' @export
+#'
+#' @examples
+create_Pos_image_filepath <- function(ScanBasePath,
+                                      PositionFolder,
+                                      Type){
+  Type <- match.arg(Type,choices = c("posRef",
+                                     "flimages",
+                                     "deltaTL",
+                                     "focus",
+                                     "hdr"))
+  image_filepath <- file.path(ScanBasePath,
+                              PositionFolder,
+                              Type)
+  return(image_filepath)
+
+
+}
+
+#' create_ScanHistory_of_chipIDs
+#'
+#' @param chip_IDs
+#'
+#' @return
+#' @export
+#'
+#' @examples
+create_ScanHistory_of_chipIDs<-function(chip_IDs){
+
+  MethodHistory <- create_MethodHistory_of_chipIDs(chip_IDs)
+
+  ScanHistorys <- purrr::map(MethodHistory,
+                             ~.x%>%
+                               dplyr::rename("scan_ID" = "UID")%>%
+                               dplyr::rename("cycle_ID" = "CycleUID")%>%
+                               tidyr::fill(cycle_ID,  .direction = "up")%>%
+                               dplyr::filter(Type == "Chipcytometry-Scan")%>%
+                               dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
+  return(ScanHistorys)
+}
+
+#' export_list_all_image_files
 #'
 #' @param chip_IDs
 #' @param type
@@ -164,7 +234,7 @@ export_list_all_image_files <- function(chip_IDs,
   file <- create_result_filepath(output_dir,
                                  name_string = "all_image_files_of_groupID",
                                  result_ID,
-                                 type = ".csv")
+                                 type = "csv")
   #__15b) export file
   data.table::fwrite(result_files,
                      file)
@@ -175,117 +245,7 @@ export_list_all_image_files <- function(chip_IDs,
   return(result_files)
 }
 
-#' select_valid_image_files
-#'
-#' @param result_files
-#' @param type
-#'
-#' @return
-#' @export
-#'
-#' @examples
-select_valid_image_files <- function(result_files, type){
 
-  Version <- "250422"
-
-  #_______________
-  # 0) check input----
-  type <- match.arg(type, choices =c("blob","blob32","png"))
-
-  #_________________________
-  # 1) remove excluded scans----
-  result_files <- result_files%>%
-    dplyr::filter(Excluded %in% c(NA, "FALSE"))%>%
-    dplyr::filter(Status == "Finished")
-
-  #_______________________________
-  # 2) select image type to return----
-  # __2a) .blob----
-  if(type == "blob"){
-    result_files <- result_files%>%
-      dplyr::filter(filetype == "blob")
-  }
-  # __2b) .blob32----
-  if(type == "blob32"){
-    result_files <- result_files%>%
-      dplyr::filter(filetype == "blob32")
-  }
-  # __2c) .png----
-  if(type == "png"){
-    result_files <- result_files%>%
-      dplyr::filter(filetype == "png")
-  }
-
-  #_________________
-  # 3) return result----
-  return(result_files)
-}
-
-#' create_pos_foldername
-#'
-#' @param imageServer_path
-#' @param basePath
-#' @param pos_ID
-#'
-#' @return
-#' @export
-#'
-#' @examples
-create_pos_foldername <- function(imageServer_path,basePath,pos_ID){
-
-  file.path(imageServer_path,basePath,
-            paste0("pos",pos_ID))
-}
-
-
-
-#' create_Pos_image_filepath
-#'
-#' @param ScanBasePath
-#' @param PositionFolder
-#' @param Type
-#'
-#' @return
-#' @export
-#'
-#' @examples
-create_Pos_image_filepath <- function(ScanBasePath,
-                                      PositionFolder,
-                                      Type){
-  Type <- match.arg(Type,choices = c("posRef",
-                                     "flimages",
-                                     "deltaTL",
-                                     "focus",
-                                     "hdr"))
-  image_filepath <- file.path(ScanBasePath,
-                              PositionFolder,
-                              Type)
-  return(image_filepath)
-
-
-}
-
-#' create_ScanHistory_of_chipIDs
-#'
-#' @param chip_IDs
-#'
-#' @return
-#' @export
-#'
-#' @examples
-create_ScanHistory_of_chipIDs<-function(chip_IDs){
-
-  MethodHistory <- create_MethodHistory_of_chipIDs(chip_IDs)
-
-  ScanHistorys <- purrr::map(MethodHistory,
-                             ~.x%>%
-                               dplyr::rename("scan_ID" = "UID")%>%
-                               dplyr::rename("cycle_ID" = "CycleUID")%>%
-                               tidyr::fill(cycle_ID,  .direction = "up")%>%
-                               dplyr::filter(Type == "Chipcytometry-Scan")%>%
-                               dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
-  return(ScanHistorys)
-}
 #' find_scan_basepath
 #'
 #' @param scan_IDs
@@ -374,6 +334,150 @@ query_filterset_of_scanIDs <- function(scan_IDs){
 
   return(filterset)
 
+}
+
+#' read_image_binary_file
+#'
+#' @param blob_parameter
+#'
+#' @return
+#' @export
+#'
+#' @examples
+read_image_binary_file <- function(blob_parameter) {
+
+  encoding<-blob_parameter%>%
+    dplyr::filter(node_attributes_id=="encoding")%>%
+    dplyr::pull(node_attributes)
+
+  bin_size<-dplyr::case_when(encoding == "32bit little-endian" ~ 4,
+                             encoding == "16bit little-endian" ~ 2)
+
+  width <- blob_parameter%>%
+    dplyr::filter(node_name == "size")%>%
+    dplyr::filter(node_attributes_id=="width")%>%
+    dplyr::pull(node_attributes)%>%
+    as.numeric()
+
+  height <- blob_parameter%>%
+    dplyr::filter(node_name == "size")%>%
+    dplyr::filter(node_attributes_id=="height")%>%
+    dplyr::pull(node_attributes)%>%
+    as.numeric()
+
+  n_pixels<-width * height
+
+  path <- file.path(attr(blob_parameter, "image_path"),
+                    attr(blob_parameter, "blob_filename"))
+
+  data<-readBin(path,
+                integer(),
+                n=n_pixels,
+                size=bin_size)
+
+  return (data)
+}
+
+#' read_XML_BLOB_parameter
+#'
+#' @param image_path
+#' @param blob_file_name
+#' @param blob_filetype
+#'
+#' @return
+#' @export
+#'
+#' @examples
+read_XML_BLOB_parameter<- function(image_path, blob_filename) {
+
+  Version <- "260422"
+
+  path<-file.path(image_path,
+              paste0(blob_filename,".xml"))
+
+  XML<-path%>%
+    xml2::read_xml()
+
+  XML_parameter <- XML%>%
+    create_long_node_df_from_XML()
+
+  attr(XML_parameter,"image_path") <- image_path
+  attr(XML_parameter, "blob_filename") <- blob_filename
+  attr(XML_parameter,"xml_path") <- path
+
+  #size<-purrr::map_df(
+  #  XML,
+  #  ~.x%>%
+  #  xml2::xml_find_all('/image/size')%>%
+  #  xml2::xml_attrs())
+#
+  #structure<-purrr::map_df(
+  #  XML,
+  #  ~.x%>%
+  #    xml2::xml_find_all('/image/data-structure')%>%
+  #    xml2::xml_attrs())
+  #
+  #statistics <- purrr::map_df(
+  #  XML,
+  #  ~.x%>%
+  #    xml2::xml_find_all('/image/metadata/statistics')%>%
+  #    xml2::xml_attrs())
+  #
+  #extend <- purrr::map_df(
+  #  XML,
+  #  ~.x%>%
+  #    xml2::xml_find_all('/image/metadata/extent')%>%
+  #    xml2::xml_attrs())
+
+
+
+  return(XML_parameter)
+}
+
+#' select_valid_image_files
+#'
+#' @param result_files
+#' @param type
+#'
+#' @return
+#' @export
+#'
+#' @examples
+select_valid_image_files <- function(result_files, type){
+
+  Version <- "250422"
+
+  #_______________
+  # 0) check input----
+  type <- match.arg(type, choices =c("blob","blob32","png"))
+
+  #_________________________
+  # 1) remove excluded scans----
+  result_files <- result_files%>%
+    dplyr::filter(Excluded %in% c(NA, "FALSE"))%>%
+    dplyr::filter(Status == "Finished")
+
+  #_______________________________
+  # 2) select image type to return----
+  # __2a) .blob----
+  if(type == "blob"){
+    result_files <- result_files%>%
+      dplyr::filter(filetype == "blob")
+  }
+  # __2b) .blob32----
+  if(type == "blob32"){
+    result_files <- result_files%>%
+      dplyr::filter(filetype == "blob32")
+  }
+  # __2c) .png----
+  if(type == "png"){
+    result_files <- result_files%>%
+      dplyr::filter(filetype == "png")
+  }
+
+  #_________________
+  # 3) return result----
+  return(result_files)
 }
 
 #' query_UID_limsproc

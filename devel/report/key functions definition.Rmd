@@ -62,7 +62,7 @@ D) estimation of tissue size
 
 ## import chip group
 
-- find_valid_group_chip_IDs() in helpers: 
+- find_valid_group_chip_IDs() in helpers: RJob_execution
 
 ```{r}
 group_ID <- "P1761451"
@@ -71,14 +71,14 @@ chip_IDs <- find_valid_group_chip_IDs(group_ID)
 
 ## find all image files
 
-- create_working_directory() in helpers:
+- create_working_directory() in helpers: RJob_execution
 
 ```{r}
 output_dir <- "devel/data/data_output"
 RJobTissueArea:::create_working_directory(output_dir)
 ```
 
-- export_list_all_image_files() in helpers: 
+- export_list_all_image_files() in helpers: ImportBlobFiles
 
 ```{r}
 image_files <- export_list_all_image_files(chip_IDs,
@@ -86,17 +86,17 @@ image_files <- export_list_all_image_files(chip_IDs,
                                            output_dir)
 ```
 
-- create_result_filepath() in helpers:
+- create_result_filepath() in helpers: ImageProcessing
 
 ```{r}
 file <- create_result_filepath(output_dir,
                                name_string = "all_image_files_of_groupID",
                                result_ID=group_ID,
-                               type = ".csv")
+                               type = "csv")
 image_files <- data.table::fread(file)
 ```
 
-- select_valid_image_files() in helpers:
+- select_valid_image_files() in helpers: ImportBlobFiles
 
 ```{r}
 blob32_files <- select_valid_image_files(image_files,
@@ -105,6 +105,23 @@ blob32_files <- select_valid_image_files(image_files,
 
 ## image processing
 
+- read_XML_BLOB_parameter() in helpers: ImportBlobFiles
+
+```{r}
+
+image_path <- blob32_files$image_path[1]
+blob_filename <- blob32_files$blob_filename[1]
+
+
+blob_parameter <- read_XML_BLOB_parameter(image_path,
+                                          blob_filename)
+```
+
+- read_image_binary_file() in helpers: ImportBlobFiles
+
+```{r}
+data <- read_image_binary_file(blob_parameter)
+```
 
 
 ### variables

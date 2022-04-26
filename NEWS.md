@@ -1,4 +1,11 @@
-# RJobTissueArea (development version)
+# RJobTissueArea 0.0.0.8
+
+* NEW functions in helpers ImportBlobFiles:
+    - read_BLOB_parameter_from_XML()
+    - read_image_binary_file()
+* NEW report key functions definition
+* NEW helpes DBrelated:
+    - create_long_node_df_from_XML()
 
 # RJobTissueArea 0.0.0.7
 
@@ -33,5 +40,6 @@
 # RJobTissueArea 0.0.0.1
 
 * Added helpers_GenerateInputData.R (from FDR project, new Version: 080322: bugfix dependencies)
+
 
 

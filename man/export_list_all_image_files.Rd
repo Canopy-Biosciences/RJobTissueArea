@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers_ImportBlobFiles.R
 \name{export_list_all_image_files}
 \alias{export_list_all_image_files}
-\title{list_all_image_files}
+\title{export_list_all_image_files}
 \usage{
 export_list_all_image_files(chip_IDs, result_ID, output_dir)
 }
@@ -13,5 +13,5 @@ export_list_all_image_files(chip_IDs, result_ID, output_dir)
 
 }
 \description{
-list_all_image_files
+export_list_all_image_files
 }
