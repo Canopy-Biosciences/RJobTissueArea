@@ -51,7 +51,7 @@ image_files <- export_list_all_image_files(chip_IDs)
 
 - load list of all image files
 
-```{r}
+```{r,eval=FALSE}
 file <- create_result_filepath(output_dir,
                                name_string = "all_image_files_of_groupID",
                                result_ID=group_ID,
@@ -61,7 +61,7 @@ image_files <- data.table::fread(file)
 
 - select valid bolb32 files
 
-```{r}
+```{r,eval=FALSE}
 blob32_files <- select_valid_image_files(image_files,
                                          type = "blob32")
 ```
