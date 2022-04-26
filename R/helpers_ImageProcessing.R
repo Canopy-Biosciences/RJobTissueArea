@@ -16,6 +16,20 @@ writeLines(
     "- create_result_filepath()"
   ))
 
+#' Title
+#'
+#' @param data_sum
+#' @param cellres
+#' @param output_dir
+#' @param chip_ID
+#' @param pos
+#' @param sigma
+#' @param threshold
+#'
+#' @return
+#' @export
+#'
+#' @examples
 perform_image_processing <- function(data_sum,
                                      cellres = cellres,
                                      output_dir = output_dir,
@@ -76,6 +90,23 @@ perform_image_processing <- function(data_sum,
 
 }
 
+#' Title
+#'
+#' @param image
+#' @param image_blurred
+#' @param image_binary
+#' @param output_dir
+#' @param chip_ID
+#' @param pos
+#' @param sigma
+#' @param threshold
+#' @param cols
+#' @param rows
+#'
+#' @return
+#' @export
+#'
+#' @examples
 export_image_result_tiffs <- function(image,
                                       image_blurred,
                                       image_binary,
@@ -127,6 +158,17 @@ export_image_result_tiffs <- function(image,
   ))
 }
 
+#' Title
+#'
+#' @param chip_ID
+#' @param pos
+#' @param sigma
+#' @param threshold
+#'
+#' @return
+#' @export
+#'
+#' @examples
 create_name_result_ID <- function(chip_ID,
                                   pos,
                                   sigma,
@@ -138,6 +180,17 @@ create_name_result_ID <- function(chip_ID,
                       "_threshold_",threshold)
 }
 
+#' Title
+#'
+#' @param output_dir
+#' @param name_string
+#' @param result_ID
+#' @param type
+#'
+#' @return
+#' @export
+#'
+#' @examples
 create_result_filepath <- function(output_dir,
                                    name_string,
                                    result_ID,

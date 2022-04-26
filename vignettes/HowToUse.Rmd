@@ -39,7 +39,27 @@ chip_IDs <- find_valid_group_chip_IDs(group_ID)
 - get all image files
 
 ```{r,eval=FALSE}
-image_files <- list_all_image_files(chipIDs)
+image_files <- list_all_image_files(chip_IDs)
+```
+
+- export result table
+
+```{r,eval=FALSE}
+
+output_dir <- "inst/data_output"
+if(dir.exists(output_dir)==FALSE){
+  dir.create(output_dir)
+}
+
+data.table::fwrite(image_files,
+                  file.path(
+                    output_dir,
+                    paste0("all_image_files_of_groupID_",group_ID,".csv")))
+
+feather::write_feather(image_files,
+                  file.path(
+                    output_dir,
+                    paste0("all_image_files_of_groupID_",group_ID,".feather")))
 ```
 
 - select valid bolb32 files
