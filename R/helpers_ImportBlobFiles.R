@@ -33,7 +33,8 @@ writeLines(
     "- extract_image_width_from_blob_parameter()",
     "- extract_image_heigth_from_blob_parameter()",
     "- extract_image_resolution_from_blob_parameter()",
-    "- read_binary_image_as_matrix()"
+    "- read_binary_image_as_matrix()",
+    "- extract_statistics_from_blob_parameter()"
   ))
 
 #' convert_binsize_from_encoding
@@ -412,7 +413,7 @@ extract_n_pixels_from_blob_parameter <- function(blob_paramter){
   Version <- "270422"
 
   h_pixel <- extract_h_pixels_from_blob_parameter(blob_parameter)
-  height <- extract_v_pixel_from_blob_parameter(blob_parameter)
+  height <- extract_v_pixels_from_blob_parameter(blob_parameter)
   n_pixels <- h_pixel * height
 
   return(n_pixels)
@@ -437,6 +438,27 @@ extract_v_pixels_from_blob_parameter <- function(blob_parameter){
     as.numeric()
 
   return(v_pixel)
+}
+
+#' extract_statistics_from_blob_parameter
+#'
+#' @param blob_parameter
+#'
+#' @return
+#' @export
+#'
+#' @examples
+extract_statistics_from_blob_parameter <- function(blob_parameter){
+
+  Version <- "270422"
+
+  statistics <-   blob_parameter%>%
+    dplyr::filter(node_name == "statistics")%>%
+    dplyr::mutate(node_attributes = as.numeric(node_attributes))%>%
+    tidyr::spread(node_attributes_id,node_attributes)%>%
+    dplyr::select(-node_name, -node_path)
+
+  return(statistics)
 }
 
 #' find_scan_basepath
