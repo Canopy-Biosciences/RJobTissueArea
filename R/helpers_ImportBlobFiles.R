@@ -30,7 +30,8 @@ writeLines(
     "- extract_v_pixel_from_blob_parameter()",
     "- extract_n_pixels_from_blob_parameter()",
     "- extract_image_path_from_blob_parameter()",
-    "- extract_image_width_from_blob_parameter()"
+    "- extract_image_width_from_blob_parameter()",
+    "- extract_image_heigth_from_blob_parameter()"
   ))
 
 #' convert_binsize_from_encoding
@@ -365,6 +366,26 @@ extract_n_pixels_from_blob_parameter <- function(blob_paramter){
   return(n_pixels)
 }
 
+#' extract_image_heigth_from_blob_parameter
+#'
+#' @param blob_paramter
+#'
+#' @return
+#' @export
+#'
+#' @examples
+extract_image_heigth_from_blob_parameter <- function(blob_paramter){
+
+  Version <- "270422"
+
+  heigth <-   blob_parameter%>%
+    dplyr::filter(node_name == "extend")%>%
+    dplyr::filter(node_attributes_id=="width")%>%
+    dplyr::pull(node_attributes)%>%
+    as.numeric()
+
+  return(heigth)
+}
 #' extract_image_width_from_blob_parameter
 #'
 #' @param blob_paramter
