@@ -342,7 +342,7 @@ extract_image_heigth_from_blob_parameter <- function(blob_paramter){
 
   heigth <-   blob_parameter%>%
     dplyr::filter(node_name == "extent")%>%
-    dplyr::filter(node_attributes_id=="heigth")%>%
+    dplyr::filter(node_attributes_id=="height")%>%
     dplyr::pull(node_attributes)%>%
     as.numeric()
 
