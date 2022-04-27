@@ -34,7 +34,8 @@ writeLines(
     "- extract_image_heigth_from_blob_parameter()",
     "- extract_image_resolution_from_blob_parameter()",
     "- read_binary_image_as_matrix()",
-    "- extract_statistics_from_blob_parameter()"
+    "- extract_statistics_from_blob_parameter()",
+    "- extract_parameter_from_BLOB()"
   ))
 
 #' convert_binsize_from_encoding
@@ -438,6 +439,38 @@ extract_v_pixels_from_blob_parameter <- function(blob_parameter){
     as.numeric()
 
   return(v_pixel)
+}
+
+#' extract_parameter_from_BLOB
+#'
+#' @param image_path
+#' @param blob_filename
+#'
+#' @return
+#' @export
+#'
+#' @examples
+extract_parameter_from_BLOB <- function(image_path,
+                                        blob_filename){
+
+  blob_parameter <- read_XML_BLOB_parameter(image_path,
+                                            blob_filename)
+  df <- data.frame(
+    image_path = image_path,
+    blob_filename = blob_filename,
+    h_pixel = extract_h_pixels_from_blob_parameter(blob_parameter),
+    v_pixel = extract_v_pixels_from_blob_parameter(blob_parameter),
+    n_pixel = extract_n_pixels_from_blob_parameter(blob_parameter),
+    image_width = extract_image_width_from_blob_parameter(blob_parameter),
+    image_heigth = extract_image_heigth_from_blob_parameter(blob_parameter))%>%
+    dplyr::mutate(
+      h_res = image_width/h_pixel,
+      v_res = image_heigth/v_pixel)
+
+  df <- cbind(df,
+              extract_statistics_from_blob_parameter((blob_parameter)))
+
+  return(df)
 }
 
 #' extract_statistics_from_blob_parameter
