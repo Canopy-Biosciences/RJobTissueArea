@@ -298,6 +298,7 @@ image_groups <- image_groups%>%
                                                  ~create_export_data_sum(.x,
                                                                          .y,
                                                                          file_path(output_dir,"data_sum_collection"))))
+
 ```
 
 
