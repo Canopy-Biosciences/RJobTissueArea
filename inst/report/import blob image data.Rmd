@@ -57,13 +57,20 @@ file <- create_result_filepath(output_dir,
 image_files <- data.table::fread(file)
 ```
 
+- select_valid_image_files() in helpers: ImportBlobFiles
+
+```{r}
+blob32_files <- select_valid_image_files(image_files,
+                                         type = "blob32")
+```
+
 # define functions
 
 ## single file
 
 ```{r}
-image_path <- image_selection$image_path[1]
-blob_filename <- image_selection$blob_filename[1]
+image_path <- blob32_files$image_path[1]
+blob_filename <- blob32_files$blob_filename[1]
 ```
 
 ### read_XML_BLOB_parameter() 
@@ -74,6 +81,102 @@ blob_filename <- image_selection$blob_filename[1]
 ```{r}
 blob_parameter <- read_XML_BLOB_parameter(image_path,
                                           blob_filename)
+
+blob_parameter
+```
+
+### functions that extract values from blob_parameter
+
+- extract_h_pixels_from_blob_parameter() in helpers: ImportBlobFiles
+
+```{r}
+extract_h_pixels_from_blob_parameter(blob_parameter)
+```
+
+- extract_v_pixel_from_blob_parameter() in helpers: ImportBlobFiles
+
+```{r}
+extract_v_pixel_from_blob_parameter(blob_parameter)
+```
+
+- extract_n_pixels_from_blob_parameter() in helpers: ImportBlobFiles
+
+```{r}
+extract_n_pixels_from_blob_parameter(blob_paramter)
+```
+
+- extract_image_path_from_blob_parameter() in helpers: ImportBlobFiles
+
+```{r}
+extract_image_path_from_blob_parameter(blob_parameter)
+```
+
+- extract_encoding_from_blob_parameter() in helpers: ImportBlobFiles
+
+```{r}
+extract_encoding_from_blob_parameter(blob_parameter)
+```
+
+- convert_binsize_from_encoding() in helpers: ImportBlobFiles
+
+```{r}
+encoding <- extract_encoding_from_blob_parameter(blob_parameter)
+
+convert_binsize_from_encoding(encoding)
+```
+
+- extract_image_width_from_blob_parameter() in helpers: ImportBlobFiles
+
+```{r}
+extract_image_width_from_blob_parameter(blob_paramter)
+```
+
+- extract_image_heigth_from_blob_parameter() in helpers: ImportBlobFiles
+
+```{r}
+extract_image_heigth_from_blob_parameter(blob_paramter)
+```
+
+- extract_image_resolution_from_blob_parameter() in helpers: ImportBlobFiles
+
+```{r}
+extract_image_resolution_from_blob_parameter(blob_parameter)
+```
+
+- extract_parameter_from_BLOB 
+
+```{r}
+extract_parameter_from_BLOB <- function(image_path,
+                                        blob_filename){
+  
+  blob_parameter <- read_XML_BLOB_parameter(image_path,
+                                            blob_filename)
+  df <- data.frame(
+    h_pixel = extract_h_pixels_from_blob_parameter(blob_parameter),
+    v_pixel = extract_v_pixels_from_blob_parameter(blob_parameter),
+    n_pixel = extract_n_pixels_from_blob_parameter(blob_parameter),
+    image_width = extract_image_width_from_blob_parameter(blob_parameter),
+    image_heigth = extract_image_heigth_from_blob_parameter(blob_parameter))%>%
+    dplyr::mutate(
+      h_res = image_width/h_pixel,
+      v_res = image_heigth/v_pixel)
+  
+  return(df)
+}
+
+extract_parameter_from_BLOB(image_path,
+                            blob_filename)
+```
+
+- add_blob_parameter_to_image_files
+
+```{r,eval_FALSE}
+blob32_files_parameter <- purrr::map2(blob32_files$image_path,
+                                             blob32_files$blob_filename,
+                                             ~extract_parameter_from_BLOB(.x,.y))
+
+blob32_files_parameter <- blob32_files_parameter%>%
+  data.table::rbindlist()
 ```
 
 ### read_image_binary_file() 
@@ -85,78 +188,194 @@ blob_parameter <- read_XML_BLOB_parameter(image_path,
 data <- read_image_binary_file(blob_parameter)
 ```
 
-- create_grey_value_image
+### read_binary_image_as_matrix()
 
 ```{r}
-blob_parameter <- read_XML_BLOB_parameter(selection_group$image_path[1],
-                                  selection_group$blob_filename[1])
+read_binary_image_as_matrix <- function(image_path,
+                                    blob_filename){
   
-  blob_image <- data_parameter%>%
-    read_image_binary_file()
+  blob_parameter <-read_XML_BLOB_parameter(image_path,
+                                           blob_filename)
+  
+  data <- read_image_binary_file(blob_parameter)
+  
+  data_mat <- matrix(data,
+                     nrow = attr(data, "v_pixel"),
+                     ncol = attr(data,"h_pixel"))
+  
+  attr(data_mat, "image_resolution") <- attr(data,"image_resolution")
+  
+  return(data_mat)
+}
 ```
 
-
-
-## file group
-
-- select_valid_image_files() in helpers: ImportBlobFiles
-
-```{r}
-image_selection <- select_valid_image_files(image_files,
-                                         type = "blob32")
-```
+## group of files
 
 - nest file groups (by chip_ID and pos_ID) to a image_selection_list
 
 ```{r}
-image_selection_list <- image_selection%>%
+image_groups <- blob32_files%>%
   dplyr::group_by(chip_ID,pos_ID)%>%
   tidyr::nest()
 ```
 
-- import all images of a single selection group
+- add group_ID 
+- add filename of the file containing the data_sum results to be created
 
 ```{r}
-selection_group <- image_selection_list$data[[1]]
+image_groups <- image_groups%>%
+  dplyr::mutate(group_ID = paste0(chip_ID,"_",pos_ID))%>%
+  dplyr::mutate(data_file = create_result_filepath(output_dir,
+                                                   "data_sum",
+                                                   group_ID,
+                                                   type="csv"))
+
+image_group_list <- image_groups$data[[1]]
+group_ID <-  image_groups$group_ID[1]
 ```
 
-- map over all entities and load image data into a list 
---> dauert ewig
+### create_export_data_sum()
 
-```{r}
-group_data <- purrr::map2(selection_group$image_path,
-                          selection_group$blob_filename,
-                          ~ read_XML_BLOB_parameter(.x,.y)%>%
-                            read_image_binary_file)
-```
-
-- calculate data_sum of a chip_group directly and return only one dataset per image selection group
+- import all images of a image group
+- calculate data_sum of all pixel values 
+- return one image matrix
+- exports data_sum into the output_dir
 
 ```{r}
 
-for(i in 1:dim(selection_group)[1]){
+create_export_data_sum <- function(image_group_list,
+                                   group_ID,
+                                   output_dir){
   
-  blob_parameter <- read_XML_BLOB_parameter(selection_group$image_path[i],
-                                  selection_group$blob_filename[i])
+  create_working_directory(output_dir)
   
-  blob_image <- data_parameter%>%
-    read_image_binary_file()
-
-  if(i == 1){
-    data_sum <- data
-  }else{
-    data_sum <- data_sum+data
+  for(i in 1:dim(image_group_list)[1]){
+    
+    image_path <- image_group_list$image_path[i]
+    blob_filename <- image_group_list$blob_filename[i]
+    
+    data_mat <- read_binary_image_as_matrix(image_path,
+                                            blob_filename)
+    
+    if(i == 1){
+      data_sum <- data_mat
+    }else{
+      
+      if(any(attr(data_mat,"image_resolution") != attr(data_sum,"image_resolution"))){
+        writeLines(c(
+          paste0("- image_resolution changed with scan_ID: ", image_group_list$scan_ID[i])
+        ))}
+      
+      data_sum <- data_sum+data_mat
+      
+    }
   }
   
+    result_filename <- create_result_filepath(output_dir,
+                                            "data_sum",
+                                            group_ID,
+                                            type="csv")
+    data.table::fwrite(data_sum,
+                       result_filename)
   
-}
-return(data_sum)
+    return(attr(data_sum,"image_resolution"))
 
+}
+```
+
+```{r}
+data_sum_resultion <- create_export_data_sum(image_groups$data[[1]],
+                                   image_groups$group_ID[1],
+                                   output_dir)
+```
+
+- apply to complete chip_group
+
+```{r}
+image_groups <- image_groups%>%
+  dplyr::mutate(data_sum_resultion = purrr::map2(data,
+                                                 group_ID,
+                                                 ~create_export_data_sum(.x,
+                                                                         .y,
+                                                                         file_path(output_dir,"data_sum_collection"))))
+```
+
+
+```{r}
+# create pixmap
+  # cellres: pixel resolution in horizontal and vertical direction
+  image <-pixmap::pixmapGrey(m.data_sum,
+                             nrow = rows,
+                             ncol = cols,
+                             cellres=cellres)
+  
+  # get grey values
+  grey_values <- image@grey * 255
+  
+  
+  
+                                    }
+```
+
+
+- 
+
+## file group
+
+```{r}
+h_pixel <- 1392
+v_pixel <- 1040
+n_pixel <- 1447680
+image_width <- 689.149
+image_heigth <- 514.963
+h_res <- 0.4950783
+v_res <- 0.4951567
 ```
 
 
 
-# introduction 
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # supplement
 
