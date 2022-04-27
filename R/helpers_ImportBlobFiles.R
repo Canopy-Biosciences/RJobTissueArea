@@ -24,10 +24,24 @@ writeLines(
     "- select_valid_image_files()",
     "- read_BLOB_parameter_from_XML()",
     "- read_image_binary_file()",
-    "- extract_encoding_from_blob_parameter()"
+    "- extract_encoding_from_blob_parameter()",
+    "- convert_binsize_from_encoding()"
   ))
 
+#' convert_binsize_from_encoding
+#'
+#' @param encoding
+#'
+#' @return
+#' @export
+#'
+#' @examples
+convert_binsize_from_encoding <- function(encoding){
+  bin_size <- dplyr::case_when(encoding == "32bit little-endian" ~ 4,
+                               encoding == "16bit little-endian" ~ 2)
 
+  return(bin_size)
+}
 
 #' create_pos_foldername
 #'
@@ -364,8 +378,7 @@ read_image_binary_file <- function(blob_parameter) {
 
   encoding<-extract_encoding_from_blob_parameter(blob_parameter)
 
-  bin_size<-dplyr::case_when(encoding == "32bit little-endian" ~ 4,
-                             encoding == "16bit little-endian" ~ 2)
+  bin_size<-convert_binsize_from_encoding(encoding)
 
   width <- blob_parameter%>%
     dplyr::filter(node_name == "size")%>%
