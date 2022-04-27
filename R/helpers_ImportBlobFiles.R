@@ -137,11 +137,13 @@ export_blob_parameter_of_image_filelist<-function(image_files,
                                                   output_dir,
                                                   result_ID){
 
+  V <- "270422"
+
   parameter_list <- purrr::map2_df(
     image_files$image_path,
     image_files$blob_filename,
-    ~extract_parameter_from_BLOB(.x,.y)
-  )
+    ~extract_parameter_from_BLOB(.x,.y))
+
   result_filename <- create_result_filepath(output_dir,
                                             "Blob_parameters",
                                             result_ID,
@@ -482,6 +484,8 @@ extract_v_pixels_from_blob_parameter <- function(blob_parameter){
 #' @examples
 extract_parameter_from_BLOB <- function(image_path,
                                         blob_filename){
+
+  Version <- "270422"
 
   blob_parameter <- read_XML_BLOB_parameter(image_path,
                                             blob_filename)
