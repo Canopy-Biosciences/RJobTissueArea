@@ -27,7 +27,9 @@ writeLines(
     "- extract_encoding_from_blob_parameter()",
     "- convert_binsize_from_encoding()",
     "- extract_image_width_from_blob_parameter()",
-    "- extract_image_height_from_blob_parameter()"
+    "- extract_image_height_from_blob_parameter()",
+    "- extract_n_pixels_from_blob_parameter()",
+    "- extract_image_path_from_blob_parameter()"
   ))
 
 #' convert_binsize_from_encoding
@@ -295,6 +297,19 @@ extract_image_height_from_blob_parameter <- function(blob_parameter){
 
   return(height)
 }
+#' extract_image_path_from_blob_parameter
+#'
+#' @param blob_parameter
+#'
+#' @return
+#' @export
+#'
+#' @examples
+extract_image_path_from_blob_parameter<- function(blob_parameter){
+  path <- file.path(attr(blob_parameter, "image_path"),
+                    attr(blob_parameter, "blob_filename"))
+  return(path)
+}
 
 #' extract_image_width_from_blob_parameter
 #'
@@ -314,6 +329,25 @@ extract_image_width_from_blob_parameter <- function(blob_parameter){
 
   return(width)
 }
+
+#' extract_n_pixels_from_blob_parameter
+#'
+#' @param blob_paramter
+#'
+#' @return
+#' @export
+#'
+#' @examples
+extract_n_pixels_from_blob_parameter <- function(blob_paramter){
+
+  width <- extract_image_width_from_blob_parameter(blob_parameter)
+  height <- extract_image_height_from_blob_parameter(blob_parameter)
+  n_pixels <- width * height
+
+  return(n_pixels)
+}
+
+
 #' find_scan_basepath
 #'
 #' @param scan_IDs
@@ -418,14 +452,9 @@ read_image_binary_file <- function(blob_parameter) {
 
   bin_size<-convert_binsize_from_encoding(encoding)
 
-  width <- extract_image_width_from_blob_parameter(blob_parameter)
+  n_pixels<- extract_n_pixels_from_blob_parameter(blob_parameter)
 
-  height <- extract_image_height_from_blob_parameter(blob_parameter)
-
-  n_pixels<-width * height
-
-  path <- file.path(attr(blob_parameter, "image_path"),
-                    attr(blob_parameter, "blob_filename"))
+  path <- extract_image_path_from_blob_parameter(blob_parameter)
 
   data<-readBin(path,
                 integer(),
