@@ -35,7 +35,8 @@ writeLines(
     "- extract_image_resolution_from_blob_parameter()",
     "- read_binary_image_as_matrix()",
     "- extract_statistics_from_blob_parameter()",
-    "- extract_parameter_from_BLOB()"
+    "- extract_parameter_from_BLOB()",
+    "- export_blob_parameter_of_image_filelist()"
   ))
 
 #' convert_binsize_from_encoding
@@ -122,6 +123,35 @@ create_ScanHistory_of_chipIDs<-function(chip_IDs){
   return(ScanHistorys)
 }
 
+#' export_blob_parameter_of_image_filelist
+#'
+#' @param image_files
+#' @param output_dir
+#' @param result_ID
+#'
+#' @return
+#' @export
+#'
+#' @examples
+export_blob_parameter_of_image_filelist<-function(image_files,
+                                                  output_dir,
+                                                  result_ID){
+
+  parameter_list <- purrr::map2_df(
+    image_files$image_path,
+    image_files$blob_filename,
+    ~extract_parameter_from_BLOB(.x,.y)
+  )
+  result_filename <- create_result_filepath(output_dir,
+                                            "Blob_parameters",
+                                            result_ID,
+                                            "csv")
+  data.table::fwrite(parameter_list,
+                     result_filename)
+
+  return(parameter_list)
+
+}
 #' export_list_all_image_files
 #'
 #' @param chip_IDs
