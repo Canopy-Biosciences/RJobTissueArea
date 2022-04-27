@@ -275,6 +275,7 @@ create_export_data_sum <- function(image_group_list,
                                             "data_sum",
                                             group_ID,
                                             type="csv")
+    data_sum <- data.table::data.table(data_sum)
     data.table::fwrite(data_sum,
                        result_filename)
   
@@ -297,7 +298,7 @@ image_groups <- image_groups%>%
                                                  group_ID,
                                                  ~create_export_data_sum(.x,
                                                                          .y,
-                                                                         file_path(output_dir,"data_sum_collection"))))
+                                                                         file.path(output_dir,"data_sum_collection"))))
 
 ```
 
