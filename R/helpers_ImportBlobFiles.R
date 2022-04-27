@@ -288,44 +288,6 @@ extract_encoding_from_blob_parameter <- function(blob_parameter){
   return(encoding)
 }
 
-#' extract_image_height_from_blob_parameter
-#'
-#' @param blob_parameter
-#'
-#' @return
-#' @export
-#'
-#' @examples
-extract_v_pixel_from_blob_parameter <- function(blob_parameter){
-
-  Version <- "270422"
-
-  v_pixel <- blob_parameter%>%
-    dplyr::filter(node_name == "size")%>%
-    dplyr::filter(node_attributes_id=="height")%>%
-    dplyr::pull(node_attributes)%>%
-    as.numeric()
-
-  return(v_pixel)
-}
-#' extract_image_path_from_blob_parameter
-#'
-#' @param blob_parameter
-#'
-#' @return
-#' @export
-#'
-#' @examples
-extract_image_path_from_blob_parameter<- function(blob_parameter){
-
-  Version <- "270422"
-
-  path <- file.path(attr(blob_parameter, "image_path"),
-                    attr(blob_parameter, "blob_filename"))
-
-  return(path)
-}
-
 #' extract_h_pixels_from_blob_parameter
 #'
 #' @param blob_parameter
@@ -347,23 +309,22 @@ extract_h_pixels_from_blob_parameter <- function(blob_parameter){
   return(h_pixel)
 }
 
-#' extract_n_pixels_from_blob_parameter
+#' extract_image_path_from_blob_parameter
 #'
-#' @param blob_paramter
+#' @param blob_parameter
 #'
 #' @return
 #' @export
 #'
 #' @examples
-extract_n_pixels_from_blob_parameter <- function(blob_paramter){
+extract_image_path_from_blob_parameter<- function(blob_parameter){
 
   Version <- "270422"
 
-  h_pixel <- extract_h_pixels_from_blob_parameter(blob_parameter)
-  height <- extract_v_pixel_from_blob_parameter(blob_parameter)
-  n_pixels <- h_pixel * height
+  path <- file.path(attr(blob_parameter, "image_path"),
+                    attr(blob_parameter, "blob_filename"))
 
-  return(n_pixels)
+  return(path)
 }
 
 #' extract_image_heigth_from_blob_parameter
@@ -406,6 +367,47 @@ extract_image_width_from_blob_parameter <- function(blob_paramter){
 
   return(width)
 }
+
+#' extract_n_pixels_from_blob_parameter
+#'
+#' @param blob_paramter
+#'
+#' @return
+#' @export
+#'
+#' @examples
+extract_n_pixels_from_blob_parameter <- function(blob_paramter){
+
+  Version <- "270422"
+
+  h_pixel <- extract_h_pixels_from_blob_parameter(blob_parameter)
+  height <- extract_v_pixel_from_blob_parameter(blob_parameter)
+  n_pixels <- h_pixel * height
+
+  return(n_pixels)
+}
+
+#' extract_image_height_from_blob_parameter
+#'
+#' @param blob_parameter
+#'
+#' @return
+#' @export
+#'
+#' @examples
+extract_v_pixel_from_blob_parameter <- function(blob_parameter){
+
+  Version <- "270422"
+
+  v_pixel <- blob_parameter%>%
+    dplyr::filter(node_name == "size")%>%
+    dplyr::filter(node_attributes_id=="height")%>%
+    dplyr::pull(node_attributes)%>%
+    as.numeric()
+
+  return(v_pixel)
+}
+
 #' find_scan_basepath
 #'
 #' @param scan_IDs
