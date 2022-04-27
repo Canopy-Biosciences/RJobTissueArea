@@ -26,8 +26,8 @@ writeLines(
     "- read_image_binary_file()",
     "- extract_encoding_from_blob_parameter()",
     "- convert_binsize_from_encoding()",
-    "- extract_image_width_from_blob_parameter()",
-    "- extract_image_height_from_blob_parameter()",
+    "- extract_h_pixels_from_blob_parameter()",
+    "- extract_v_pixel_from_blob_parameter()",
     "- extract_n_pixels_from_blob_parameter()",
     "- extract_image_path_from_blob_parameter()"
   ))
@@ -294,17 +294,17 @@ extract_encoding_from_blob_parameter <- function(blob_parameter){
 #' @export
 #'
 #' @examples
-extract_image_height_from_blob_parameter <- function(blob_parameter){
+extract_v_pixel_from_blob_parameter <- function(blob_parameter){
 
   Version <- "270422"
 
-  heigth <- blob_parameter%>%
+  v_pixel <- blob_parameter%>%
     dplyr::filter(node_name == "size")%>%
     dplyr::filter(node_attributes_id=="height")%>%
     dplyr::pull(node_attributes)%>%
     as.numeric()
 
-  return(height)
+  return(v_pixel)
 }
 #' extract_image_path_from_blob_parameter
 #'
@@ -324,7 +324,7 @@ extract_image_path_from_blob_parameter<- function(blob_parameter){
   return(path)
 }
 
-#' extract_image_width_from_blob_parameter
+#' extract_h_pixels_from_blob_parameter
 #'
 #' @param blob_parameter
 #'
@@ -332,17 +332,17 @@ extract_image_path_from_blob_parameter<- function(blob_parameter){
 #' @export
 #'
 #' @examples
-extract_image_width_from_blob_parameter <- function(blob_parameter){
+extract_h_pixels_from_blob_parameter <- function(blob_parameter){
 
   Version <- "270422"
 
-  width <- blob_parameter%>%
+  h_pixel <- blob_parameter%>%
     dplyr::filter(node_name == "size")%>%
     dplyr::filter(node_attributes_id=="width")%>%
     dplyr::pull(node_attributes)%>%
     as.numeric()
 
-  return(width)
+  return(h_pixel)
 }
 
 #' extract_n_pixels_from_blob_parameter
@@ -357,9 +357,9 @@ extract_n_pixels_from_blob_parameter <- function(blob_paramter){
 
   Version <- "270422"
 
-  width <- extract_image_width_from_blob_parameter(blob_parameter)
-  height <- extract_image_height_from_blob_parameter(blob_parameter)
-  n_pixels <- width * height
+  h_pixel <- extract_h_pixels_from_blob_parameter(blob_parameter)
+  height <- extract_v_pixel_from_blob_parameter(blob_parameter)
+  n_pixels <- h_pixel * height
 
   return(n_pixels)
 }
