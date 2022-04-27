@@ -25,7 +25,8 @@ writeLines(
     "- read_BLOB_parameter_from_XML()",
     "- read_image_binary_file()",
     "- extract_encoding_from_blob_parameter()",
-    "- convert_binsize_from_encoding()"
+    "- convert_binsize_from_encoding()",
+    "- extract_image_width_from_blob_parameter()"
   ))
 
 #' convert_binsize_from_encoding
@@ -276,6 +277,24 @@ extract_encoding_from_blob_parameter <- function(blob_parameter){
   return(encoding)
 }
 
+#' extract_image_width_from_blob_parameter
+#'
+#' @param blob_parameter
+#'
+#' @return
+#' @export
+#'
+#' @examples
+extract_image_width_from_blob_parameter <- function(blob_parameter){
+
+  width <- blob_parameter%>%
+    dplyr::filter(node_name == "size")%>%
+    dplyr::filter(node_attributes_id=="width")%>%
+    dplyr::pull(node_attributes)%>%
+    as.numeric()
+
+  return(width)
+}
 #' find_scan_basepath
 #'
 #' @param scan_IDs
@@ -380,11 +399,7 @@ read_image_binary_file <- function(blob_parameter) {
 
   bin_size<-convert_binsize_from_encoding(encoding)
 
-  width <- blob_parameter%>%
-    dplyr::filter(node_name == "size")%>%
-    dplyr::filter(node_attributes_id=="width")%>%
-    dplyr::pull(node_attributes)%>%
-    as.numeric()
+  width <- extract_image_width_from_blob_parameter(blob_parameter)
 
   height <- blob_parameter%>%
     dplyr::filter(node_name == "size")%>%
