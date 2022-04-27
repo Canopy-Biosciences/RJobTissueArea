@@ -32,7 +32,8 @@ writeLines(
     "- extract_image_path_from_blob_parameter()",
     "- extract_image_width_from_blob_parameter()",
     "- extract_image_heigth_from_blob_parameter()",
-    "- extract_image_resolution_from_blob_parameter()"
+    "- extract_image_resolution_from_blob_parameter()",
+    "- read_binary_image_as_matrix()"
   ))
 
 #' convert_binsize_from_encoding
@@ -417,7 +418,7 @@ extract_n_pixels_from_blob_parameter <- function(blob_paramter){
   return(n_pixels)
 }
 
-#' extract_image_height_from_blob_parameter
+#' extract_v_pixels_from_blob_parameter
 #'
 #' @param blob_parameter
 #'
@@ -425,7 +426,7 @@ extract_n_pixels_from_blob_parameter <- function(blob_paramter){
 #' @export
 #'
 #' @examples
-extract_v_pixel_from_blob_parameter <- function(blob_parameter){
+extract_v_pixels_from_blob_parameter <- function(blob_parameter){
 
   Version <- "270422"
 
@@ -528,6 +529,34 @@ query_filterset_of_scanIDs <- function(scan_IDs){
 
 }
 
+#' read_binary_image_as_matrix
+#'
+#' @param image_path
+#' @param blob_filename
+#'
+#' @return
+#' @export
+#'
+#' @examples
+read_binary_image_as_matrix <- function(image_path,
+                                        blob_filename){
+
+  Version <- "270422"
+
+  blob_parameter <-read_XML_BLOB_parameter(image_path,
+                                           blob_filename)
+
+  data <- read_image_binary_file(blob_parameter)
+
+  data_mat <- matrix(data,
+                     nrow = attr(data, "v_pixel"),
+                     ncol = attr(data,"h_pixel"))
+
+  attr(data_mat, "image_resolution") <- attr(data,"image_resolution")
+
+  return(data_mat)
+}
+
 #' read_image_binary_file
 #'
 #' @param blob_parameter
@@ -556,6 +585,10 @@ read_image_binary_file <- function(blob_parameter) {
                 integer(),
                 n=n_pixels,
                 size=bin_size)
+
+  attr(data,"h_pixel") <- extract_h_pixels_from_blob_parameter(blob_parameter)
+  attr(data,"v_pixel") <- extract_v_pixels_from_blob_parameter(blob_parameter)
+  attr(data,"image_resolution") <- extract_image_resolution_from_blob_parameter(blob_parameter)
 
   return (data)
 }
