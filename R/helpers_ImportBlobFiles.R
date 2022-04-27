@@ -41,6 +41,9 @@ writeLines(
 #'
 #' @examples
 convert_binsize_from_encoding <- function(encoding){
+
+  Version <- "270422"
+
   bin_size <- dplyr::case_when(encoding == "32bit little-endian" ~ 4,
                                encoding == "16bit little-endian" ~ 2)
 
@@ -273,6 +276,9 @@ export_list_all_image_files <- function(chip_IDs,
 #'
 #' @examples
 extract_encoding_from_blob_parameter <- function(blob_parameter){
+
+  Version <- "270422"
+
   encoding <- blob_parameter%>%
     dplyr::filter(node_attributes_id=="encoding")%>%
     dplyr::pull(node_attributes)
@@ -289,6 +295,9 @@ extract_encoding_from_blob_parameter <- function(blob_parameter){
 #'
 #' @examples
 extract_image_height_from_blob_parameter <- function(blob_parameter){
+
+  Version <- "270422"
+
   heigth <- blob_parameter%>%
     dplyr::filter(node_name == "size")%>%
     dplyr::filter(node_attributes_id=="height")%>%
@@ -306,8 +315,12 @@ extract_image_height_from_blob_parameter <- function(blob_parameter){
 #'
 #' @examples
 extract_image_path_from_blob_parameter<- function(blob_parameter){
+
+  Version <- "270422"
+
   path <- file.path(attr(blob_parameter, "image_path"),
                     attr(blob_parameter, "blob_filename"))
+
   return(path)
 }
 
@@ -320,6 +333,8 @@ extract_image_path_from_blob_parameter<- function(blob_parameter){
 #'
 #' @examples
 extract_image_width_from_blob_parameter <- function(blob_parameter){
+
+  Version <- "270422"
 
   width <- blob_parameter%>%
     dplyr::filter(node_name == "size")%>%
@@ -339,6 +354,8 @@ extract_image_width_from_blob_parameter <- function(blob_parameter){
 #'
 #' @examples
 extract_n_pixels_from_blob_parameter <- function(blob_paramter){
+
+  Version <- "270422"
 
   width <- extract_image_width_from_blob_parameter(blob_parameter)
   height <- extract_image_height_from_blob_parameter(blob_parameter)
@@ -447,6 +464,8 @@ query_filterset_of_scanIDs <- function(scan_IDs){
 #'
 #' @examples
 read_image_binary_file <- function(blob_parameter) {
+
+  Version <- "270422"
 
   encoding<-extract_encoding_from_blob_parameter(blob_parameter)
 
