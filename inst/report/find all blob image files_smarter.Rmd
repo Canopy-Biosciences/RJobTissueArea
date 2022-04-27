@@ -34,7 +34,48 @@ if (requireNamespace("thematic"))
 
 # summary
 
-... 
+## import chip group
+
+- find_valid_group_chip_IDs() in helpers: RJob_execution
+
+```{r}
+group_ID <- "P1761451"
+chip_IDs <- find_valid_group_chip_IDs(group_ID)
+```
+
+## find all image files
+
+- create_working_directory() in helpers: RJob_execution
+
+```{r}
+output_dir <- "devel/data/data_output"
+RJobTissueArea:::create_working_directory(output_dir)
+```
+
+- export_list_all_image_files() in helpers: ImportBlobFiles
+
+```{r}
+image_files <- export_list_all_image_files(chip_IDs,
+                                           group_ID,
+                                           output_dir)
+```
+
+- create_result_filepath() in helpers: ImageProcessing
+
+```{r}
+file <- create_result_filepath(output_dir,
+                               name_string = "all_image_files_of_groupID",
+                               result_ID=group_ID,
+                               type = "csv")
+image_files <- data.table::fread(file)
+```
+
+- select_valid_image_files() in helpers: ImportBlobFiles
+
+```{r}
+blob32_files <- select_valid_image_files(image_files,
+                                         type = "blob32")
+```
 
 # introduction 
 

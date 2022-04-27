@@ -34,7 +34,127 @@ if (requireNamespace("thematic"))
 
 # summary
 
-... 
+# workflow
+
+## load previous results
+
+- define chip_group and output_dir
+
+```{r}
+library(RJobTissueArea)
+output_dir <- "devel/data/data_output"
+group_ID <- "P1761451"
+chip_IDs <- find_valid_group_chip_IDs(group_ID)
+```
+
+- read list of all image files in a chip group
+
+```{r}
+file <- create_result_filepath(output_dir,
+                               name_string = "all_image_files_of_groupID",
+                               result_ID=group_ID,
+                               type = "csv")
+image_files <- data.table::fread(file)
+```
+
+# define functions
+
+## single file
+
+```{r}
+image_path <- image_selection$image_path[1]
+blob_filename <- image_selection$blob_filename[1]
+```
+
+### read_XML_BLOB_parameter() 
+
+- reads single file
+- in helpers: ImportBlobFiles
+
+```{r}
+blob_parameter <- read_XML_BLOB_parameter(image_path,
+                                          blob_filename)
+```
+
+### read_image_binary_file() 
+
+- reads single file
+- in helpers: ImportBlobFiles
+
+```{r}
+data <- read_image_binary_file(blob_parameter)
+```
+
+- create_grey_value_image
+
+```{r}
+blob_parameter <- read_XML_BLOB_parameter(selection_group$image_path[1],
+                                  selection_group$blob_filename[1])
+  
+  blob_image <- data_parameter%>%
+    read_image_binary_file()
+```
+
+
+
+## file group
+
+- select_valid_image_files() in helpers: ImportBlobFiles
+
+```{r}
+image_selection <- select_valid_image_files(image_files,
+                                         type = "blob32")
+```
+
+- nest file groups (by chip_ID and pos_ID) to a image_selection_list
+
+```{r}
+image_selection_list <- image_selection%>%
+  dplyr::group_by(chip_ID,pos_ID)%>%
+  tidyr::nest()
+```
+
+- import all images of a single selection group
+
+```{r}
+selection_group <- image_selection_list$data[[1]]
+```
+
+- map over all entities and load image data into a list 
+--> dauert ewig
+
+```{r}
+group_data <- purrr::map2(selection_group$image_path,
+                          selection_group$blob_filename,
+                          ~ read_XML_BLOB_parameter(.x,.y)%>%
+                            read_image_binary_file)
+```
+
+- calculate data_sum of a chip_group directly and return only one dataset per image selection group
+
+```{r}
+
+for(i in 1:dim(selection_group)[1]){
+  
+  blob_parameter <- read_XML_BLOB_parameter(selection_group$image_path[i],
+                                  selection_group$blob_filename[i])
+  
+  blob_image <- data_parameter%>%
+    read_image_binary_file()
+
+  if(i == 1){
+    data_sum <- data
+  }else{
+    data_sum <- data_sum+data
+  }
+  
+  
+}
+return(data_sum)
+
+```
+
+
 
 # introduction 
 
