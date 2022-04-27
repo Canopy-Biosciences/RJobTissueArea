@@ -31,7 +31,8 @@ writeLines(
     "- extract_n_pixels_from_blob_parameter()",
     "- extract_image_path_from_blob_parameter()",
     "- extract_image_width_from_blob_parameter()",
-    "- extract_image_heigth_from_blob_parameter()"
+    "- extract_image_heigth_from_blob_parameter()",
+    "- extract_image_resolution_from_blob_parameter()"
   ))
 
 #' convert_binsize_from_encoding
@@ -347,6 +348,35 @@ extract_image_heigth_from_blob_parameter <- function(blob_paramter){
 
   return(heigth)
 }
+
+#' extract_image_resolution_from_blob_parameter
+#'
+#' @param blob_parameter
+#'
+#' @return
+#' @export
+#'
+#' @examples
+extract_image_resolution_from_blob_parameter <- function(blob_parameter){
+
+  Version <- "270422"
+
+  v_pixel <- extract_v_pixel_from_blob_parameter(blob_parameter)
+  width <- extract_image_width_from_blob_parameter(blob_parameter)
+  v_res <- width/v_pixel
+
+  h_pixel <- extract_h_pixels_from_blob_parameter(blob_parameter)
+  heigth <- extract_image_heigth_from_blob_parameter(blob_parameter)
+  h_res <- heigth/h_pixel
+
+  resolution_unit <- "[um per pixel edge]"
+
+  image_resolution <- c(h_res,v_res)
+  attr(image_resolution,"resolution_unit") <- resolution_unit
+
+  return(image_resolution)
+}
+
 #' extract_image_width_from_blob_parameter
 #'
 #' @param blob_paramter
