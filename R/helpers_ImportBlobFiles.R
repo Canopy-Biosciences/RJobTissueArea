@@ -23,7 +23,8 @@ writeLines(
     "- export_list_all_image_files()",
     "- select_valid_image_files()",
     "- read_BLOB_parameter_from_XML()",
-    "- read_image_binary_file()"
+    "- read_image_binary_file()",
+    "- extract_encoding_from_blob_parameter()"
   ))
 
 
@@ -245,6 +246,21 @@ export_list_all_image_files <- function(chip_IDs,
   return(result_files)
 }
 
+#' extract_encoding_from_blob_parameter
+#'
+#' @param blob_parameter
+#'
+#' @return
+#' @export
+#'
+#' @examples
+extract_encoding_from_blob_parameter <- function(blob_parameter){
+  encoding <- blob_parameter%>%
+    dplyr::filter(node_attributes_id=="encoding")%>%
+    dplyr::pull(node_attributes)
+
+  return(encoding)
+}
 
 #' find_scan_basepath
 #'
@@ -346,9 +362,7 @@ query_filterset_of_scanIDs <- function(scan_IDs){
 #' @examples
 read_image_binary_file <- function(blob_parameter) {
 
-  encoding<-blob_parameter%>%
-    dplyr::filter(node_attributes_id=="encoding")%>%
-    dplyr::pull(node_attributes)
+  encoding<-extract_encoding_from_blob_parameter(blob_parameter)
 
   bin_size<-dplyr::case_when(encoding == "32bit little-endian" ~ 4,
                              encoding == "16bit little-endian" ~ 2)
