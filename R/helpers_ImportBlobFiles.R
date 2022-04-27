@@ -467,13 +467,17 @@ read_image_binary_file <- function(blob_parameter) {
 
   Version <- "270422"
 
-  encoding<-extract_encoding_from_blob_parameter(blob_parameter)
+  encoding<-blob_parameter%>%
+    extract_encoding_from_blob_parameter()
 
-  bin_size<-convert_binsize_from_encoding(encoding)
+  bin_size<-encoding%>%
+    convert_binsize_from_encoding()
 
-  n_pixels<- extract_n_pixels_from_blob_parameter(blob_parameter)
+  n_pixels<- blob_parameter%>%
+    extract_n_pixels_from_blob_parameter()
 
-  path <- extract_image_path_from_blob_parameter(blob_parameter)
+  path <- blob_parameter%>%
+    extract_image_path_from_blob_parameter()
 
   data<-readBin(path,
                 integer(),
