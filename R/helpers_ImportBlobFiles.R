@@ -26,7 +26,8 @@ writeLines(
     "- read_image_binary_file()",
     "- extract_encoding_from_blob_parameter()",
     "- convert_binsize_from_encoding()",
-    "- extract_image_width_from_blob_parameter()"
+    "- extract_image_width_from_blob_parameter()",
+    "- extract_image_height_from_blob_parameter()"
   ))
 
 #' convert_binsize_from_encoding
@@ -277,6 +278,24 @@ extract_encoding_from_blob_parameter <- function(blob_parameter){
   return(encoding)
 }
 
+#' extract_image_height_from_blob_parameter
+#'
+#' @param blob_parameter
+#'
+#' @return
+#' @export
+#'
+#' @examples
+extract_image_height_from_blob_parameter <- function(blob_parameter){
+  heigth <- blob_parameter%>%
+    dplyr::filter(node_name == "size")%>%
+    dplyr::filter(node_attributes_id=="height")%>%
+    dplyr::pull(node_attributes)%>%
+    as.numeric()
+
+  return(height)
+}
+
 #' extract_image_width_from_blob_parameter
 #'
 #' @param blob_parameter
@@ -401,11 +420,7 @@ read_image_binary_file <- function(blob_parameter) {
 
   width <- extract_image_width_from_blob_parameter(blob_parameter)
 
-  height <- blob_parameter%>%
-    dplyr::filter(node_name == "size")%>%
-    dplyr::filter(node_attributes_id=="height")%>%
-    dplyr::pull(node_attributes)%>%
-    as.numeric()
+  height <- extract_image_height_from_blob_parameter(blob_parameter)
 
   n_pixels<-width * height
 
