@@ -340,7 +340,7 @@ extract_image_heigth_from_blob_parameter <- function(blob_paramter){
   Version <- "270422"
 
   heigth <-   blob_parameter%>%
-    dplyr::filter(node_name == "extend")%>%
+    dplyr::filter(node_name == "extent")%>%
     dplyr::filter(node_attributes_id=="width")%>%
     dplyr::pull(node_attributes)%>%
     as.numeric()
@@ -360,7 +360,7 @@ extract_image_width_from_blob_parameter <- function(blob_paramter){
   Version <- "270422"
 
   width <-   blob_parameter%>%
-    dplyr::filter(node_name == "extend")%>%
+    dplyr::filter(node_name == "extent")%>%
     dplyr::filter(node_attributes_id=="width")%>%
     dplyr::pull(node_attributes)%>%
     as.numeric()
