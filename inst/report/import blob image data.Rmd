@@ -58,8 +58,21 @@ chip_IDs <- find_valid_group_chip_IDs(group_ID)
 
 - create extended Version of ScanHistory
 
+```{r, eval=FALSE}
+ScanHistory <- create_ScanHistory_extended(chip_IDs,
+                                           output_dir, 
+                                           result_ID = group_ID)
+```
+
+- read ScanHistory
+
 ```{r}
-ScanHistory <- create_ScanHistory_extended(chip_IDs)
+filename <- create_result_filepath(output_dir,
+                                   "extendedScanHistory",
+                                   group_ID,
+                                   "csv")
+
+ScanHistory <- data.table::fread(filename)
 ```
 
 - select valid entities

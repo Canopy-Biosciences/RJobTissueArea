@@ -163,15 +163,14 @@ create_ScanHistory_of_chipIDs<-function(chip_IDs){
 #' @export
 #'
 #' @examples
-create_ScanHistory_extended <- function(chip_IDs){
+create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
 
   Version <- "290422"
 
   tictoc::tic("create extended ScanHistory")
 
   # create scanHistory (query limslager)
-  ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)%>%
-    data.table::rbindlist()
+  ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)
 
   # add filterset (query limsproc)
   ScanHistory <- ScanHistory%>%
@@ -246,11 +245,20 @@ create_ScanHistory_extended <- function(chip_IDs){
 
   #add chip_path
   serverpath <- find_server_path()
+
   chip_paths <- data.frame(
     chip_ID = chip_IDs,
     chip_path = purrr::map_chr(chip_IDs,~find_chip_path(.x)))
+
   ScanHistory7 <- ScanHistory6%>%
     dplyr::left_join(chip_paths,by="chip_ID")
+
+  # export ScanHistory
+  result_filename <- create_result_filepath(output_dir,
+                                            "extendedScanHistory",
+                                            result_ID,
+                                            "csv")
+  data.table::fwrite(ScanHistory7,result_filename)
 
   tictoc::toc()
   return(ScanHistory7)
