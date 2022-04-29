@@ -41,7 +41,8 @@ writeLines(
     "- create_hdr_filepath()",
     "- select_hdr_files()",
     "- query_chipID_channels()",
-    "- extract_enabled_positions()"
+    "- extract_enabled_positions()",
+    "- get_enabled_positions_from_positions_list()"
   ))
 
 #' create_hdr_filepath
@@ -688,7 +689,22 @@ find_scan_basepath <- function(scan_IDs){
 
 }
 
+#' get_enabled_positions_from_positions_list
+#'
+#' @param positions_list
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_enabled_positions_from_positions_list <- function(positions_list){
 
+  enabled_positions <-  tibble::tibble(
+    chip_ID = positions_list$chip_ID,
+    enabled_positions = purrr::map(positions_list$positions,
+                                   ~.x%>%extract_enabled_positions()))%>%
+    tidyr::unnest(cols=c("enabled_positions"))
+}
 
 #' get_df_from_query_result
 #'
