@@ -4,7 +4,7 @@
 \alias{select_valid_image_files}
 \title{select_valid_image_files}
 \usage{
-select_valid_image_files(result_files, type)
+select_valid_image_files(result_files, type = NULL)
 }
 \arguments{
 \item{type}{}

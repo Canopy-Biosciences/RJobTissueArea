@@ -36,32 +36,42 @@ if (requireNamespace("thematic"))
 
 # workflow
 
-## load previous results
-
 - define chip_group and output_dir
 
 ```{r}
 library(RJobTissueArea)
 output_dir <- "devel/data/data_output"
 group_ID <- "P1761451"
+```
+
+- create_working_directory() in helpers: RJob_execution
+
+```{r}
+RJobTissueArea:::create_working_directory(output_dir)
+```
+
+- load all chip_IDs in the group
+
+```{r}
 chip_IDs <- find_valid_group_chip_IDs(group_ID)
 ```
 
-- read list of all image files in a chip group
+- create extended Version of ScanHistory
 
-```{r}
-file <- create_result_filepath(output_dir,
-                               name_string = "all_image_files_of_groupID",
-                               result_ID=group_ID,
-                               type = "csv")
-image_files <- data.table::fread(file)
+```{r,eval=FALSE}
+ScanHistory <- create_ScanHistory_extended(chip_IDs)
 ```
 
-- select_valid_image_files() in helpers: ImportBlobFiles
+- select valid entities
 
-```{r}
-blob32_files <- select_valid_image_files(image_files,
-                                         type = "blob32")
+```{r,eval=FALSE}
+result_files <- select_valid_image_files(ScanHistory,type = NULL)
+```
+
+- select hdr images and add filepath
+
+```{r,eval=FALSE}
+hdr_files <- select_hdr_files(result_files)
 ```
 
 # define functions
@@ -341,6 +351,25 @@ image_groups <- image_groups%>%
 
 
 # supplement
+
+## list all files in image dirs
+
+- read list of all image files in a chip group
+
+```{r}
+file <- create_result_filepath(output_dir,
+                               name_string = "all_image_files_of_groupID",
+                               result_ID=group_ID,
+                               type = "csv")
+image_files <- data.table::fread(file)
+```
+
+- select_valid_image_files() in helpers: ImportBlobFiles
+
+```{r}
+blob32_files <- select_valid_image_files(image_files,
+                                         type = "blob32")
+```
 
 ## find_picture_informations()
 
