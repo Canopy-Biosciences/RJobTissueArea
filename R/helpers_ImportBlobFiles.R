@@ -98,6 +98,9 @@ convert_binsize_from_encoding <- function(encoding){
 #' @examples
 create_pos_foldername <- function(imageServer_path,basePath,pos_ID){
 
+  pos<-  which(pos_ID %in% c(1:9))
+  pos_ID[pos] <- paste0("0", pos_ID[pos])
+
   file.path(imageServer_path,basePath,
             paste0("pos",pos_ID))
 }
