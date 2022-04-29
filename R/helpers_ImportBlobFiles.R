@@ -38,7 +38,8 @@ writeLines(
     "- extract_parameter_from_BLOB()",
     "- export_blob_parameter_of_image_filelist()",
     "- create_ScanHistory_extended()",
-    "- create_hdr_filepath()"
+    "- create_hdr_filepath()",
+    "- select_hdr_files()"
   ))
 
 #' create_hdr_filepath
@@ -861,6 +862,26 @@ read_XML_BLOB_parameter<- function(image_path, blob_filename) {
 
 
   return(XML_parameter)
+}
+
+#' select_hdr_files
+#'
+#' @param results_files
+#'
+#' @return
+#' @export
+#'
+#' @examples
+select_hdr_files <- function(results_files){
+  hdr_files <- result_files%>%
+    dplyr::filter(!is.na(hdr_filename))%>%
+    dplyr::filter(jobType == "FL")%>%
+    dplyr::filter(! Tag %in% c("BG", "*"))%>%
+    dplyr::mutate(hdr_filepath = create_hdr_filepath(chip_path,scan_ID,pos_ID))#%>%
+  #dplyr::group_by(chip_ID,pos_ID)%>%
+  #tidyr::nest()
+
+  return(hdr_files)
 }
 
 #' select_valid_image_files
