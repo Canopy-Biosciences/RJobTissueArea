@@ -43,7 +43,8 @@ writeLines(
     "- query_chipID_channels()",
     "- extract_enabled_positions()",
     "- get_enabled_positions_from_positions_list()",
-    "- get_enabled_positions()"
+    "- get_enabled_positions()",
+    "- get_positions_field_from_query_result()"
   ))
 
 #' create_hdr_filepath
@@ -737,6 +738,26 @@ get_df_from_query_result<- function(query_result){
 
   return(result)
 
+}
+
+#' get_positions_field_from_query_result
+#'
+#' @param query_result
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_positions_field_from_query_result <- function(query_result){
+
+  df <- tibble::tibble(
+    chip_ID = purrr::map_chr(query_result$result,
+                             ~.x$UID),
+    positions = purrr::map(query_result$result,
+                           ~.x$positions%>%
+                             purrr::flatten()))
+
+  return(df)
 }
 
 #' list_BlobFileName_in_filepath
