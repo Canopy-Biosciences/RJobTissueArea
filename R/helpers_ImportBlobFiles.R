@@ -39,7 +39,8 @@ writeLines(
     "- export_blob_parameter_of_image_filelist()",
     "- create_ScanHistory_extended()",
     "- create_hdr_filepath()",
-    "- select_hdr_files()"
+    "- select_hdr_files()",
+    "- query_chipID_channels()"
   ))
 
 #' create_hdr_filepath
@@ -977,4 +978,19 @@ query_UID_scans<- function(scan_IDs){
                           scan_IDs)
 
   return(result)
+}
+
+#' Title
+#'
+#' @param chip_IDs
+#'
+#' @return
+#' @export
+#'
+#' @examples
+query_chipID_channels <- function(chip_IDs){
+
+  query_result <- query_mongoDB("channels","UID",chip_IDs)
+  return(query_result)
+
 }
