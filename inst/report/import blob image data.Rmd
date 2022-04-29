@@ -58,19 +58,19 @@ chip_IDs <- find_valid_group_chip_IDs(group_ID)
 
 - create extended Version of ScanHistory
 
-```{r,eval=FALSE}
+```{r}
 ScanHistory <- create_ScanHistory_extended(chip_IDs)
 ```
 
 - select valid entities
 
-```{r,eval=FALSE}
+```{r}
 result_files <- select_valid_image_files(ScanHistory,type = NULL)
 ```
 
 - select hdr images and add filepath
 
-```{r,eval=FALSE}
+```{r}
 hdr_files <- select_hdr_files(result_files)
 ```
 
