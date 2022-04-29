@@ -162,9 +162,11 @@ create_ScanHistory_extended <- function(chip_IDs){
 
   Version <- "290422"
 
-  # create scanHistory (query limslager)
-  ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)
+  tictoc::tic("create extended ScanHistory")
 
+  # create scanHistory (query limslager)
+  ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)%>%
+    data.table::rbindlist()
 
   # add filterset (query limsproc)
   ScanHistory <- ScanHistory%>%
@@ -245,6 +247,7 @@ create_ScanHistory_extended <- function(chip_IDs){
   ScanHistory7 <- ScanHistory6%>%
     dplyr::left_join(chip_paths,by="chip_ID")
 
+  tictoc::toc()
   return(ScanHistory7)
 
 }
