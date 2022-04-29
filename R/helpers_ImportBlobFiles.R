@@ -1,4 +1,4 @@
-V <- "270422"
+V <- "290422"
 helpers <- "ImportBlobFiles"
 
 assign(paste0("version.helpers.", helpers), V)
@@ -36,7 +36,8 @@ writeLines(
     "- read_binary_image_as_matrix()",
     "- extract_statistics_from_blob_parameter()",
     "- extract_parameter_from_BLOB()",
-    "- export_blob_parameter_of_image_filelist()"
+    "- export_blob_parameter_of_image_filelist()",
+    "- create_ScanHistory_extended()"
   ))
 
 #' convert_binsize_from_encoding
@@ -111,9 +112,12 @@ create_Pos_image_filepath <- function(ScanBasePath,
 #' @examples
 create_ScanHistory_of_chipIDs<-function(chip_IDs){
 
+  Version <- "290422"
+  #update:
+  #- purrr::map_df
   MethodHistory <- create_MethodHistory_of_chipIDs(chip_IDs)
 
-  ScanHistorys <- purrr::map(MethodHistory,
+  ScanHistorys <- purrr::map_df(MethodHistory,
                              ~.x%>%
                                dplyr::rename("scan_ID" = "UID")%>%
                                dplyr::rename("cycle_ID" = "CycleUID")%>%
@@ -121,6 +125,76 @@ create_ScanHistory_of_chipIDs<-function(chip_IDs){
                                dplyr::filter(Type == "Chipcytometry-Scan")%>%
                                dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
   return(ScanHistorys)
+}
+
+#' create_ScanHistory_extended
+#'
+#' @param chip_IDs
+#'
+#' @return
+#' @export
+#'
+#' @examples
+create_ScanHistory_extended <- function(chip_IDs){
+
+  Version <- "290422"
+
+  # create scanHistory
+  ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)
+
+  # add filterset
+  ScanHistory <- ScanHistory%>%
+    dplyr::mutate(filterset = query_filterset_of_scanIDs(scan_ID))
+
+  # query result chipID ins scans
+  query_chip_scans <- query_mongoDB("scans",
+                                    "channelUID",
+                                    chip_IDs)
+
+  # select columns
+  results_chip_scans <- purrr::map_df(query_chip_scans$result,
+                                      ~.x%>%
+                                        dplyr::select("chip_ID" = "channelUID",
+                                                      "scan_ID" = "UID",
+                                                      jobType,
+                                                      basePath,
+                                                      "Status" = "jobEndState",
+                                                      positions,
+                                                      `enabled-count`))
+
+  # subselect columns position
+  results_chip_scans <- results_chip_scans%>%
+    dplyr::mutate(positions = purrr::map(
+      positions,
+      ~.x%>%
+        dplyr::select(
+          dplyr::any_of(c("chip_ID",
+                          "scan_ID",
+                          "pos_ID" = "posid",
+                          "jobType",
+                          "basePath",
+                          "Status",
+                          "chipx",
+                          "chipy",
+                          "enabled",
+                          "bleach-time",
+                          "enabled-count")))))
+
+  #unnest selected columns in positions
+  results_chip_scans <- results_chip_scans%>%
+    tidyr::unnest(cols="positions")
+
+  # get enabled positions
+  enabled_positions <- get_enabled_positions(chip_IDs)
+
+  # join enabled position flag
+
+  results_chip_scans<- dplyr::left_join(results_chip_scans,
+                                        enabled_positions,
+                                        by=c("chip_ID", "pos_ID"="posid"))
+
+  return(results_chip_scans)
+
 }
 
 #' export_blob_parameter_of_image_filelist
@@ -747,13 +821,16 @@ read_XML_BLOB_parameter<- function(image_path, blob_filename) {
 #' @export
 #'
 #' @examples
-select_valid_image_files <- function(result_files, type){
+select_valid_image_files <- function(result_files, type=NULL){
 
-  Version <- "250422"
+  #Version <- "250422"
+  Version <- "290422"
+  # - added NULL as default type
+  # - include filtering of enabled flag
 
   #_______________
   # 0) check input----
-  type <- match.arg(type, choices =c("blob","blob32","png"))
+  type <- match.arg(type, choices =c("blob","blob32","png",NULL))
 
   #_________________________
   # 1) remove excluded scans----
@@ -779,8 +856,16 @@ select_valid_image_files <- function(result_files, type){
       dplyr::filter(filetype == "png")
   }
 
+  #____________________________
+  # 3) filter enabled positions
+  if(1 %in% result_files$enabled){
+    result_files <- result_files%>%
+      dplyr::filter(enabled == 1)
+  }
+
+
   #_________________
-  # 3) return result----
+  # 4) return result----
   return(result_files)
 }
 
