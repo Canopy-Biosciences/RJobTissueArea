@@ -350,13 +350,6 @@ tictoc::toc()
 ## query_chipID_channels()
 
 ```{r}
-query_chipID_channels <- function(chip_IDs){
-  
-  query_result <- query_mongoDB("channels","UID",chip_IDs)
-  return(query_result)
-  
-}
-
 query_result <- query_chipID_channels(chip_IDs)
 ```
 
@@ -382,41 +375,17 @@ positions_list <- get_positions_field_from_query_result(query_result)
 ```{r}
 single_pos_entity <- positions_list$positions[[1]]
 
-extract_enabled_positions <- function(single_pos_entity){
-  df <- data.frame(
-    pos_ID = single_pos_entity['posid'],
-    enabled = single_pos_entity['enabled']
-  )#%>%
-  #  dplyr::filter(enabled == 1)
-  return(df)
-}
-
 enabled_positions_single <- extract_enabled_positions(single_pos_entity)
 ```
 
 ```{r}
-get_enabled_positions_from_positions_list <- function(positions_list){
-  
-  enabled_positions <-  tibble::tibble(
-    chip_ID = positions_list$chip_ID,
-    enabled_positions = purrr::map(positions_list$positions,
-                                   ~.x%>%extract_enabled_positions()))%>%
-    tidyr::unnest(cols=c("enabled_positions"))
-}
 enabled_positions <- get_enabled_positions_from_positions_list(positions_list)
 ```
 
 ## get_enabled_positions()
 
 ```{r}
-get_enabled_positions <- function(chip_ID){
-  
-  query_result<-query_chipID_channels(chip_IDs)
-  positions_list <- get_positions_field_from_query_result(query_result)
-  enabled_positions <- get_enabled_positions_from_positions_list(positions_list)
-  
-  return(enabled_positions)
-}
+enabled_positions <- get_enabled_positions_from_positions_list(positions_list)
 ```
 
 

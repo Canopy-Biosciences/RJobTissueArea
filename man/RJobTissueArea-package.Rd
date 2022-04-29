@@ -8,8 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
 
-Determination of chip area covered by tissue in selected
-    positions.
+Determination of chip area covered by tissue in selected positions.
 }
 \seealso{
 Useful links:
