@@ -39,7 +39,12 @@ writeLines(
     "- export_blob_parameter_of_image_filelist()",
     "- create_ScanHistory_extended()",
     "- create_hdr_filepath()",
-    "- select_hdr_files()"
+    "- select_hdr_files()",
+    "- query_chipID_channels()",
+    "- extract_enabled_positions()",
+    "- get_enabled_positions_from_positions_list()",
+    "- get_enabled_positions()",
+    "- get_positions_field_from_query_result()"
   ))
 
 #' create_hdr_filepath
@@ -657,6 +662,23 @@ extract_statistics_from_blob_parameter <- function(blob_parameter){
   return(statistics)
 }
 
+#' extract_enabled_positions
+#'
+#' @param single_pos_entity
+#'
+#' @return
+#' @export
+#'
+#' @examples
+extract_enabled_positions <- function(single_pos_entity){
+  df <- data.frame(
+    pos_ID = single_pos_entity['posid'],
+    enabled = single_pos_entity['enabled']
+  )#%>%
+  #  dplyr::filter(enabled == 1)
+  return(df)
+}
+
 #' find_scan_basepath
 #'
 #' @param scan_IDs
@@ -671,8 +693,39 @@ find_scan_basepath <- function(scan_IDs){
   return(df$basePath)
 
 }
+#' get_enabled_positions
+#'
+#' @param chip_ID
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_enabled_positions <- function(chip_ID){
 
+  query_result<-query_chipID_channels(chip_IDs)
+  positions_list <- get_positions_field_from_query_result(query_result)
+  enabled_positions <- get_enabled_positions_from_positions_list(positions_list)
 
+  return(enabled_positions)
+}
+
+#' get_enabled_positions_from_positions_list
+#'
+#' @param positions_list
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_enabled_positions_from_positions_list <- function(positions_list){
+
+  enabled_positions <-  tibble::tibble(
+    chip_ID = positions_list$chip_ID,
+    enabled_positions = purrr::map(positions_list$positions,
+                                   ~.x%>%extract_enabled_positions()))%>%
+    tidyr::unnest(cols=c("enabled_positions"))
+}
 
 #' get_df_from_query_result
 #'
@@ -688,6 +741,26 @@ get_df_from_query_result<- function(query_result){
 
   return(result)
 
+}
+
+#' get_positions_field_from_query_result
+#'
+#' @param query_result
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_positions_field_from_query_result <- function(query_result){
+
+  df <- tibble::tibble(
+    chip_ID = purrr::map_chr(query_result$result,
+                             ~.x$UID),
+    positions = purrr::map(query_result$result,
+                           ~.x$positions%>%
+                             purrr::flatten()))
+
+  return(df)
 }
 
 #' list_BlobFileName_in_filepath
@@ -980,4 +1053,19 @@ query_UID_scans<- function(scan_IDs){
                           scan_IDs)
 
   return(result)
+}
+
+#' Title
+#'
+#' @param chip_IDs
+#'
+#' @return
+#' @export
+#'
+#' @examples
+query_chipID_channels <- function(chip_IDs){
+
+  query_result <- query_mongoDB("channels","UID",chip_IDs)
+  return(query_result)
+
 }
