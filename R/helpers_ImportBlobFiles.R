@@ -37,8 +37,30 @@ writeLines(
     "- extract_statistics_from_blob_parameter()",
     "- extract_parameter_from_BLOB()",
     "- export_blob_parameter_of_image_filelist()",
-    "- create_ScanHistory_extended()"
+    "- create_ScanHistory_extended()",
+    "- create_hdr_filepath()"
   ))
+
+#' create_hdr_filepath
+#'
+#' @param chip_path
+#' @param scan_ID
+#' @param pos_ID
+#'
+#' @return
+#' @export
+#'
+#' @examples
+create_hdr_filepath <- function(chip_path,scan_ID,pos_ID){
+
+  hdr_file_path <- file.path(
+    chip_path,
+    "scanjobs",
+    scan_ID,
+    pos_ID,
+    "hdr"
+  )
+}
 
 #' convert_binsize_from_encoding
 #'
@@ -139,10 +161,11 @@ create_ScanHistory_extended <- function(chip_IDs){
 
   Version <- "290422"
 
-  # create scanHistory
+  # create scanHistory (query limslager)
   ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)
 
-  # add filterset
+
+  # add filterset (query limsproc)
   ScanHistory <- ScanHistory%>%
     dplyr::mutate(filterset = query_filterset_of_scanIDs(scan_ID))
 
@@ -158,12 +181,17 @@ create_ScanHistory_extended <- function(chip_IDs){
                                                       "scan_ID" = "UID",
                                                       jobType,
                                                       basePath,
-                                                      "Status" = "jobEndState",
+                                                      "jobEndState",
+                                                      "success",
                                                       positions,
                                                       `enabled-count`))
 
+  # join ScanHistory
+  ScanHistory2 <- dplyr::full_join(ScanHistory,
+                                  results_chip_scans, by = "scan_ID")
+
   # subselect columns position
-  results_chip_scans <- results_chip_scans%>%
+  ScanHistory3 <- ScanHistory2%>%
     dplyr::mutate(positions = purrr::map(
       positions,
       ~.x%>%
@@ -176,24 +204,47 @@ create_ScanHistory_extended <- function(chip_IDs){
                           "Status",
                           "chipx",
                           "chipy",
-                          "enabled",
                           "bleach-time",
-                          "enabled-count")))))
+                          "enabled-count",
+                          "hdr"
+                          #,
+                          #"flimages",
+                          #"posref",
+                          #"focus",
+                          #"deltaTL"
+                          )))))
 
   #unnest selected columns in positions
-  results_chip_scans <- results_chip_scans%>%
-    tidyr::unnest(cols="positions")
+  ScanHistory4 <- ScanHistory3%>%
+    tidyr::unnest(positions)
 
-  # get enabled positions
+  # extract hdr column in positions
+  ScanHistory5 <- ScanHistory4%>%
+    dplyr::mutate(hdr_filename = purrr::map(ScanHistory4$hdr,~.x)$filename)%>%
+    dplyr::select(-hdr)
+
+ # Image_list <- ScanHistory4%>%
+ #   dplyr::select(chip_ID,scan_ID,pos_ID,hdr,flimages,focus,deltaTL,posref)
+
+
+  # get enabled positions (query in channels)
   enabled_positions <- get_enabled_positions(chip_IDs)
 
   # join enabled position flag
 
-  results_chip_scans<- dplyr::left_join(results_chip_scans,
-                                        enabled_positions,
-                                        by=c("chip_ID", "pos_ID"="posid"))
+  ScanHistory6<- dplyr::left_join(ScanHistory5,
+                                 enabled_positions,
+                                 by=c("chip_ID", "pos_ID"="posid"))
 
-  return(results_chip_scans)
+  #add chip_path
+  serverpath <- find_server_path()
+  chip_paths <- data.frame(
+    chip_ID = chip_IDs,
+    chip_path = purrr::map_chr(chip_IDs,~find_chip_path(.x)))
+  ScanHistory7 <- ScanHistory6%>%
+    dplyr::left_join(chip_paths,by="chip_ID")
+
+  return(ScanHistory7)
 
 }
 
@@ -830,12 +881,12 @@ select_valid_image_files <- function(result_files, type=NULL){
 
   #_______________
   # 0) check input----
-  type <- match.arg(type, choices =c("blob","blob32","png",NULL))
+  type <- match.arg(type, choices =c("none","blob","blob32","png"))
 
   #_________________________
   # 1) remove excluded scans----
   result_files <- result_files%>%
-    dplyr::filter(Excluded %in% c(NA, "FALSE"))%>%
+    dplyr::filter(Excluded %in% c("FALSE"))%>%
     dplyr::filter(Status == "Finished")
 
   #_______________________________
