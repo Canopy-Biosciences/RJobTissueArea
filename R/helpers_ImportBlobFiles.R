@@ -40,7 +40,8 @@ writeLines(
     "- create_ScanHistory_extended()",
     "- create_hdr_filepath()",
     "- select_hdr_files()",
-    "- query_chipID_channels()"
+    "- query_chipID_channels()",
+    "- extract_enabled_positions()"
   ))
 
 #' create_hdr_filepath
@@ -653,6 +654,23 @@ extract_statistics_from_blob_parameter <- function(blob_parameter){
     dplyr::select(-node_name, -node_path)
 
   return(statistics)
+}
+
+#' extract_enabled_positions
+#'
+#' @param single_pos_entity
+#'
+#' @return
+#' @export
+#'
+#' @examples
+extract_enabled_positions <- function(single_pos_entity){
+  df <- data.frame(
+    pos_ID = single_pos_entity['posid'],
+    enabled = single_pos_entity['enabled']
+  )#%>%
+  #  dplyr::filter(enabled == 1)
+  return(df)
 }
 
 #' find_scan_basepath
