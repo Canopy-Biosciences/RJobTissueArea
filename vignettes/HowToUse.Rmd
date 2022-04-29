@@ -43,6 +43,27 @@ output_dir <- "devel/data/data_output"
 RJobTissueArea:::create_working_directory(output_dir)
 ```
 
+
+- create extended Version of ScanHistory
+
+```{r}
+ScanHistory <- create_ScanHistory_extended(chip_IDs)
+```
+
+- select valid entities
+
+```{r}
+result_files <- select_valid_image_files(ScanHistory,type = NULL)
+```
+
+- select hdr images and add filepath
+
+```{r}
+hdr_files <- select_hdr_files(result_files)
+```
+
+# supplement
+
 - create and export list of all chip group image files
 
 ```{r,eval=FALSE}

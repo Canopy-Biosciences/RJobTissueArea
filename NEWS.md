@@ -1,4 +1,11 @@
-# RJobTissueArea (development version)
+# RJobTissueArea 0.0.0.9
+* find hdr files uddate approach via extended ScanHistory
+* UPDATE report: import hdr data
+* UPDATE helpers: importBlobFiles
+* APPLICATION: for every chip_ID and pos combination of the chip_group:
+    - export all image files 
+    - calcutation and export of data_sum (only blob32 = hdr)
+    - export of blob parameters (only blob32 = hdr)
 
 # RJobTissueArea 0.0.0.8
 
@@ -42,6 +49,7 @@
 # RJobTissueArea 0.0.0.1
 
 * Added helpers_GenerateInputData.R (from FDR project, new Version: 080322: bugfix dependencies)
+
 
 
 

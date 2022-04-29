@@ -80,7 +80,7 @@ RJobTissueArea:::create_working_directory(output_dir)
 
 - export_list_all_image_files() in helpers: ImportBlobFiles
 
-```{r}
+```{r, eval=FALSE}
 image_files <- export_list_all_image_files(chip_IDs,
                                            group_ID,
                                            output_dir)
@@ -102,6 +102,15 @@ image_files <- data.table::fread(file)
 blob32_files <- select_valid_image_files(image_files,
                                          type = "blob32")
 ```
+
+## find hdr images
+
+```{r}
+ScanHistory <- create_ScanHistory_extended(chip_IDs)
+result_files <- select_valid_image_files(ScanHistory,type = NULL)
+hdr_files <- select_hdr_files(result_files)
+```
+
 
 ## image processing
 
