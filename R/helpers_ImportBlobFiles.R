@@ -59,11 +59,14 @@ writeLines(
 #' @examples
 create_hdr_filepath <- function(chip_path,scan_ID,pos_ID){
 
+  pos<-  which(pos_ID %in% c(1:9))
+  pos_ID[pos] <- paste0("0", pos_ID[pos])
+
   hdr_file_path <- file.path(
     chip_path,
     "scanjobs",
     scan_ID,
-    pos_ID,
+    paste0("pos",pos_ID),
     "hdr"
   )
 }

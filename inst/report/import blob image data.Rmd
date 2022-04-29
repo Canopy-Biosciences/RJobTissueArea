@@ -92,8 +92,8 @@ hdr_files <- select_hdr_files(result_files)
 ## single file
 
 ```{r}
-image_path <- blob32_files$image_path[1]
-blob_filename <- blob32_files$blob_filename[1]
+image_path <- hdr_files$hdr_filepath[1]
+blob_filename <- hdr_files$hdr_filename[1]
 ```
 
 ### read_XML_BLOB_parameter() 
