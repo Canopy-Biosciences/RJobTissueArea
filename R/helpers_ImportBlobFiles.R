@@ -42,7 +42,8 @@ writeLines(
     "- select_hdr_files()",
     "- query_chipID_channels()",
     "- extract_enabled_positions()",
-    "- get_enabled_positions_from_positions_list()"
+    "- get_enabled_positions_from_positions_list()",
+    "- get_enabled_positions()"
   ))
 
 #' create_hdr_filepath
@@ -687,6 +688,22 @@ find_scan_basepath <- function(scan_IDs){
   df <- get_df_from_query_result(query_result)
   return(df$basePath)
 
+}
+#' get_enabled_positions
+#'
+#' @param chip_ID
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_enabled_positions <- function(chip_ID){
+
+  query_result<-query_chipID_channels(chip_IDs)
+  positions_list <- get_positions_field_from_query_result(query_result)
+  enabled_positions <- get_enabled_positions_from_positions_list(positions_list)
+
+  return(enabled_positions)
 }
 
 #' get_enabled_positions_from_positions_list
