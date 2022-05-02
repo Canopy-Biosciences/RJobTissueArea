@@ -13,6 +13,14 @@ writeLines(
     "- create_long_node_df_from_XML()"
     ))
 
+#' create_long_node_df_from_XML
+#'
+#' @param XML
+#'
+#' @return
+#' @export
+#'
+#' @examples
 create_long_node_df_from_XML <- function(XML){
 
   all_nodes <- XML %>%

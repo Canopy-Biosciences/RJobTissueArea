@@ -119,7 +119,7 @@ extract_h_pixels_from_blob_parameter(blob_parameter)
 - extract_v_pixel_from_blob_parameter() in helpers: ImportBlobFiles
 
 ```{r}
-extract_v_pixel_from_blob_parameter(blob_parameter)
+extract_v_pixels_from_blob_parameter(blob_parameter)
 ```
 
 - extract_n_pixels_from_blob_parameter() in helpers: ImportBlobFiles
@@ -182,9 +182,13 @@ extract_parameter_from_BLOB(image_path,
 - export_blob_parameter_of_image_filelist() in helpers: ImportBlobFiles
 
 ```{r, eval=FALSE}
-parameter_list<- export_blob_parameter_of_image_filelist(blob32_files,
+hdr_files <- hdr_files%>%
+  dplyr::rename("image_path"="hdr_filepath",
+                "blob_filename" = "hdr_filename")
+
+parameter_list<- export_blob_parameter_of_image_filelist(hdr_files,
                                                          output_dir,
-                                                         paste0(group_ID,"_blob32files"))
+                                                         paste0(group_ID,"_hdr_files"))
 ```
 
 - read exported parameter list
@@ -192,7 +196,7 @@ parameter_list<- export_blob_parameter_of_image_filelist(blob32_files,
 ```{r}
 result_filename <- create_result_filepath(output_dir,
                                             "Blob_parameters",
-                                            result_ID,
+                                            paste0(group_ID,"_hdr_files"),
                                             "csv")
 parameter_list <- data.table::fread(result_filename)
 
@@ -234,7 +238,7 @@ read_binary_image_as_matrix <- function(image_path,
 - nest file groups (by chip_ID and pos_ID) to a image_selection_list
 
 ```{r}
-image_groups <- blob32_files%>%
+image_groups <- hdr_files%>%
   dplyr::group_by(chip_ID,pos_ID)%>%
   tidyr::nest()
 ```
@@ -318,7 +322,7 @@ image_groups <- image_groups%>%
                                                  group_ID,
                                                  ~create_export_data_sum(.x,
                                                                          .y,
-                                                                         file.path(output_dir,"data_sum_collection"))))
+                                                                         file.path(output_dir,"data_sum_collection_2"))))
 
 ```
 

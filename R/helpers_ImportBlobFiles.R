@@ -544,7 +544,7 @@ extract_image_resolution_from_blob_parameter <- function(blob_parameter){
 
   Version <- "270422"
 
-  v_pixel <- extract_v_pixel_from_blob_parameter(blob_parameter)
+  v_pixel <- extract_v_pixels_from_blob_parameter(blob_parameter)
   width <- extract_image_width_from_blob_parameter(blob_parameter)
   v_res <- width/v_pixel
 

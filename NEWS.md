@@ -1,4 +1,4 @@
-# RJobTissueArea (development version)
+# RJobTissueArea 0.0.0.10
 
 # RJobTissueArea 0.0.0.9
 * find hdr files uddate approach via extended ScanHistory
