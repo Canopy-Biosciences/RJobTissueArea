@@ -40,6 +40,9 @@ if (requireNamespace("thematic"))
 
 A) import chip group
 B) find all image files
+  - find all files
+  - read all blob.xml
+  - import blob image
 C) image processing steps:
 
   1) sum pixel of all hdr imgages
@@ -63,6 +66,7 @@ D) estimation of tissue size
 - find_valid_group_chip_IDs() in helpers: RJob_execution
 
 ```{r}
+library(RJobTissueArea)
 group_ID <- "P1761451"
 chip_IDs <- find_valid_group_chip_IDs(group_ID)
 ```
@@ -76,59 +80,102 @@ output_dir <- "devel/data/data_output"
 RJobTissueArea:::create_working_directory(output_dir)
 ```
 
-- export_list_all_image_files() in helpers: ImportBlobFiles
+- create extended Version of ScanHistory
 
 ```{r, eval=FALSE}
-image_files <- export_list_all_image_files(chip_IDs,
-                                           group_ID,
-                                           output_dir)
+ScanHistory <- create_ScanHistory_extended(chip_IDs,
+                                           output_dir, 
+                                           result_ID = group_ID)
 ```
 
-- create_result_filepath() in helpers: ImageProcessing
+- read ScanHistory
 
 ```{r}
-file <- create_result_filepath(output_dir,
-                               name_string = "all_image_files_of_groupID",
-                               result_ID=group_ID,
-                               type = "csv")
-image_files <- data.table::fread(file)
+filename <- create_result_filepath(output_dir,
+                                   "extendedScanHistory",
+                                   group_ID,
+                                   "csv")
+
+ScanHistory <- data.table::fread(filename)
+ScanHistory%>%head()
 ```
 
-- select_valid_image_files() in helpers: ImportBlobFiles
+- select valid entities
 
 ```{r}
-blob32_files <- select_valid_image_files(image_files,
-                                         type = "blob32")
-```
-
-## find hdr images
-
-```{r}
-ScanHistory <- create_ScanHistory_extended(chip_IDs)
 result_files <- select_valid_image_files(ScanHistory,type = NULL)
-hdr_files <- select_hdr_files(result_files)
+result_files%>%head()
 ```
 
+- select hdr images and add filepath
+
+```{r}
+hdr_files <- select_hdr_files(result_files)
+hdr_files%>%head()
+```
+
+## generate data_sum
+
+- create list of image_groups:
+    + nest file groups (by chip_ID and pos_ID) to a image_selection_list
+    + add group_ID 
+    + add filename of the file containing the data_sum results to be created
+
+```{r}
+image_groups <- hdr_files%>%
+  dplyr::rename("image_path" = "hdr_filepath",
+                "blob_filename" = "hdr_filename")%>%
+  dplyr::group_by(chip_ID,pos_ID)%>%
+  tidyr::nest()%>%
+  dplyr::mutate(group_ID = paste0(chip_ID,"_",pos_ID))%>%
+  dplyr::mutate(data_file = create_result_filepath(output_dir,
+                                                   "data_sum",
+                                                   group_ID,
+                                                   type="csv"))
+image_groups%>%head
+image_groups$data[1][[1]]%>%head
+```
+- set output_dir for data_sum results
+
+```{r}
+output_dir_dataSum <- file.path(output_dir,"data_sum_collection_2")
+```
+
+- create_export_data_sum () in helpers: ImageProcessing Version:030522
+
+    + import all images of a image group
+    + calculate data_sum of all pixel values 
+    + return one image matrix
+    + exports data_sum into the output_dir
+    + apply to each chip group
+
+```{r, eval=FALSE}
+image_groups_resolution <- purrr::map2(image_groups$data,
+                                       image_groups$group_ID,
+                                       ~create_export_data_sum(.x,
+                                                               .y,
+                                                               output_dir_dataSum))
+```
+
+data_sum_resultion: 
+[1] 0.3697953 0.6639183
+attr(,"resolution_unit")
+[1] "[um per pixel edge]"
+
+- read in single file: data_sum
+
+```{r}
+group_ID <- image_groups$group_ID[1]
+image_group_list <- image_groups$group_ID
+result_filename <- create_result_filepath(output_dir_dataSum,
+                                            "data_sum",
+                                            group_ID,
+                                            type="csv")
+data_sum <- data.table::fread(result_filename)
+```
 
 ## image processing
 
-- read_XML_BLOB_parameter() in helpers: ImportBlobFiles
-
-```{r}
-
-image_path <- blob32_files$image_path[1]
-blob_filename <- blob32_files$blob_filename[1]
-
-
-blob_parameter <- read_XML_BLOB_parameter(image_path,
-                                          blob_filename)
-```
-
-- read_image_binary_file() in helpers: ImportBlobFiles
-
-```{r}
-data <- read_image_binary_file(blob_parameter)
-```
 
 
 ### variables
@@ -676,9 +723,17 @@ image_groups <- image_groups%>%
 
 ## list all files in image dirs
 
-- read list of all image files in a chip group
+- export_list_all_image_files() in helpers: ImportBlobFiles
 
-```{r}
+```{r, eval=FALSE}
+image_files <- export_list_all_image_files(chip_IDs,
+                                           group_ID,
+                                           output_dir)
+```
+
+- create_result_filepath() in helpers: ImageProcessing
+
+```{r, eval=FALSE}
 file <- create_result_filepath(output_dir,
                                name_string = "all_image_files_of_groupID",
                                result_ID=group_ID,
@@ -688,7 +743,7 @@ image_files <- data.table::fread(file)
 
 - select_valid_image_files() in helpers: ImportBlobFiles
 
-```{r}
+```{r, eval=FALSE}
 blob32_files <- select_valid_image_files(image_files,
                                          type = "blob32")
 ```
