@@ -18,19 +18,18 @@ writeLines(
   ))
 
 
-
-#' Title
+#' export_image_result_tiffs
 #'
 #' @param image
 #' @param image_blurred
 #' @param image_binary
 #' @param output_dir
 #' @param chip_ID
-#' @param pos
+#' @param pos_ID
 #' @param sigma
 #' @param threshold
-#' @param cols
-#' @param rows
+#' @param ncols
+#' @param nrows
 #'
 #' @return
 #' @export
@@ -41,14 +40,20 @@ export_image_result_tiffs <- function(image,
                                       image_binary,
                                       output_dir,
                                       chip_ID,
-                                      pos,
+                                      pos_ID,
                                       sigma,
                                       threshold,
-                                      cols,
-                                      rows){
+                                      ncols,
+                                      nrows){
+  Version <- "030522"
+  # check output.dir
+
+  library(pixmap)
+  create_working_directory(output_dir)
+
   # filename
   result_ID <- create_name_result_ID(chip_ID,
-                                     pos,
+                                     pos_ID,
                                      sigma,
                                      threshold)
   # complete filepath
@@ -61,8 +66,8 @@ export_image_result_tiffs <- function(image,
 
   # create tiff object
   tiff(filename = file,
-       width = cols*3,
-       height = rows)
+       width = ncols*3,
+       height = nrows)
 
   par(mfrow=c(1,3))
 
@@ -83,10 +88,9 @@ export_image_result_tiffs <- function(image,
   dev.off()
 
   writeLines(c(
-    paste0("- successful exported processed image results")
+    paste0("- successful exported processed image results of: ",result_ID)
   ))
 }
-
 #' Title
 #'
 #' @param chip_ID
