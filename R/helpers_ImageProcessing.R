@@ -1,4 +1,4 @@
-V <- "260422"
+V <- "030522"
 helpers <- "ImageProcessing"
 
 assign(paste0("version.helpers.", helpers), V)
@@ -13,7 +13,8 @@ writeLines(
     "- perform_image_processing()",
     "- export_image_result_tiffs()",
     "- create_name_result_ID()",
-    "- create_result_filepath()"
+    "- create_result_filepath()",
+    "- create_export_data_sum()"
   ))
 
 #' Title
@@ -203,4 +204,54 @@ create_result_filepath <- function(output_dir,
            ".",type))
 
   return(path)
+}
+
+#' create_export_data_sum
+#'
+#' @param image_group_list
+#' @param group_ID
+#' @param output_dir
+#'
+#' @return
+#' @export
+#'
+#' @examples
+create_export_data_sum <- function(image_group_list,
+                                   group_ID,
+                                   output_dir){
+
+  create_working_directory(output_dir)
+
+  for(i in 1:dim(image_group_list)[1]){
+
+    image_path <- image_group_list$image_path[i]
+    blob_filename <- image_group_list$blob_filename[i]
+
+    data_mat <- read_binary_image_as_matrix(image_path,
+                                            blob_filename)
+
+    if(i == 1){
+      data_sum <- data_mat
+    }else{
+
+      if(any(attr(data_mat,"image_resolution") != attr(data_sum,"image_resolution"))){
+        writeLines(c(
+          paste0("- image_resolution changed with scan_ID: ", image_group_list$scan_ID[i])
+        ))}
+
+      data_sum <- data_sum+data_mat
+
+    }
+  }
+
+  result_filename <- create_result_filepath(output_dir,
+                                            "data_sum",
+                                            group_ID,
+                                            type="csv")
+  data_sum <- data.table::data.table(data_sum)
+  data.table::fwrite(data_sum,
+                     result_filename)
+
+  return(attr(data_sum,"image_resolution"))
+
 }
