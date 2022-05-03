@@ -17,79 +17,7 @@ writeLines(
     "- create_export_data_sum()"
   ))
 
-#' Title
-#'
-#' @param data_sum
-#' @param cellres
-#' @param output_dir
-#' @param chip_ID
-#' @param pos
-#' @param sigma
-#' @param threshold
-#'
-#' @return
-#' @export
-#'
-#' @examples
-perform_image_processing <- function(data_sum,
-                                     cellres = cellres,
-                                     output_dir = output_dir,
-                                     chip_ID,
-                                     pos,
-                                     sigma = sigma,
-                                     threshold = threshold){
 
-  # create data.sum
-
-  # export data.sum
-
-  # define data_sum as matrix
-  m.data_sum <- data.sum%>%
-    as.matrix()
-
-  # create pixmap
-  # cellres: pixel resolution in horizontal and vertical direction
-  image <-pixmap::pixmapGrey(m.data_sum,
-                             nrow = rows,
-                             ncol = cols,
-                             cellres=cellres)
-
-  # get grey values
-  grey_values <- image@grey * 255
-
-  # Low-pass Gaussian filter
-  xb <- EBImage::gblur(grey_values,
-                       sigma)
-  # round values
-  xb <- round(xb,digits = 1)
-
-  # create blurred pixmap image
-  image_blurred <- pixmapGrey(xb,
-                              cellres=cellres)
-
-  #threshold filtering
-  pos <- which(xb > threshold)
-  xt <- xb
-  xt[which(xb > threshold)] <- 1
-  xt[which(xb <= threshold)] <- 0
-
-  # pixmap object of binary image
-  image_binary <- image
-  image_binary@grey <- xt
-
-  # create tiff of result images
-  export_image_result_tiffs(image,
-                            image_blurred,
-                            image_binary,
-                            output_dir,
-                            chip_ID,
-                            pos,
-                            sigma,
-                            threshold,
-                            cols,
-                            rows)
-
-}
 
 #' Title
 #'
@@ -216,10 +144,18 @@ create_result_filepath <- function(output_dir,
 #' @export
 #'
 #' @examples
+#' if(FALSE){
+#'
+#' data_sum_resultion <- create_export_data_sum(image_groups$data[[1]],
+#' image_groups$group_ID[1],
+#' output_dir)
+#'
+#' }
 create_export_data_sum <- function(image_group_list,
                                    group_ID,
                                    output_dir){
-
+#image_group_list <- image_groups$data[1][[1]]
+#group_ID <- image_groups$group_ID[1]
   create_working_directory(output_dir)
 
   for(i in 1:dim(image_group_list)[1]){
@@ -248,10 +184,93 @@ create_export_data_sum <- function(image_group_list,
                                             "data_sum",
                                             group_ID,
                                             type="csv")
-  data_sum <- data.table::data.table(data_sum)
-  data.table::fwrite(data_sum,
+  data.table::fwrite(data_sum%>%
+                       data.table::data.table(),
                      result_filename)
 
   return(attr(data_sum,"image_resolution"))
+
+}
+
+#' perform_image_processing
+#'
+#' @param data
+#' @param cellres
+#' @param output_dir
+#' @param chip_ID
+#' @param pos
+#' @param sigma
+#' @param threshold
+#'
+#' @return
+#' @export
+#'
+#' @examples
+perform_image_processing <- function(data,
+                                     cellres = cellres,
+                                     output_dir = output_dir,
+                                     chip_ID,
+                                     pos,
+                                     sigma = sigma,
+                                     threshold = threshold){
+  Version <- "030522"
+  #data <- data_sum
+
+
+  # create data.sum
+
+  # export data.sum
+
+  # read data_sum
+
+  # get nrows and ncols
+  nrows <- dim(data_sum)[1]
+  ncols <- dim(data_sum)[2]
+
+  # define data_sum as matrix
+  m.data <- as.matrix(data)
+
+  # create pixmap
+  # cellres: pixel resolution in horizontal and vertical direction
+  image <-pixmap::pixmapGrey(m.data,
+                             cellres=cellres)
+
+  # get grey values
+  grey_values <- image@grey * 255
+
+  # Low-pass Gaussian filter
+  #remotes::install_version("locfit",version="1.5.9.4")
+  #BiocManager::install("EBImage",force=TRUE)
+  #EBImage version: 4281
+  xb <- EBImage::gblur(grey_values,
+                       sigma)
+  # round values
+  xb <- round(xb,digits = 1)
+
+  # create blurred pixmap image
+  image_blurred <- pixmap::pixmapGrey(xb,
+                                      cellres=cellres)
+
+  #threshold filtering
+  pos <- which(xb > threshold)
+  xt <- xb
+  xt[which(xb > threshold)] <- 1
+  xt[which(xb <= threshold)] <- 0
+
+  # pixmap object of binary image
+  image_binary <- image
+  image_binary@grey <- xt
+
+  # create tiff of result images
+  export_image_result_tiffs(image,
+                            image_blurred,
+                            image_binary,
+                            output_dir,
+                            chip_ID,
+                            pos,
+                            sigma,
+                            threshold,
+                            ncols,
+                            nrows)
 
 }
