@@ -4,7 +4,7 @@
 \alias{create_ScanHistory_extended}
 \title{create_ScanHistory_extended}
 \usage{
-create_ScanHistory_extended(chip_IDs)
+create_ScanHistory_extended(chip_IDs, output_dir, result_ID)
 }
 \arguments{
 \item{chip_IDs}{}

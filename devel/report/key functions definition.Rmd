@@ -185,6 +185,8 @@ perform_image_processing <- function(data_sum,
   
   # export data.sum
   
+  # read data_sum
+  
   # define data_sum as matrix
   m.data_sum <- data.sum%>%
     as.matrix()
