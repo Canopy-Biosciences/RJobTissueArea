@@ -670,6 +670,7 @@ create_XML_filename <- function(RJob_ID) {
 #' @param output_dir Given working directory
 #'
 #' @return The (existing) output directory
+#' @export
 create_working_directory <- function(output_dir) {
 
   Version <- 080322
