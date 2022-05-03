@@ -103,14 +103,18 @@ export_image_result_tiffs <- function(image,
 #'
 #' @examples
 create_name_result_ID <- function(chip_ID,
-                                  pos,
+                                  pos_ID,
                                   sigma,
                                   threshold){
 
+  Version <- "030522"
+
   result_ID <- paste0("chipID_",chip_ID,
-                      "_pos_",pos,
+                      "_pos_",pos_ID,
                       "_sigma_",sigma,
                       "_threshold_",threshold)
+
+  return(result_ID)
 }
 
 #' Title
