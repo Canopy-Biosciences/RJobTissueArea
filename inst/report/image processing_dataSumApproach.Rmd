@@ -386,11 +386,11 @@ create_result_filepath <- function(output_dir,
 
 # supplement
 
-# workflow
+## workflow - import image data
 
 - define chip_group and output_dir
 
-```{r}
+```{r, eval=FALSE}
 library(RJobTissueArea)
 output_dir <- "devel/data/data_output"
 group_ID <- "P1761451"
@@ -398,13 +398,13 @@ group_ID <- "P1761451"
 
 - create_working_directory() in helpers: RJob_execution
 
-```{r}
+```{r, eval=FALSE}
 RJobTissueArea:::create_working_directory(output_dir)
 ```
 
 - load all chip_IDs in the group
 
-```{r}
+```{r, eval=FALSE}
 chip_IDs <- find_valid_group_chip_IDs(group_ID)
 ```
 
@@ -418,7 +418,7 @@ ScanHistory <- create_ScanHistory_extended(chip_IDs,
 
 - read ScanHistory
 
-```{r}
+```{r, eval=FALSE}
 filename <- create_result_filepath(output_dir,
                                    "extendedScanHistory",
                                    group_ID,
@@ -429,72 +429,70 @@ ScanHistory <- data.table::fread(filename)
 
 - select valid entities
 
-```{r}
+```{r, eval=FALSE}
 result_files <- select_valid_image_files(ScanHistory,type = NULL)
 ```
 
 - select hdr images and add filepath
 
-```{r}
+```{r, eval=FALSE}
 hdr_files <- select_hdr_files(result_files)
 ```
 
-# define functions
+### single file
 
-## single file
-
-```{r}
+```{r, eval=FALSE}
 image_path <- hdr_files$hdr_filepath[1]
 blob_filename <- hdr_files$hdr_filename[1]
 ```
 
-### read_XML_BLOB_parameter() 
+#### read_XML_BLOB_parameter() 
 
 - reads single file
 - in helpers: ImportBlobFiles
 
-```{r}
+```{r, eval=FALSE}
 blob_parameter <- read_XML_BLOB_parameter(image_path,
                                           blob_filename)
 
 blob_parameter
 ```
 
-### functions that extract values from blob_parameter
+#### functions that extract values from blob_parameter
 
 - extract_h_pixels_from_blob_parameter() in helpers: ImportBlobFiles
 
-```{r}
+```{r, eval=FALSE}
 extract_h_pixels_from_blob_parameter(blob_parameter)
 ```
 
 - extract_v_pixel_from_blob_parameter() in helpers: ImportBlobFiles
 
-```{r}
+```{r, eval=FALSE}
 extract_v_pixels_from_blob_parameter(blob_parameter)
 ```
 
 - extract_n_pixels_from_blob_parameter() in helpers: ImportBlobFiles
 
-```{r}
+```{r, eval=FALSE}
 extract_n_pixels_from_blob_parameter(blob_paramter)
 ```
 
 - extract_image_path_from_blob_parameter() in helpers: ImportBlobFiles
 
-```{r}
+```{r, eval=FALSE}
 extract_image_path_from_blob_parameter(blob_parameter)
 ```
 
 - extract_encoding_from_blob_parameter() in helpers: ImportBlobFiles
 
-```{r}
+```{r, eval=FALSE}
 extract_encoding_from_blob_parameter(blob_parameter)
 ```
 
 - convert_binsize_from_encoding() in helpers: ImportBlobFiles
 
-```{r}
+```{r, eval=FALSE}
 encoding <- extract_encoding_from_blob_parameter(blob_parameter)
 
 convert_binsize_from_encoding(encoding)
@@ -502,31 +500,31 @@ convert_binsize_from_encoding(encoding)
 
 - extract_image_width_from_blob_parameter() in helpers: ImportBlobFiles
 
-```{r}
+```{r, eval=FALSE}
 extract_image_width_from_blob_parameter(blob_paramter)
 ```
 
 - extract_image_heigth_from_blob_parameter() in helpers: ImportBlobFiles
 
-```{r}
+```{r, eval=FALSE}
 extract_image_heigth_from_blob_parameter(blob_paramter)
 ```
 
 - extract_image_resolution_from_blob_parameter() in helpers: ImportBlobFiles
 
-```{r}
+```{r, eval=FALSE}
 extract_image_resolution_from_blob_parameter(blob_parameter)
 ```
 
 - extract_statistics_from_blob_parameter() in helpers: ImportBlobFiles
 
-```{r}
+```{r, eval=FALSE}
 extract_statistics_from_blob_parameter(blob_parameter)
 ```
 
 - extract_parameter_from_BLOB in helpers: ImportBlobFiles
 
-```{r}
+```{r, eval=FALSE}
 extract_parameter_from_BLOB(image_path,
                             blob_filename)
 ```
@@ -545,7 +543,7 @@ parameter_list<- export_blob_parameter_of_image_filelist(hdr_files,
 
 - read exported parameter list
 
-```{r}
+```{r, eval=FALSE}
 result_filename <- create_result_filepath(output_dir,
                                             "Blob_parameters",
                                             paste0(group_ID,"_hdr_files"),
@@ -555,18 +553,18 @@ parameter_list <- data.table::fread(result_filename)
 parameter_list%>%head()
 ```
 
-### read_image_binary_file() 
+#### read_image_binary_file() 
 
 - reads single file
 - in helpers: ImportBlobFiles
 
-```{r}
+```{r, eval=FALSE}
 data <- read_image_binary_file(blob_parameter)
 ```
 
-### read_binary_image_as_matrix()
+#### read_binary_image_as_matrix()
 
-```{r}
+```{r, eval=FALSE}
 read_binary_image_as_matrix <- function(image_path,
                                     blob_filename){
   
@@ -589,7 +587,7 @@ read_binary_image_as_matrix <- function(image_path,
 
 - nest file groups (by chip_ID and pos_ID) to a image_selection_list
 
-```{r}
+```{r, eval=FALSE}
 image_groups <- hdr_files%>%
   dplyr::group_by(chip_ID,pos_ID)%>%
   tidyr::nest()
@@ -598,7 +596,7 @@ image_groups <- hdr_files%>%
 - add group_ID 
 - add filename of the file containing the data_sum results to be created
 
-```{r}
+```{r, eval=FALSE}
 image_groups <- image_groups%>%
   dplyr::mutate(group_ID = paste0(chip_ID,"_",pos_ID))%>%
   dplyr::mutate(data_file = create_result_filepath(output_dir,
@@ -617,7 +615,7 @@ group_ID <-  image_groups$group_ID[1]
 - return one image matrix
 - exports data_sum into the output_dir
 
-```{r}
+```{r, eval=FALSE}
 
 create_export_data_sum <- function(image_group_list,
                                    group_ID,
@@ -660,7 +658,7 @@ create_export_data_sum <- function(image_group_list,
 }
 ```
 
-```{r}
+```{r, eval=FALSE}
 data_sum_resultion <- create_export_data_sum(image_groups$data[[1]],
                                    image_groups$group_ID[1],
                                    output_dir)
@@ -668,7 +666,7 @@ data_sum_resultion <- create_export_data_sum(image_groups$data[[1]],
 
 - apply to complete chip_group
 
-```{r}
+```{r, eval=FALSE}
 image_groups <- image_groups%>%
   dplyr::mutate(data_sum_resultion = purrr::map2(data,
                                                  group_ID,
@@ -678,50 +676,9 @@ image_groups <- image_groups%>%
 
 ```
 
+## workflow - find all imaga files
 
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# supplement
-
-## list all files in image dirs
+### list all files in image dirs
 
 - export_list_all_image_files() in helpers: ImportBlobFiles
 
@@ -748,7 +705,7 @@ blob32_files <- select_valid_image_files(image_files,
                                          type = "blob32")
 ```
 
-## find_picture_informations()
+### find_picture_informations()
 
 ```{r,eval=FALSE}
 find_picture_informations<- function(image_path, blob_file_name, positions) {
@@ -770,7 +727,7 @@ find_picture_informations<- function(image_path, blob_file_name, positions) {
 }
 ```
 
-## read_image_bin()
+### read_image_bin()
 
 ```{r,eval=FALSE}
 read_image_bin <- function(image_path, position, blob_file_name, parameter) {
@@ -799,7 +756,7 @@ read_image_bin <- function(image_path, position, blob_file_name, parameter) {
 }
 ```
 
-## find_hdr_data ()
+### find_hdr_data ()
 
 ```{r,eval=FALSE}
 find_hdr_data<-function(scan_IDs){
@@ -899,7 +856,7 @@ find_hdr_data<-function(scan_IDs){
 }
 ```
 
-## check_hdr_import()
+### check_hdr_import()
 
 ```{r,eval=FALSE}
 check_hdr_import<-function(hdr_data){
