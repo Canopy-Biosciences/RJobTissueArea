@@ -44,7 +44,8 @@ writeLines(
     "- extract_enabled_positions()",
     "- get_enabled_positions_from_positions_list()",
     "- get_enabled_positions()",
-    "- get_positions_field_from_query_result()"
+    "- get_positions_field_from_query_result()",
+    "- read_binary_image_as_vector()"
   ))
 
 #' create_hdr_filepath
@@ -862,6 +863,28 @@ read_binary_image_as_matrix <- function(image_path,
   return(data_mat)
 }
 
+#' read_binary_image_as_vector
+#'
+#' @param image_path
+#' @param blob_filename
+#'
+#' @return
+#' @export
+#'
+#' @examples
+read_binary_image_as_vector<- function(image_path,
+                            blob_filename){
+  Version <- "030522"
+
+  blob_parameter <-read_XML_BLOB_parameter(image_path,
+                                           blob_filename)
+
+  data <- read_image_binary_file(blob_parameter)
+
+  return(data)
+
+
+}
 #' read_image_binary_file
 #'
 #' @param blob_parameter
