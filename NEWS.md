@@ -1,5 +1,7 @@
 # RJobTissueArea 0.0.0.10
 
+* R SCRIPT looping over image groups and parameter grid
+
 # RJobTissueArea 0.0.0.9
 * find hdr files uddate approach via extended ScanHistory
 * UPDATE report: import hdr data

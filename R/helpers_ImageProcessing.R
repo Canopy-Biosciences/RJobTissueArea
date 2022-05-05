@@ -91,7 +91,7 @@ export_image_result_tiffs <- function(image,
     paste0("- successful exported processed image results of: ",result_ID)
   ))
 }
-#' Title
+#' create_name_result_ID
 #'
 #' @param chip_ID
 #' @param pos
@@ -214,29 +214,16 @@ create_export_data_sum <- function(image_group_list,
 #' @export
 #'
 #' @examples
-perform_image_processing <- function(data,
+perform_image_processing <- function(m.data,
                                      cellres = cellres,
                                      output_dir = output_dir,
                                      chip_ID,
-                                     pos,
+                                     pos_ID,
                                      sigma = sigma,
                                      threshold = threshold){
   Version <- "030522"
   #data <- data_sum
 
-
-  # create data.sum
-
-  # export data.sum
-
-  # read data_sum
-
-  # get nrows and ncols
-  nrows <- dim(data_sum)[1]
-  ncols <- dim(data_sum)[2]
-
-  # define data_sum as matrix
-  m.data <- as.matrix(data)
 
   # create pixmap
   # cellres: pixel resolution in horizontal and vertical direction
@@ -275,7 +262,7 @@ perform_image_processing <- function(data,
                             image_binary,
                             output_dir,
                             chip_ID,
-                            pos,
+                            pos_ID,
                             sigma,
                             threshold,
                             ncols,

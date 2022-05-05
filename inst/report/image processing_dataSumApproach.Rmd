@@ -34,36 +34,46 @@ if (requireNamespace("thematic"))
 
 # summary
 
-# introduction 
+# introduction
 
 **process modules**
 
-A) import chip group
-B) find all image files
-  - find all files
-  - read all blob.xml
-  - import blob image
-C) image processing steps:
+A)  import chip group
+B)  find all image files
 
-  1) sum pixel of all hdr imgages
-  2) convert pixel matrix to pixmapGrey object
-  3) blurring via gauss filter
-  4) binary filtering via threshold
-  5) export tiff-images
+-   find all files
+-   read all blob.xml
+-   import blob image
 
-D) estimation of tissue size
+C)  image processing steps:
 
-  1) tissue size estimation (via pixel resolution and amount pixels set TRUE)
-  2) return tissue area results (tissue size [mm] and %tissue size)
+```{=html}
+<!-- -->
+```
+1)  sum pixel of all hdr imgages
+2)  convert pixel matrix to pixmapGrey object
+3)  blurring via gauss filter
+4)  binary filtering via threshold
+5)  export tiff-images
+
+```{=html}
+<!-- -->
+```
+D)  estimation of tissue size
+
+```{=html}
+<!-- -->
+```
+1)  tissue size estimation (via pixel resolution and amount pixels set TRUE)
+2)  return tissue area results (tissue size \[mm\] and %tissue size)
 
 --> apply on parameterset, positions, chips
-
 
 # workflows
 
 ## import chip group
 
-- find_valid_group_chip_IDs() in helpers: RJob_execution
+-   find_valid_group_chip_IDs() in helpers: RJob_execution
 
 ```{r}
 library(RJobTissueArea)
@@ -73,14 +83,14 @@ chip_IDs <- find_valid_group_chip_IDs(group_ID)
 
 ## find all image files
 
-- create_working_directory() in helpers: RJob_execution
+-   create_working_directory() in helpers: RJob_execution
 
 ```{r}
 output_dir <- "devel/data/data_output"
 RJobTissueArea:::create_working_directory(output_dir)
 ```
 
-- create extended Version of ScanHistory
+-   create extended Version of ScanHistory
 
 ```{r, eval=FALSE}
 ScanHistory <- create_ScanHistory_extended(chip_IDs,
@@ -88,7 +98,7 @@ ScanHistory <- create_ScanHistory_extended(chip_IDs,
                                            result_ID = group_ID)
 ```
 
-- read ScanHistory
+-   read ScanHistory
 
 ```{r}
 filename <- create_result_filepath(output_dir,
@@ -100,14 +110,14 @@ ScanHistory <- data.table::fread(filename)
 ScanHistory%>%head()
 ```
 
-- select valid entities
+-   select valid entities
 
 ```{r}
 result_files <- select_valid_image_files(ScanHistory,type = NULL)
 result_files%>%head()
 ```
 
-- select hdr images and add filepath
+-   select hdr images and add filepath
 
 ```{r}
 hdr_files <- select_hdr_files(result_files)
@@ -116,10 +126,11 @@ hdr_files%>%head()
 
 ## generate data_sum
 
-- create list of image_groups:
-    + nest file groups (by chip_ID and pos_ID) to a image_selection_list
-    + add group_ID 
-    + add filename of the file containing the data_sum results to be created
+-   create list of image_groups:
+
+    -   nest file groups (by chip_ID and pos_ID) to a image_selection_list
+    -   add group_ID
+    -   add filename of the file containing the data_sum results to be created
 
 ```{r}
 image_groups <- hdr_files%>%
@@ -135,19 +146,21 @@ image_groups <- hdr_files%>%
 image_groups%>%head
 image_groups$data[1][[1]]%>%head
 ```
-- set output_dir for data_sum results
+
+-   set output_dir for data_sum results
 
 ```{r}
 output_dir_dataSum <- file.path(output_dir,"data_sum_collection_2")
+#output_dir_dataSum <- file.path(output_dir,"data_sum_collection")
 ```
 
-- create_export_data_sum () in helpers: ImageProcessing Version:030522
+-   create_export_data_sum () in helpers: ImageProcessing Version:030522
 
-    + import all images of a image group
-    + calculate data_sum of all pixel values 
-    + return one image matrix
-    + exports data_sum into the output_dir
-    + apply to each chip group
+    -   import all images of a image group
+    -   calculate data_sum of all pixel values
+    -   return one image matrix
+    -   exports data_sum into the output_dir
+    -   apply to each chip group
 
 ```{r, eval=FALSE}
 image_groups_resolution <- purrr::map2(image_groups$data,
@@ -157,12 +170,11 @@ image_groups_resolution <- purrr::map2(image_groups$data,
                                                                output_dir_dataSum))
 ```
 
-data_sum_resultion: 
-[1] 0.3697953 0.6639183
-attr(,"resolution_unit")
-[1] "[um per pixel edge]"
+data_sum_resultion: \[1\] 0.3697953 0.6639183 attr(,"resolution_unit") \[1\] "\[um per pixel edge\]"
 
-- read in single file: data_sum
+cols: 1040 rows: 1392
+
+-   read in single file: data_sum
 
 ```{r}
 group_ID <- image_groups$group_ID[1]
@@ -176,219 +188,95 @@ data_sum <- data.table::fread(result_filename)
 
 ## image processing
 
+### single file
 
-
-### variables
-
-- **variables**
+-   **variables**
 
 ```{r}
-#variables
-chip_ID <- "M"
-pos <- 1
-cellres <- c(1,1)
+#__________________
+#1) input variables----
+chip_ID <- image_groups$chip_ID[10] 
+pos_ID <- image_groups$pos_ID[10] 
+group_ID <- image_groups$group_ID[10]
+
+cellres <- c(0.370,0.664)
 sigma <- 0.5
 threshold <- 4
-output_dir <- "inst/data/data_output"
-cols <- 1040
-rows <- 1392
-```
+input_dir <- output_dir_dataSum
+output_dir <- "devel/data/data_output/image_processing"
 
-- **secundary variable**
-
-```{r}
-#secundary vaiables
+#_____________________
+#2) secundary vaiables----
 result_ID <- create_name_result_ID(chip_ID,
-                                   pos,
+                                   pos_ID,
                                    sigma,
                                    threshold
                                    )
+
+dataSum_filename <- create_result_filepath(input_dir,
+                                           "data_sum",
+                                           group_ID,
+                                           type="csv")
+#image_groups$data_file[1]
 ```
 
-### function definition
-
-#### **perform_image_processing() - workflow function**
+-   read in data_sum
 
 ```{r}
-create_pixmapGrey(data_sum,
-                  cellres,
-                  output_dir,
-                  chip_ID,
-                  pos,
-                  sigma,
-                  threshold)
-
-perform_image_processing <- function(data_sum,
-                              cellres = cellres,
-                              output_dir = output_dir,
-                              chip_ID,
-                              pos,
-                              sigma = sigma,
-                              threshold = threshold){
-  
-  # create data.sum
-  
-  # export data.sum
-  
-  # read data_sum
-  
-  # define data_sum as matrix
-  m.data_sum <- data.sum%>%
-    as.matrix()
-
-  # create pixmap
-  # cellres: pixel resolution in horizontal and vertical direction
-  image <-pixmap::pixmapGrey(m.data_sum,
-                             nrow = rows,
-                             ncol = cols,
-                             cellres=cellres)
-  
-  # get grey values
-  grey_values <- image@grey * 255
-  
-  # Low-pass Gaussian filter
-  xb <- EBImage::gblur(grey_values,
-                       sigma)
-  # round values
-  xb <- round(xb,digits = 1)
-  
-  # create blurred pixmap image
-  image_blurred <- pixmapGrey(xb,
-                              cellres=cellres) 
-  
-  #threshold filtering
-  pos <- which(xb > threshold)
-  xt <- xb
-  xt[which(xb > threshold)] <- 1
-  xt[which(xb <= threshold)] <- 0
-  
-  # pixmap object of binary image
-  image_binary <- image
-  image_binary@grey <- xt
-
-  # create tiff of result images
-  export_image_result_tiffs(image,
-                            image_blurred,
-                            image_binary,
-                            output_dir,
-                            chip_ID,
-                            pos,
-                            sigma,
-                            threshold,
-                            cols,
-                            rows)
-  
-}
+#____________________
+#3) read image matrix----
+data_sum <- data.table::fread(dataSum_filename)
 ```
 
-#### **export_image_result_tiffs()**
+-   **perform_image_processing() - workflow function** - in helper: ImageProcessing - Version: 030522
 
 ```{r}
-export_image_result_tiffs <- function(image,
-                                      image_blurred,
-                                      image_binary,
-                                      output_dir,
-                                      chip_ID,
-                                      pos,
-                                      sigma,
-                                      threshold,
-                                      cols,
-                                      rows){
-  # filename
-  result_ID <- create_name_result_ID(chip_ID,
-                                     pos,
-                                     sigma,
-                                     threshold)
-  # complete filepath
-  file <- create_result_filepath(
-    output_dir,
-    "result_tiffs",
-    result_ID,
-    "tiff"
-  )
-  
-  # create tiff object
-  tiff(filename = file,
-       width = cols*3,
-       height = rows)
-  
-  par(mfrow=c(1,3))
-  
-  # plot inital image
-  plot(image,
-       main = "grey value image",
-       sub = "sum values by pixels across all hdr images")
-
-  # plot blurred image
-  plot(image_blurred,
-       main = paste0("blurred with sigma = ",sigma),
-       sub = paste0("min: ", min(xb), "max: ",max(xb)))
-  
-  # plot binary image
-  plot(image_binary,
-       main= paste0("threshold set to: ",threshold))
-  
-  dev.off()
-  
-  writeLines(c(
-    paste0("- successful exported processed image results")
-    ))
-}
+perform_image_processing(data = data_sum,
+                         cellres = cellres,
+                         output_dir = output_dir,
+                         chip_ID,
+                         pos_ID,
+                         sigma = sigma,
+                         threshold = threshold)
 ```
 
-#### **create_name_result_ID()**
+-   calls: **export_image_result_tiffs()** - in helper: ImageProcessing - Version: 030522
+
+```{r, eval=FALSE}
+export_image_result_tiffs(image,
+                          image_blurred,
+                          image_binary,
+                          output_dir,
+                          chip_ID,
+                          pos,
+                          sigma,
+                          threshold,
+                          cols,
+                          rows)
+```
+
+-   insert generated tiff
 
 ```{r}
-create_name_result_ID <- function(chip_ID,
-                                  pos,
-                                  sigma,
-                                  threshold){
-  
-  result_ID <- paste0("chipID_",chip_ID,
-                      "_pos_",pos,
-                      "_sigma_",sigma,
-                      "_threshold_",threshold)
-}
+#file_ID
+result_ID <- create_name_result_ID(chip_ID,
+                                   pos,
+                                   sigma,
+                                   threshold)
+# complete filepath
+file <- create_result_filepath(
+  output_dir,
+  "result_tiffs",
+  result_ID,
+  "tiff"
+)
 ```
-
-#### **create_result_filepath()**
-
-```{r}
-create_result_filepath <- function(output_dir,
-                                   name_string,
-                                   result_ID,
-                                   type){
-  
-  path <- file.path(
-    output_dir,
-    paste0(name_string,
-           "_",result_ID,
-           ".",type))
-  
-  return(path)
-}
-```
-
-### workflow application
-
-```{r}
-
-```
-
-
-
-
-
-
-
-
-
 
 # supplement
 
 ## workflow - import image data
 
-- define chip_group and output_dir
+-   define chip_group and output_dir
 
 ```{r, eval=FALSE}
 library(RJobTissueArea)
@@ -396,19 +284,19 @@ output_dir <- "devel/data/data_output"
 group_ID <- "P1761451"
 ```
 
-- create_working_directory() in helpers: RJob_execution
+-   create_working_directory() in helpers: RJob_execution
 
 ```{r, eval=FALSE}
 RJobTissueArea:::create_working_directory(output_dir)
 ```
 
-- load all chip_IDs in the group
+-   load all chip_IDs in the group
 
 ```{r, eval=FALSE}
 chip_IDs <- find_valid_group_chip_IDs(group_ID)
 ```
 
-- create extended Version of ScanHistory
+-   create extended Version of ScanHistory
 
 ```{r, eval=FALSE}
 ScanHistory <- create_ScanHistory_extended(chip_IDs,
@@ -416,7 +304,7 @@ ScanHistory <- create_ScanHistory_extended(chip_IDs,
                                            result_ID = group_ID)
 ```
 
-- read ScanHistory
+-   read ScanHistory
 
 ```{r, eval=FALSE}
 filename <- create_result_filepath(output_dir,
@@ -427,13 +315,13 @@ filename <- create_result_filepath(output_dir,
 ScanHistory <- data.table::fread(filename)
 ```
 
-- select valid entities
+-   select valid entities
 
 ```{r, eval=FALSE}
 result_files <- select_valid_image_files(ScanHistory,type = NULL)
 ```
 
-- select hdr images and add filepath
+-   select hdr images and add filepath
 
 ```{r, eval=FALSE}
 hdr_files <- select_hdr_files(result_files)
@@ -446,10 +334,10 @@ image_path <- hdr_files$hdr_filepath[1]
 blob_filename <- hdr_files$hdr_filename[1]
 ```
 
-#### read_XML_BLOB_parameter() 
+#### read_XML_BLOB_parameter()
 
-- reads single file
-- in helpers: ImportBlobFiles
+-   reads single file
+-   in helpers: ImportBlobFiles
 
 ```{r, eval=FALSE}
 blob_parameter <- read_XML_BLOB_parameter(image_path,
@@ -460,37 +348,37 @@ blob_parameter
 
 #### functions that extract values from blob_parameter
 
-- extract_h_pixels_from_blob_parameter() in helpers: ImportBlobFiles
+-   extract_h\_pixels_from_blob_parameter() in helpers: ImportBlobFiles
 
 ```{r, eval=FALSE}
 extract_h_pixels_from_blob_parameter(blob_parameter)
 ```
 
-- extract_v_pixel_from_blob_parameter() in helpers: ImportBlobFiles
+-   extract_v\_pixel_from_blob_parameter() in helpers: ImportBlobFiles
 
 ```{r, eval=FALSE}
 extract_v_pixels_from_blob_parameter(blob_parameter)
 ```
 
-- extract_n_pixels_from_blob_parameter() in helpers: ImportBlobFiles
+-   extract_n\_pixels_from_blob_parameter() in helpers: ImportBlobFiles
 
 ```{r, eval=FALSE}
 extract_n_pixels_from_blob_parameter(blob_paramter)
 ```
 
-- extract_image_path_from_blob_parameter() in helpers: ImportBlobFiles
+-   extract_image_path_from_blob_parameter() in helpers: ImportBlobFiles
 
 ```{r, eval=FALSE}
 extract_image_path_from_blob_parameter(blob_parameter)
 ```
 
-- extract_encoding_from_blob_parameter() in helpers: ImportBlobFiles
+-   extract_encoding_from_blob_parameter() in helpers: ImportBlobFiles
 
 ```{r, eval=FALSE}
 extract_encoding_from_blob_parameter(blob_parameter)
 ```
 
-- convert_binsize_from_encoding() in helpers: ImportBlobFiles
+-   convert_binsize_from_encoding() in helpers: ImportBlobFiles
 
 ```{r, eval=FALSE}
 encoding <- extract_encoding_from_blob_parameter(blob_parameter)
@@ -498,38 +386,38 @@ encoding <- extract_encoding_from_blob_parameter(blob_parameter)
 convert_binsize_from_encoding(encoding)
 ```
 
-- extract_image_width_from_blob_parameter() in helpers: ImportBlobFiles
+-   extract_image_width_from_blob_parameter() in helpers: ImportBlobFiles
 
 ```{r, eval=FALSE}
 extract_image_width_from_blob_parameter(blob_paramter)
 ```
 
-- extract_image_heigth_from_blob_parameter() in helpers: ImportBlobFiles
+-   extract_image_heigth_from_blob_parameter() in helpers: ImportBlobFiles
 
 ```{r, eval=FALSE}
 extract_image_heigth_from_blob_parameter(blob_paramter)
 ```
 
-- extract_image_resolution_from_blob_parameter() in helpers: ImportBlobFiles
+-   extract_image_resolution_from_blob_parameter() in helpers: ImportBlobFiles
 
 ```{r, eval=FALSE}
 extract_image_resolution_from_blob_parameter(blob_parameter)
 ```
 
-- extract_statistics_from_blob_parameter() in helpers: ImportBlobFiles
+-   extract_statistics_from_blob_parameter() in helpers: ImportBlobFiles
 
 ```{r, eval=FALSE}
 extract_statistics_from_blob_parameter(blob_parameter)
 ```
 
-- extract_parameter_from_BLOB in helpers: ImportBlobFiles
+-   extract_parameter_from_BLOB in helpers: ImportBlobFiles
 
 ```{r, eval=FALSE}
 extract_parameter_from_BLOB(image_path,
                             blob_filename)
 ```
 
-- export_blob_parameter_of_image_filelist() in helpers: ImportBlobFiles
+-   export_blob_parameter_of_image_filelist() in helpers: ImportBlobFiles
 
 ```{r, eval=FALSE}
 hdr_files <- hdr_files%>%
@@ -541,7 +429,7 @@ parameter_list<- export_blob_parameter_of_image_filelist(hdr_files,
                                                          paste0(group_ID,"_hdr_files"))
 ```
 
-- read exported parameter list
+-   read exported parameter list
 
 ```{r, eval=FALSE}
 result_filename <- create_result_filepath(output_dir,
@@ -553,10 +441,10 @@ parameter_list <- data.table::fread(result_filename)
 parameter_list%>%head()
 ```
 
-#### read_image_binary_file() 
+#### read_image_binary_file()
 
-- reads single file
-- in helpers: ImportBlobFiles
+-   reads single file
+-   in helpers: ImportBlobFiles
 
 ```{r, eval=FALSE}
 data <- read_image_binary_file(blob_parameter)
@@ -583,9 +471,9 @@ read_binary_image_as_matrix <- function(image_path,
 }
 ```
 
-## group of files
+### group of files
 
-- nest file groups (by chip_ID and pos_ID) to a image_selection_list
+-   nest file groups (by chip_ID and pos_ID) to a image_selection_list
 
 ```{r, eval=FALSE}
 image_groups <- hdr_files%>%
@@ -593,8 +481,8 @@ image_groups <- hdr_files%>%
   tidyr::nest()
 ```
 
-- add group_ID 
-- add filename of the file containing the data_sum results to be created
+-   add group_ID
+-   add filename of the file containing the data_sum results to be created
 
 ```{r, eval=FALSE}
 image_groups <- image_groups%>%
@@ -610,10 +498,10 @@ group_ID <-  image_groups$group_ID[1]
 
 ### create_export_data_sum()
 
-- import all images of a image group
-- calculate data_sum of all pixel values 
-- return one image matrix
-- exports data_sum into the output_dir
+-   import all images of a image group
+-   calculate data_sum of all pixel values
+-   return one image matrix
+-   exports data_sum into the output_dir
 
 ```{r, eval=FALSE}
 
@@ -664,7 +552,7 @@ data_sum_resultion <- create_export_data_sum(image_groups$data[[1]],
                                    output_dir)
 ```
 
-- apply to complete chip_group
+-   apply to complete chip_group
 
 ```{r, eval=FALSE}
 image_groups <- image_groups%>%
@@ -680,7 +568,7 @@ image_groups <- image_groups%>%
 
 ### list all files in image dirs
 
-- export_list_all_image_files() in helpers: ImportBlobFiles
+-   export_list_all_image_files() in helpers: ImportBlobFiles
 
 ```{r, eval=FALSE}
 image_files <- export_list_all_image_files(chip_IDs,
@@ -688,7 +576,7 @@ image_files <- export_list_all_image_files(chip_IDs,
                                            output_dir)
 ```
 
-- create_result_filepath() in helpers: ImageProcessing
+-   create_result_filepath() in helpers: ImageProcessing
 
 ```{r, eval=FALSE}
 file <- create_result_filepath(output_dir,
@@ -698,7 +586,7 @@ file <- create_result_filepath(output_dir,
 image_files <- data.table::fread(file)
 ```
 
-- select_valid_image_files() in helpers: ImportBlobFiles
+-   select_valid_image_files() in helpers: ImportBlobFiles
 
 ```{r, eval=FALSE}
 blob32_files <- select_valid_image_files(image_files,
