@@ -190,7 +190,7 @@ for(k in 1:dim(grid)[1]){
     #_____________________________
     #___3) map throgh shink_vector----
 
-    GS <- c(10,20,30,40,50,60,70,80)
+    GS <- c(10,30,50,70)
     gs <- 1
     for(gs in 1:length(GS)){
 
