@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers_ImageProcessing.R
 \name{export_image_result_tiffs}
 \alias{export_image_result_tiffs}
-\title{Title}
+\title{export_image_result_tiffs}
 \usage{
 export_image_result_tiffs(
   image,
@@ -10,19 +10,19 @@ export_image_result_tiffs(
   image_binary,
   output_dir,
   chip_ID,
-  pos,
+  pos_ID,
   sigma,
   threshold,
-  cols,
-  rows
+  ncols,
+  nrows
 )
 }
 \arguments{
-\item{rows}{}
+\item{nrows}{}
 }
 \value{
 
 }
 \description{
-Title
+export_image_result_tiffs
 }

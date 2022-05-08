@@ -2,14 +2,14 @@
 % Please edit documentation in R/helpers_ImageProcessing.R
 \name{perform_image_processing}
 \alias{perform_image_processing}
-\title{Title}
+\title{perform_image_processing}
 \usage{
 perform_image_processing(
-  data_sum,
+  m.data,
   cellres = cellres,
   output_dir = output_dir,
   chip_ID,
-  pos,
+  pos_ID,
   sigma = sigma,
   threshold = threshold
 )
@@ -21,5 +21,5 @@ perform_image_processing(
 
 }
 \description{
-Title
+perform_image_processing
 }

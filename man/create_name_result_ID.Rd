@@ -2,9 +2,9 @@
 % Please edit documentation in R/helpers_ImageProcessing.R
 \name{create_name_result_ID}
 \alias{create_name_result_ID}
-\title{Title}
+\title{create_name_result_ID}
 \usage{
-create_name_result_ID(chip_ID, pos, sigma, threshold)
+create_name_result_ID(chip_ID, pos_ID, sigma, threshold)
 }
 \arguments{
 \item{threshold}{}
@@ -13,5 +13,5 @@ create_name_result_ID(chip_ID, pos, sigma, threshold)
 
 }
 \description{
-Title
+create_name_result_ID
 }
