@@ -34,7 +34,7 @@ image_groups <- hdr_files%>%
 
 #sigma <- c(0.5,1,2,3,4)
 #threshold <- c(0.5,1,1.5,2,2.5,3,3.5,4,4.5,5)
-sigma <- c(1,4)
+sigma <- c(1,4,10)
 threshold <- c(1,5)
 grid <- expand.grid(sigma=sigma,threshold=threshold)
 
@@ -235,7 +235,8 @@ for(k in 1:dim(grid)[1]){
       output_dir_image_processing <- file.path(
         output_dir,
         "image_processing","extended",
-        paste0(sigma,"_",threshold,"_",window))
+        paste0(sigma,"_",threshold),
+        window)
 
       create_working_directory(output_dir_image_processing)
 
