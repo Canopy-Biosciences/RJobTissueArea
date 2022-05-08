@@ -246,7 +246,7 @@ for(k in 1:dim(grid)[1]){
       file <- create_result_filepath(
         output_dir_image_processing,
         "ResultImages",
-        paste0(chip_ID,"_",pos_ID,sigma,"_",threshold,"_",window),
+        paste0(chip_ID,"_",pos_ID,"_",sigma,"_",threshold,"_",window),
         "tiff"
       )
 
