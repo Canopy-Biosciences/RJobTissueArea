@@ -179,7 +179,7 @@ for(j in 32:dim(image_groups)[1]){
     #_____________________________
     #___3) map throgh shink_vector----
 
-    GS <- c(10,30,50,70)
+    GS <- c(10,50)
     gs <- 1
     for(gs in 1:length(GS)){
 
@@ -224,8 +224,10 @@ for(j in 32:dim(image_groups)[1]){
       output_dir_image_processing <- file.path(
         output_dir,
         "image_processing","extended",
-        paste0(sigma,"_",threshold),
-        window)
+        paste0("blurring_sigma_",sigma),
+        paste0("thresholding_values_",threshold),
+        paste0("growANDshinking_windowsize_",window)
+        )
 
       create_working_directory(output_dir_image_processing)
 
@@ -238,15 +240,16 @@ for(j in 32:dim(image_groups)[1]){
         "ResultImages",
         paste0(chip_ID,"_",pos_ID,"_",sigma,"_",threshold,"_",window),
       #  "tiff"
-      #"png"
-      "jpeg")
+      "png"
+      #"jpeg"
+      )
 
       # create tiff object
       #tiff(filename = file,
        #    width = 1400*5,
         #   height = 1400)
 
-      jpeg(filename = file, width = 1400*3, height = 1400, units = "px",quality=.1)
+      png(filename = file, width = 1400*3, height = 1400)
       par(mfrow=c(1,3))
 
       # original convert to imager object and plot

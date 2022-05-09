@@ -26,6 +26,7 @@ Imports:
     mongolite (>= 1.0),
     openssl,
     params,
+    pixmap,
     pkgnet,
     purrr,
     qs,
