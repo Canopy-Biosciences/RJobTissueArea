@@ -1,5 +1,7 @@
 # RJobTissueArea 0.0.0.11
 
+* RSCRIPT extended image processing 
+
 # RJobTissueArea 0.0.0.10
 
 * R SCRIPT looping over image groups and parameter grid
