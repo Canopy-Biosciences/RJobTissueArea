@@ -34,7 +34,7 @@ image_groups <- hdr_files%>%
 
 #sigma <- c(0.5,1,2,3,4)
 #threshold <- c(0.5,1,1.5,2,2.5,3,3.5,4,4.5,5)
-sigma <- c(1,4,10)
+sigma <- c(1,4,10,15)
 threshold <- c(1,5)
 grid <- expand.grid(sigma=sigma,threshold=threshold)
 
