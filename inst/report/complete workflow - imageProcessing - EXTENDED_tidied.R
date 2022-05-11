@@ -34,8 +34,8 @@ image_groups <- hdr_files%>%
 
 #sigma <- c(0.5,1,2,3,4)
 #threshold <- c(0.5,1,1.5,2,2.5,3,3.5,4,4.5,5)
-sigma <- c(1,4,10,15)
-threshold <- c(1,5)
+sigma <- c(1,15)
+threshold <- c(1,2,5)
 grid <- expand.grid(sigma=sigma,threshold=threshold)
 
 
@@ -59,7 +59,7 @@ result_df <- tibble::tibble(
 #1) map through image group----
 
 j=1
-for(j in 32:dim(image_groups)[1]){
+for(j in 1:dim(image_groups)[1]){
 
 
   image_group_list <- image_groups$data[[j]]
@@ -103,6 +103,9 @@ for(j in 32:dim(image_groups)[1]){
 
   #_________________
   #__export data_sum----
+  create_working_directory(file.path(output_dir,
+                                     "image_processing",
+                                     "data_sum_collection_3"))
   saveRDS(m_data_sum,
           file.path(output_dir,
                     "image_processing",
@@ -277,9 +280,11 @@ for(j in 32:dim(image_groups)[1]){
 
 #________________
 #export result_df----
-
+create_working_directory(file.path(output_dir,
+                                   "image_processing",
+                                   "extended"))
 readr::write_csv(result_df,
                  file.path(output_dir,
-                           "image_processing",
-                           "extended",
+                          # "image_processing",
+                          # "extended",
                            paste0("ResultTissueArea_",group_ID,".csv")))

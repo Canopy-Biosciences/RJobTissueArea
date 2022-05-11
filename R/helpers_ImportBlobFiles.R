@@ -177,7 +177,8 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
   tictoc::tic("create extended ScanHistory")
 
   # create scanHistory (query limslager)
-  ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)
+  ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)%>%
+    data.table::rbindlist()
 
   # add filterset (query limsproc)
   ScanHistory <- ScanHistory%>%
