@@ -165,6 +165,8 @@ create_ScanHistory_of_chipIDs<-function(chip_IDs){
 #' create_ScanHistory_extended
 #'
 #' @param chip_IDs
+#' @param output_dir
+#' @param result_ID
 #'
 #' @return
 #' @export

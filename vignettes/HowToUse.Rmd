@@ -46,7 +46,20 @@ RJobTissueArea:::create_working_directory(output_dir)
 - create extended Version of ScanHistory
 
 ```{r,eval=FALSE}
-ScanHistory <- create_ScanHistory_extended(chip_IDs)
+ScanHistory <- create_ScanHistory_extended(chip_IDs,
+                                           output_dir,
+                                           group_ID)
+```
+
+- read ScanHistory from output_dir
+
+```{r,eval=FALSE}
+filename <- create_result_filepath(output_dir,
+                                   "extendedScanHistory",
+                                   group_ID,
+                                   "csv")
+
+ScanHistory <- data.table::fread(filename)
 ```
 
 - select valid entities
@@ -60,6 +73,8 @@ result_files <- select_valid_image_files(ScanHistory,type = NULL)
 ```{r,eval=FALSE}
 hdr_files <- select_hdr_files(result_files)
 ```
+
+
 
 # supplement
 
