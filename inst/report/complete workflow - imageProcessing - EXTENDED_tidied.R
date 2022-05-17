@@ -2,14 +2,42 @@
 # apply image processing
 # investigate additional processing step in order to fill tissue black spots
 # complete run on chipgroup and estimate tissue size
+# filter BG and *
 
-Version <- 080522
+Version <- 170622
 
 library(RJobTissueArea)
 output_dir <- "devel/data/data_output"
 group_ID <- "P1761451"
+
+#output_dir_image_processing <- file.path(output_dir,"image_processing","extended_strategy")
+input_dir_dataSum <- file.path(output_dir,
+                               "image_processing",
+                               "data_sum_collection_4")
+
+
+
+
+
 create_working_directory(output_dir)
+create_working_directory(input_dir_dataSum)
+
+
+#sigma <- c(0.5,1,2,3,4)
+#threshold <- c(0.5,1,1.5,2,2.5,3,3.5,4,4.5,5)
+sigma <- c(1,15)
+threshold <- c(1,2,5)
+grid <- expand.grid(sigma=sigma,threshold=threshold)
+
+
+
+
 chip_IDs <- find_valid_group_chip_IDs(group_ID)
+
+
+#__________________
+#create ScanHistory----
+
 #ScanHistory <- create_ScanHistory_extended(chip_IDs,
 #                                           output_dir,
 #                                           result_ID = group_ID)
@@ -19,8 +47,17 @@ filename <- create_result_filepath(output_dir,
                                    "csv")
 
 ScanHistory <- data.table::fread(filename)
+
+#________________________
+#subset valid image files----
 result_files <- select_valid_image_files(ScanHistory,type = NULL)
+
+#______________________
+#subset hdr image files----
 hdr_files <- select_hdr_files(result_files)
+
+#___________________________
+#create list of image_groups----
 image_groups <- hdr_files%>%
   dplyr::rename("image_path"="hdr_filepath",
                 "blob_filename"="hdr_filename")%>%
@@ -31,19 +68,7 @@ image_groups <- hdr_files%>%
                                                    "data_sum",
                                                    group_ID,
                                                    type="csv"))
-
-#sigma <- c(0.5,1,2,3,4)
-#threshold <- c(0.5,1,1.5,2,2.5,3,3.5,4,4.5,5)
-sigma <- c(1,15)
-threshold <- c(1,2,5)
-grid <- expand.grid(sigma=sigma,threshold=threshold)
-
-
-#output_dir_image_processing <- file.path(output_dir,"image_processing","extended_strategy")
-input_dir_dataSum <- file.path(output_dir,"image_processing", "data_sum_collection_3")
-
 #create result_df----
-
 result_df <- tibble::tibble(
   group_ID = character(0), # group_ID
   chip_ID = character(0), #chip_ID
@@ -62,6 +87,8 @@ j=1
 for(j in 1:dim(image_groups)[1]){
 
 
+  #____________________________________________
+  #__select single entities of image_group list----
   image_group_list <- image_groups$data[[j]]
   group_ID <-  image_groups$group_ID[j]
   chip_ID <- image_groups$chip_ID[j]
@@ -72,14 +99,21 @@ for(j in 1:dim(image_groups)[1]){
   i=1
   for(i in 1:dim(image_group_list)[1]){
 
+    #____________________________
+    #__select single image entity----
+
     image_path <- image_group_list$image_path[i]
     blob_filename <- image_group_list$blob_filename[i]
 
+    #___________________
+    #__read image binary----
     #data_mat <- read_binary_image_as_matrix(image_path,
     #                                        blob_filename)
     data <- read_binary_image_as_vector(image_path,
                                         blob_filename)
 
+    #__________________
+    #__add pixel values----
     if(i == 1){
       data_sum <- data
     }else{
@@ -94,29 +128,28 @@ for(j in 1:dim(image_groups)[1]){
     }
   }
 
+  #___________________________
+  #__create matrix of data_sum----
   m_data_sum <-matrix(data,
                       ncol=attr(data_sum,"h_pixel"),
                       nrow=attr(data_sum,"v_pixel"),
                       byrow=TRUE)
 
+  #__________________________
+  #__extract image resolution----
   cellres <- as.vector(attr(data_sum,"image_resolution"))
 
   #_________________
   #__export data_sum----
-  create_working_directory(file.path(output_dir,
-                                     "image_processing",
-                                     "data_sum_collection_3"))
   saveRDS(m_data_sum,
-          file.path(output_dir,
-                    "image_processing",
-                    "data_sum_collection_3",
+          file.path(input_dir_dataSum,
                     paste0("dataSum_",chip_ID,"_",pos_ID,".rds")))
 
   #__________________
   #__read in data_sum----
 
-  #m_data_file <- file.path(input_dir_dataSum,
-  #                         paste0("dataSum_",chip_ID,"_",pos_ID,".rds"))
+  m_data_file <- file.path(input_dir_dataSum,
+                           paste0("dataSum_",chip_ID,"_",pos_ID,".rds"))
 #
   #m_data_sum <- readRDS(m_data_file)
   ##cellres <- as.vector(attr(m_data_sum,"image_resolution"))
@@ -226,7 +259,7 @@ for(j in 1:dim(image_groups)[1]){
 
       output_dir_image_processing <- file.path(
         output_dir,
-        "image_processing","extended",
+        "image_processing","extended_4",
         paste0("blurring_sigma_",sigma),
         paste0("thresholding_values_",threshold),
         paste0("growANDshinking_windowsize_",window)
@@ -282,9 +315,9 @@ for(j in 1:dim(image_groups)[1]){
 #export result_df----
 create_working_directory(file.path(output_dir,
                                    "image_processing",
-                                   "extended"))
+                                   "extended_4"))
 readr::write_csv(result_df,
                  file.path(output_dir,
                           # "image_processing",
                           # "extended",
-                           paste0("ResultTissueArea_",group_ID,".csv")))
+                           paste0("ResultTissueArea_4_",group_ID,".csv")))

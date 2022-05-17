@@ -990,7 +990,7 @@ select_hdr_files <- function(results_files){
   hdr_files <- result_files%>%
     dplyr::filter(!is.na(hdr_filename))%>%
     #dplyr::filter(jobType == "FL")%>%
-    #dplyr::filter(! Tag %in% c("BG", "*"))%>%
+    dplyr::filter(! Tag %in% c("BG", "*"))%>%
     dplyr::mutate(hdr_filepath = create_hdr_filepath(chip_path,scan_ID,pos_ID))#%>%
   #dplyr::group_by(chip_ID,pos_ID)%>%
   #tidyr::nest()
