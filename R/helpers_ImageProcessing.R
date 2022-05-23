@@ -378,8 +378,10 @@ calculate_data_sum <- function(image_list,
 #' @export
 #'
 #' @examples
-process_data_sum_for_image_groups <- function(image_groups){
+process_data_sum_for_image_groups <- function(image_groups,datasum_dir){
 
+
+  create_working_directory(datasum_dir)
 
   purrr::map2(image_groups$data,
               image_groups$data_file,

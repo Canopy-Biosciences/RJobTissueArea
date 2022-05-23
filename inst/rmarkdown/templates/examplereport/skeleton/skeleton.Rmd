@@ -19,11 +19,18 @@ library(RJobTissueArea)
 group_ID <- "P1761451"
 ```
 
-- set and check output directory
+- set output directory
 
 ```{r,eval=FALSE}
 output_dir <- "devel/data/data_output"
+```
+
+- check and create directories
+
+```{r}
 RJobTissueArea:::create_working_directory(output_dir)
+input_dir_dataSum <- file.path(output_dir,"dataSum_collection")
+RJobTissueArea:::create_working_directory(input_dir_dataSum)
 ```
 
 # get all valid chip_IDs in chip_group 
