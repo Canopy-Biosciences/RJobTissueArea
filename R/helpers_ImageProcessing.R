@@ -20,7 +20,8 @@ writeLines(
     "- process_data_sum_for_image_groups()",
     "- read_data_sum_image_resolution()",
     "- read_data_sum_as_matrix()",
-    "- process_tissue_detection_workflow()"
+    "- process_tissue_detection_workflow()",
+    "- create_pixmap_greyvalues()"
   ))
 
 
@@ -288,7 +289,8 @@ create_hdr_image_groups <- function(ScanHistory,
                                     input_dir_dataSum){
   #________________________
   #subset valid image files----
-  result_files <- select_valid_image_files(ScanHistory,type = NULL)
+  result_files <- select_valid_image_files(result_files=ScanHistory,
+                                           type = NULL)
 
   #______________________
   #subset hdr image files----
@@ -424,6 +426,22 @@ read_data_sum_image_resolution <- function(filepath){
   return(cellres)
 }
 
+create_pixmap_greyvalues <- function(m.data,
+                                     cellres){
+  #_____________
+  #create pixmap----
+  # cellres: pixel resolution in horizontal and vertical direction
+
+  image <-pixmap::pixmapGrey(m.data,
+                             cellres=cellres)
+
+  #_______________
+  #get grey values----
+  grey_values <- image@grey * 255
+
+  return(grey_values)
+}
+
 #' process_tissue_detection_workflow
 #'
 #' @param m.data
@@ -441,17 +459,6 @@ process_tissue_detection_workflow <- function(m.data,
                                               sigma,
                                               threshold,
                                               window){
-  #_____________
-  #create pixmap----
-  # cellres: pixel resolution in horizontal and vertical direction
-
-  image <-pixmap::pixmapGrey(m.data,
-                             cellres=cellres)
-
-  #_______________
-  #get grey values----
-  grey_values <- image@grey * 255
-
   #________________________
   #Low-pass Gaussian filter----
   #remotes::install_version("locfit",version="1.5.9.4")
@@ -503,5 +510,11 @@ process_tissue_detection_workflow <- function(m.data,
   xs <-imager::shrink(xg,window, window, window)
 
   return(xs)
+
+}
+
+plot_tissue_detection <- function(m.data,pixelset,filename){
+
+
 
 }
