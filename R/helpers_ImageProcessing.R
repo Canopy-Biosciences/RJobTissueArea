@@ -1,4 +1,4 @@
-V <- "030522"
+V <- "230522"
 helpers <- "ImageProcessing"
 
 assign(paste0("version.helpers.", helpers), V)
@@ -14,7 +14,8 @@ writeLines(
     "- export_image_result_tiffs()",
     "- create_name_result_ID()",
     "- create_result_filepath()",
-    "- create_export_data_sum()"
+    "- create_export_data_sum()",
+    "- create_hdr_image_groups()"
   ))
 
 
@@ -221,7 +222,7 @@ perform_image_processing <- function(m.data,
                                      pos_ID,
                                      sigma = sigma,
                                      threshold = threshold){
-  Version <- "030522"
+  Version <- "220522"
   #data <- data_sum
 
 
@@ -269,3 +270,39 @@ perform_image_processing <- function(m.data,
                             nrows)
 
 }
+
+#' create_hdr_image_groups
+#'
+#' @param ScanHistory
+#'
+#' @return
+#' @export
+#'
+#' @examples
+create_hdr_image_groups <- function(ScanHistory){
+  #________________________
+  #subset valid image files----
+  result_files <- select_valid_image_files(ScanHistory,type = NULL)
+
+  #______________________
+  #subset hdr image files----
+  hdr_files <- select_hdr_files(result_files)
+
+  #___________________________
+  #create list of image_groups----
+  image_groups <- hdr_files%>%
+    dplyr::rename("image_path"="hdr_filepath",
+                  "blob_filename"="hdr_filename")%>%
+    dplyr::group_by(chip_ID,pos_ID)%>%
+    tidyr::nest()%>%
+    dplyr::mutate(group_ID = paste0(chip_ID,"_",pos_ID))%>%
+    dplyr::mutate(data_file = create_result_filepath(output_dir,
+                                                     "data_sum",
+                                                     group_ID,
+                                                     type="csv"))
+
+  return(image_groups)
+
+}
+
+
