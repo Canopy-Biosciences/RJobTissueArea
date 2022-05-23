@@ -17,7 +17,10 @@ writeLines(
     "- create_export_data_sum()",
     "- create_hdr_image_groups()",
     "- calculate_data_sum()",
-    "- process_data_sum_for_image_groups()"
+    "- process_data_sum_for_image_groups()",
+    "- read_data_sum_image_resolution()",
+    "- read_data_sum_as_matrix()",
+    "- process_tissue_detection_workflow()"
   ))
 
 
@@ -345,10 +348,10 @@ calculate_data_sum <- function(image_list,
       data_sum <- data
     }else{
 
-      if(any(attr(data,"image_resolution") != attr(data_sum,"image_resolution"))){
-        writeLines(c(
-          paste0("- image_resolution changed with scan_ID: ", image_group_list$scan_ID[i])
-        ))}
+      #if(any(attr(data,"image_resolution") != attr(data_sum,"image_resolution"))){
+      #  writeLines(c(
+      #    paste0("- image_resolution changed with scan_ID: ", image_group_list$scan_ID[i])
+      #  ))}
 
       data_sum <- data_sum+data
 
@@ -378,4 +381,127 @@ process_data_sum_for_image_groups <- function(image_groups){
 
 }
 
-read_data_sum <- function(){}
+#' read_data_sum_as_matrix
+#'
+#' @param filepath
+#'
+#' @return
+#' @export
+#'
+#' @examples
+read_data_sum_as_matrix <- function(filepath){
+  #________________
+  #read in data_sum
+  data_sum <- readRDS(filepath)
+
+  #_________________________
+  #create matrix of data_sum
+  m_data_sum <-matrix(data_sum,
+                      ncol=attr(data_sum,"h_pixel"),
+                      nrow=attr(data_sum,"v_pixel"),
+                      byrow=TRUE)
+  return(m_data_sum)
+}
+
+#' read_data_sum_image_resolution
+#'
+#' @param filepath
+#'
+#' @return
+#' @export
+#'
+#' @examples
+read_data_sum_image_resolution <- function(filepath){
+
+  #________________
+  #read in data_sum
+  data_sum <- readRDS(filepath)
+
+  #________________________
+  #extract image resolution
+  cellres <- as.vector(attr(data_sum,"image_resolution"))
+
+  return(cellres)
+}
+
+#' process_tissue_detection_workflow
+#'
+#' @param m.data
+#' @param cellres
+#' @param sigma
+#' @param threshold
+#' @param window
+#'
+#' @return
+#' @export
+#'
+#' @examples
+process_tissue_detection_workflow <- function(m.data,
+                                              cellres,
+                                              sigma,
+                                              threshold,
+                                              window){
+  #_____________
+  #create pixmap----
+  # cellres: pixel resolution in horizontal and vertical direction
+
+  image <-pixmap::pixmapGrey(m.data,
+                             cellres=cellres)
+
+  #_______________
+  #get grey values----
+  grey_values <- image@grey * 255
+
+  #________________________
+  #Low-pass Gaussian filter----
+  #remotes::install_version("locfit",version="1.5.9.4")
+  #BiocManager::install("EBImage",force=TRUE)
+  #EBImage version: 4281
+  xb <- EBImage::gblur(grey_values,
+                       sigma)
+
+  #____________
+  #round values----
+  xb <- round(xb,digits = 1)
+
+  #___________________________
+  #create blurred pixmap image----
+  image_blurred <- pixmap::pixmapGrey(xb,
+                                      cellres=cellres)
+
+  #___________________
+  #threshold filtering----
+  pos <- which(xb > threshold)
+  xt <- xb
+  xt[which(xb > threshold)] <- 1
+  xt[which(xb <= threshold)] <- 0
+
+  #_____________________________
+  #pixmap object of binary image----
+  image_binary <- image
+  image_binary@grey <- xt
+
+  #_______________
+  #adapting window----
+  xta <- EBImage::thresh(xt, w=1,h=1)
+
+  image_adaptedThreshold <- pixmap::pixmapGrey(xta,
+                                               cellres=cellres)
+
+  #________________________
+  #convert to imager object----
+
+  imager_pxset <- imager::as.cimg(image_binary@grey)
+
+  #___________
+  #grow binary----
+  xg <- imager::grow(imager_pxset, window, window, window)
+
+
+  #_____________
+  #shrink binary----
+  xs <-imager::shrink(xg,window, window, window)
+
+  return(xs)
+
+}
