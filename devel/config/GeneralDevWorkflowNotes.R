@@ -18,6 +18,7 @@ utils::file.edit("NEWS.md")
 devtools::run_examples()
 renv::snapshot()
 devtools::document()
+
 usethis::use_namespace()
 devtools::build_vignettes()
 devtools::build_readme()

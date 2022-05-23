@@ -728,7 +728,7 @@ process_TissueDetection <- function(image_groups,
                       threshold = threshold,
                       GS_window = window,
                       perc_TissueArea = perc_pixel,
-                      InputImageFile = m_data_file,
+                      InputImageFile = data_file,
                       OutputPlotFile = filename
       )
 
@@ -749,5 +749,6 @@ process_TissueDetection <- function(image_groups,
                    result_filename)
 
 
+  return(result_df)
 
 }

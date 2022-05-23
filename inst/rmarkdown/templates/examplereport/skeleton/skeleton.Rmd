@@ -1,0 +1,73 @@
+---
+title: "Template Title"
+author: "Your Name"
+date: "The Date"
+output: output_format
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# set input
+
+```{r setup}
+library(RJobTissueArea)
+```
+
+```{r,eval=FALSE}
+group_ID <- "P1761451"
+```
+
+- set and check output directory
+
+```{r,eval=FALSE}
+output_dir <- "devel/data/data_output"
+RJobTissueArea:::create_working_directory(output_dir)
+```
+
+# get all valid chip_IDs in chip_group 
+
+```{r}
+chip_IDs <- find_valid_group_chip_IDs(group_ID)
+```
+
+# create ScanHistory
+
+```{r,eval=FALSE}
+ScanHistory <- create_ScanHistory_extended(chip_IDs,
+                                           output_dir,
+                                           group_ID)
+```
+
+- read ScanHistory file from output_dir
+
+```{r}
+ScanHistory <- read_ScanHistory(group_ID,
+                                output_dir)
+```
+
+# select valid hdr image groups
+
+```{r}
+# subsetting image data listed in ScanHistory
+image_groups <- create_hdr_image_groups(ScanHistory,
+                                        input_dir_dataSum)
+```
+
+# accumulate all images
+
+```{r}
+# calculate data_sum for all image groups
+process_data_sum_for_image_groups(image_groups)
+```
+
+# apply tissue detection workflow
+
+```{r}
+process_TissueDetection(image_groups,
+                        output_dir,
+                        sigma = 15,
+                        threshold = 2,
+                        window = 10)
+```

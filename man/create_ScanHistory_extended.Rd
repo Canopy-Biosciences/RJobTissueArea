@@ -7,7 +7,7 @@
 create_ScanHistory_extended(chip_IDs, output_dir, result_ID)
 }
 \arguments{
-\item{chip_IDs}{}
+\item{result_ID}{}
 }
 \value{
 

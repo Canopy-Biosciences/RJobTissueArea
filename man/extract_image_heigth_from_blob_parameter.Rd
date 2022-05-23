@@ -4,7 +4,7 @@
 \alias{extract_image_heigth_from_blob_parameter}
 \title{extract_image_heigth_from_blob_parameter}
 \usage{
-extract_image_heigth_from_blob_parameter(blob_paramter)
+extract_image_heigth_from_blob_parameter(blob_parameter)
 }
 \arguments{
 \item{blob_paramter}{}

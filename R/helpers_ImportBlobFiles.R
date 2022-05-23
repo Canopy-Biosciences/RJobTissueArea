@@ -1,4 +1,4 @@
-V <- "290422"
+V <- "230522"
 helpers <- "ImportBlobFiles"
 
 assign(paste0("version.helpers.", helpers), V)
@@ -45,7 +45,8 @@ writeLines(
     "- get_enabled_positions_from_positions_list()",
     "- get_enabled_positions()",
     "- get_positions_field_from_query_result()",
-    "- read_binary_image_as_vector()"
+    "- read_binary_image_as_vector()",
+    "- read_ScanHistory()"
   ))
 
 #' create_hdr_filepath
@@ -523,7 +524,7 @@ extract_image_path_from_blob_parameter<- function(blob_parameter){
 #' @export
 #'
 #' @examples
-extract_image_heigth_from_blob_parameter <- function(blob_paramter){
+extract_image_heigth_from_blob_parameter <- function(blob_parameter){
 
   Version <- "270422"
 
@@ -572,7 +573,7 @@ extract_image_resolution_from_blob_parameter <- function(blob_parameter){
 #' @export
 #'
 #' @examples
-extract_image_width_from_blob_parameter <- function(blob_paramter){
+extract_image_width_from_blob_parameter <- function(blob_parameter){
 
   Version <- "270422"
 
@@ -593,7 +594,7 @@ extract_image_width_from_blob_parameter <- function(blob_paramter){
 #' @export
 #'
 #' @examples
-extract_n_pixels_from_blob_parameter <- function(blob_paramter){
+extract_n_pixels_from_blob_parameter <- function(blob_parameter){
 
   Version <- "270422"
 
@@ -988,7 +989,7 @@ read_XML_BLOB_parameter<- function(image_path, blob_filename) {
 #' @export
 #'
 #' @examples
-select_hdr_files <- function(results_files){
+select_hdr_files <- function(result_files){
   hdr_files <- result_files%>%
     dplyr::filter(!is.na(hdr_filename))%>%
     #dplyr::filter(jobType == "FL")%>%
@@ -1051,7 +1052,6 @@ select_valid_image_files <- function(result_files, type=NULL){
       dplyr::filter(enabled == 1)
   }
 
-
   #_________________
   # 4) return result----
   return(result_files)
@@ -1109,3 +1109,25 @@ query_chipID_channels <- function(chip_IDs){
   return(query_result)
 
 }
+
+#' read_ScanHistory
+#'
+#' @param group_ID
+#' @param output_dir
+#'
+#' @return
+#' @export
+#'
+#' @examples
+read_ScanHistory <- function(group_ID,
+                             output_dir){
+  filename <- create_result_filepath(output_dir,
+                                     "extendedScanHistory",
+                                     group_ID,
+                                     "csv")
+
+  ScanHistory <- data.table::fread(filename)
+
+  return(ScanHistory)
+}
+

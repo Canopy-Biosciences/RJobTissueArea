@@ -4,7 +4,7 @@
 \alias{extract_n_pixels_from_blob_parameter}
 \title{extract_n_pixels_from_blob_parameter}
 \usage{
-extract_n_pixels_from_blob_parameter(blob_paramter)
+extract_n_pixels_from_blob_parameter(blob_parameter)
 }
 \arguments{
 \item{blob_paramter}{}
