@@ -15,7 +15,9 @@ writeLines(
     "- create_name_result_ID()",
     "- create_result_filepath()",
     "- create_export_data_sum()",
-    "- create_hdr_image_groups()"
+    "- create_hdr_image_groups()",
+    "- calculate_data_sum()",
+    "- process_data_sum_for_image_groups()"
   ))
 
 
@@ -279,7 +281,8 @@ perform_image_processing <- function(m.data,
 #' @export
 #'
 #' @examples
-create_hdr_image_groups <- function(ScanHistory){
+create_hdr_image_groups <- function(ScanHistory,
+                                    input_dir_dataSum){
   #________________________
   #subset valid image files----
   result_files <- select_valid_image_files(ScanHistory,type = NULL)
@@ -296,13 +299,83 @@ create_hdr_image_groups <- function(ScanHistory){
     dplyr::group_by(chip_ID,pos_ID)%>%
     tidyr::nest()%>%
     dplyr::mutate(group_ID = paste0(chip_ID,"_",pos_ID))%>%
-    dplyr::mutate(data_file = create_result_filepath(output_dir,
-                                                     "data_sum",
-                                                     group_ID,
-                                                     type="csv"))
+    dplyr::mutate(data_file =  file.path(input_dir_dataSum,
+                                         paste0("dataSum_",chip_ID,"_",pos_ID,".rds")))
 
   return(image_groups)
 
 }
 
+#' calculate_data_sum
+#'
+#' @param image_group_list
+#' @param filepath
+#'
+#' @return
+#' @export
+#'
+#' @examples
+calculate_data_sum <- function(image_list,
+                               filepath){
 
+ # j <- 1
+ # image_group_list <- image_groups$data[[j]]
+ # group_ID <-  image_groups$group_ID[j]
+ # chip_ID <- image_groups$chip_ID[j]
+ # pos_ID <- image_groups$pos_ID[j]
+
+  for(i in 1:dim(image_list)[1]){
+
+    #__________________________
+    #select single image entity
+
+    image_path <- image_list$image_path[i]
+    blob_filename <- image_list$blob_filename[i]
+
+    #_________________
+    #read image binary
+    #data_mat <- read_binary_image_as_matrix(image_path,
+    #                                        blob_filename)
+    data <- read_binary_image_as_vector(image_path,
+                                        blob_filename)
+
+    #________________
+    #add pixel values
+    if(i == 1){
+      data_sum <- data
+    }else{
+
+      if(any(attr(data,"image_resolution") != attr(data_sum,"image_resolution"))){
+        writeLines(c(
+          paste0("- image_resolution changed with scan_ID: ", image_group_list$scan_ID[i])
+        ))}
+
+      data_sum <- data_sum+data
+
+    }
+  }
+
+  #_______________
+  #export data_sum
+  saveRDS(data_sum,
+          filepath)
+}
+
+#' process_data_sum_for_image_groups
+#'
+#' @param image_groups
+#'
+#' @return
+#' @export
+#'
+#' @examples
+process_data_sum_for_image_groups <- function(image_groups){
+
+
+  purrr::map2(image_groups$data,
+              image_groups$data_file,
+              ~calculate_data_sum(.x,.y))
+
+}
+
+read_data_sum <- function(){}
