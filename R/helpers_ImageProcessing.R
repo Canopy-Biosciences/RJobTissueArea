@@ -21,7 +21,8 @@ writeLines(
     "- read_data_sum_image_resolution()",
     "- read_data_sum_as_matrix()",
     "- process_tissue_detection_workflow()",
-    "- create_pixmap_greyvalues()"
+    "- create_pixmap_greyvalues()",
+    "- calculate_perc_TissueArea()"
   ))
 
 
@@ -426,6 +427,15 @@ read_data_sum_image_resolution <- function(filepath){
   return(cellres)
 }
 
+#' create_pixmap_greyvalues
+#'
+#' @param m.data
+#' @param cellres
+#'
+#' @return
+#' @export
+#'
+#' @examples
 create_pixmap_greyvalues <- function(m.data,
                                      cellres){
   #_____________
@@ -459,6 +469,16 @@ process_tissue_detection_workflow <- function(m.data,
                                               sigma,
                                               threshold,
                                               window){
+  #create pixmap----
+  # cellres: pixel resolution in horizontal and vertical direction
+
+  image <-pixmap::pixmapGrey(m.data,
+                             cellres=cellres)
+
+  #_______________
+  #get grey values----
+  grey_values <- image@grey * 255
+
   #________________________
   #Low-pass Gaussian filter----
   #remotes::install_version("locfit",version="1.5.9.4")
@@ -517,4 +537,21 @@ plot_tissue_detection <- function(m.data,pixelset,filename){
 
 
 
+}
+
+#' calculate_perc_TissueArea
+#'
+#' @param xs
+#'
+#' @return
+#' @export
+#'
+#' @examples
+calculate_perc_TissueArea <- function(xs){
+  #____count tissue pixel----
+  n_tissue_pixel <- which(xs == 1)%>%length()
+  n_pixel <- xs%>%length()
+  perc_pixel <- round(n_tissue_pixel/n_pixel*100,digits=1)
+
+  return(perc_pixel)
 }
