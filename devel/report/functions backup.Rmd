@@ -447,7 +447,224 @@ list_BlobFileName_in_filepath <- function(HDRimage_filepath){
 }
 ```
 
-# immage processing - workflow
+# image files
+
+## export_list_all_image_files
+
+```{r}
+#' export_list_all_image_files
+#'
+#' @param chip_IDs
+#' @param type
+#'
+#' @return
+#' @export
+#'
+#' @examples
+export_list_all_image_files <- function(chip_IDs,
+                                        result_ID,
+                                        output_dir){
+
+  # workflow function
+  # based on workflow documented in report: "find all blob image files_smarter.Rmd"
+  Version <- "250422"
+
+  tictoc::tic("find image files complete workflow")
+
+  #_____________________
+  # 1) find server paths----
+  server_paths <- find_server_path()
+  server_paths <- server_paths$server_path
+
+  #__________________
+  # 2) find chip_path----
+  chip_paths <- purrr::map_chr(chip_IDs,
+                               ~find_chip_path(.x,server_paths))
+
+  #__________________________
+  # 3) create imageServer_path----
+  imageServer_paths <- purrr::map2_chr(chip_paths,chip_IDs,
+                                       ~stringr::str_remove(.x,.y))
+
+  #______________________
+  # 4) combine to df: IDs----
+  IDs <- dplyr::tibble(
+    chip_ID = chip_IDs,
+    chip_path = chip_paths,
+    imageServer_path = imageServer_paths)
+
+  #______________________
+  # 5) create scanHistory----
+  ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)%>%
+    dplyr::bind_rows()
+
+  #_________________
+  # 6) add filterset----
+  ScanHistory <- ScanHistory%>%
+    dplyr::mutate(filterset = query_filterset_of_scanIDs(scan_ID))
+
+  #___________________________
+  # 7) query chipIDs ins scans----
+  query_chip_scans <- query_mongoDB("scans",
+                                    "channelUID",
+                                    chip_IDs)
+
+  #________________________
+  # 8) wrangle query result----
+  # 8a) select query columns
+  results_chip_scans <- purrr::map(query_chip_scans$result,
+                                   ~.x%>%
+                                     dplyr::select("chip_ID" = "channelUID",
+                                                   "scan_ID" = "UID",
+                                                   jobType,
+                                                   basePath,
+                                                   "Status" = "jobEndState",
+                                                   positions,
+                                                   `enabled-count`))
+
+  # 8b) subselect positions
+  results_chip_scans <- purrr::map(
+    results_chip_scans,
+    ~.x%>%
+      tidyr::unnest(cols="positions")%>%
+      dplyr::select(
+        dplyr::any_of(c("chip_ID",
+                        "scan_ID",
+                        "pos_ID" = "posid",
+                        "jobType",
+                        "basePath",
+                        "Status",
+                        "chipx",
+                        "chipy",
+                        "enabled",
+                        "bleach-time",
+                        "enabled-count"))))
+
+  # 8c) bind rows
+  results_chip_scans <- results_chip_scans%>%
+    dplyr::bind_rows()
+
+  #_________________________
+  # 9) join imageServer_path----
+  result_paths <- dplyr::left_join(results_chip_scans,
+                                   IDs,
+                                   by = "chip_ID")
+
+  #_________________
+  # 10) add pos_path----
+  result_paths <- result_paths%>%
+    dplyr::mutate(pos_path = create_pos_foldername(imageServer_path,
+                                                   basePath,
+                                                   pos_ID))
+
+  #_________________________
+  # 11) add dirs in pos_path----
+  result_paths <- result_paths%>%
+    dplyr::mutate(image_folder = purrr::map(pos_path,
+                                            ~list.dirs(.x,
+                                                       full.names = FALSE,
+                                                       recursive = FALSE)))%>%
+    tidyr::unnest(cols="image_folder")%>%
+    dplyr::mutate(image_path = file.path(pos_path,image_folder))
+
+  #_______________________________
+  # 12) list files in image_folder----
+  result_files <- result_paths%>%
+    dplyr::mutate(blob_filename = purrr::map(image_path,
+                                             ~list.files(.x)))%>%
+    tidyr::unnest(cols="blob_filename")
+
+  #_________________
+  # 13) add filetype----
+  result_files <- result_files%>%
+    dplyr::mutate(filetype = tools::file_ext(blob_filename))
+
+  #_____________________
+  # 14) join ScanHistory----
+  result_files <- dplyr::left_join(
+    result_files,
+    ScanHistory,
+    by = c("scan_ID", "Status"))
+
+  #___________
+  # 15) export----
+  # __15a) create name of result file
+  file <- create_result_filepath(output_dir,
+                                 name_string = "all_image_files_of_groupID",
+                                 result_ID,
+                                 type = "csv")
+  #__15b) export file
+  data.table::fwrite(result_files,
+                     file)
+
+  #________________________
+  # 16) return result_files----
+  tictoc::toc()
+  return(result_files)
+}
+```
+
+# blob parameter
+
+## list_BlobFileName_in_filepath()
+
+```{r}
+#' list_BlobFileName_in_filepath
+#'
+#' @param image_filepath
+#'
+#' @return
+#' @export
+#'
+#' @examples
+list_BlobFileName_in_filepath <- function(image_filepath){
+  Files<-list.files(image_filepath)
+  BlobFiles<-Files[stringr::str_detect(Files,".blob32$")]
+  BlobFileName<-BlobFiles%>%stringr::str_remove(".blob32$")
+  if(length(BlobFileName)==0){
+    return(NA)
+  }else{return(BlobFileName)}
+}
+
+```
+
+## export_blob_parameter_of_image_filelist()
+
+```{r}
+#' export_blob_parameter_of_image_filelist
+#'
+#' @param image_files
+#' @param output_dir
+#' @param result_ID
+#'
+#' @return
+#' @export
+#'
+#' @examples
+export_blob_parameter_of_image_filelist<-function(image_files,
+                                                  output_dir,
+                                                  result_ID){
+
+  V <- "270422"
+
+  parameter_list <- purrr::map2_df(
+    image_files$image_path,
+    image_files$blob_filename,
+    ~extract_parameter_from_BLOB(.x,.y))
+
+  result_filename <- create_result_filepath(output_dir,
+                                            "Blob_parameters",
+                                            result_ID,
+                                            "csv")
+  data.table::fwrite(parameter_list,
+                     result_filename)
+
+  return(parameter_list)
+
+}
+```
+
+# image processing - workflow
 
 ## create_export_data_sum()
 

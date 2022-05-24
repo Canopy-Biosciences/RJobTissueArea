@@ -56,7 +56,6 @@ writeLines(
 #' @param pos_ID
 #'
 #' @return
-#' @export
 #'
 #' @examples
 create_hdr_filepath <- function(chip_path,scan_ID,pos_ID){
@@ -78,7 +77,6 @@ create_hdr_filepath <- function(chip_path,scan_ID,pos_ID){
 #' @param encoding
 #'
 #' @return
-#' @export
 #'
 #' @examples
 convert_binsize_from_encoding <- function(encoding){
@@ -98,7 +96,6 @@ convert_binsize_from_encoding <- function(encoding){
 #' @param pos_ID
 #'
 #' @return
-#' @export
 #'
 #' @examples
 create_pos_foldername <- function(imageServer_path,basePath,pos_ID){
@@ -119,7 +116,6 @@ create_pos_foldername <- function(imageServer_path,basePath,pos_ID){
 #' @param Type
 #'
 #' @return
-#' @export
 #'
 #' @examples
 create_Pos_image_filepath <- function(ScanBasePath,
@@ -143,7 +139,6 @@ create_Pos_image_filepath <- function(ScanBasePath,
 #' @param chip_IDs
 #'
 #' @return
-#' @export
 #'
 #' @examples
 create_ScanHistory_of_chipIDs<-function(chip_IDs){
@@ -173,26 +168,32 @@ create_ScanHistory_of_chipIDs<-function(chip_IDs){
 #' @export
 #'
 #' @examples
-create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
+create_ScanHistory_extended <- function(chip_IDs,
+                                        output_dir,
+                                        result_ID){
 
   Version <- "290422"
 
   tictoc::tic("create extended ScanHistory")
 
-  # create scanHistory (query limslager)
+  #_____________________________________
+  # create scanHistory (query limslager)----
   ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)%>%
     data.table::rbindlist()
 
-  # add filterset (query limsproc)
+  #_______________________________
+  # add filterset (query limsproc)----
   ScanHistory <- ScanHistory%>%
     dplyr::mutate(filterset = query_filterset_of_scanIDs(scan_ID))
 
-  # query result chipID ins scans
+  #______________________________
+  # query result chipID ins scans----
   query_chip_scans <- query_mongoDB("scans",
                                     "channelUID",
                                     chip_IDs)
 
-  # select columns
+  #_______________
+  # select columns----
   results_chip_scans <- purrr::map_df(query_chip_scans$result,
                                       ~.x%>%
                                         dplyr::select("chip_ID" = "channelUID",
@@ -204,11 +205,13 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
                                                       positions,
                                                       `enabled-count`))
 
-  # join ScanHistory
+  #_________________
+  # join ScanHistory----
   ScanHistory2 <- dplyr::full_join(ScanHistory,
                                   results_chip_scans, by = "scan_ID")
 
-  # subselect columns position
+  #___________________________
+  # subselect columns position----
   ScanHistory3 <- ScanHistory2%>%
     dplyr::mutate(positions = purrr::map(
       positions,
@@ -232,11 +235,13 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
                           #"deltaTL"
                           )))))
 
-  #unnest selected columns in positions
+  #____________________________________
+  #unnest selected columns in positions----
   ScanHistory4 <- ScanHistory3%>%
     tidyr::unnest(positions)
 
-  # extract hdr column in positions
+  #________________________________
+  # extract hdr column in positions----
   ScanHistory5 <- ScanHistory4%>%
     dplyr::mutate(hdr_filename = purrr::map(ScanHistory4$hdr,~.x)$filename)%>%
     dplyr::select(-hdr)
@@ -245,26 +250,30 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
  #   dplyr::select(chip_ID,scan_ID,pos_ID,hdr,flimages,focus,deltaTL,posref)
 
 
-  # get enabled positions (query in channels)
+  #__________________________________________
+  # get enabled positions (query in channels)----
   enabled_positions <- get_enabled_positions(chip_IDs)
 
-  # join enabled position flag
-
+  #___________________________
+  # join enabled position flag----
   ScanHistory6<- dplyr::left_join(ScanHistory5,
                                  enabled_positions,
                                  by=c("chip_ID", "pos_ID"="posid"))
 
-  #add chip_path
+  #_____________
+  #add chip_path----
   serverpath <- find_server_path()
 
   chip_paths <- data.frame(
     chip_ID = chip_IDs,
-    chip_path = purrr::map_chr(chip_IDs,~find_chip_path(.x)))
+    chip_path = purrr::map_chr(chip_IDs,
+                               ~find_chip_path(.x)))
 
   ScanHistory7 <- ScanHistory6%>%
     dplyr::left_join(chip_paths,by="chip_ID")
 
-  # export ScanHistory
+  #___________________
+  # export ScanHistory----
   result_filename <- create_result_filepath(output_dir,
                                             "extendedScanHistory",
                                             result_ID,
@@ -272,190 +281,9 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
   data.table::fwrite(ScanHistory7,result_filename)
 
   tictoc::toc()
+
   return(ScanHistory7)
 
-}
-
-#' export_blob_parameter_of_image_filelist
-#'
-#' @param image_files
-#' @param output_dir
-#' @param result_ID
-#'
-#' @return
-#' @export
-#'
-#' @examples
-export_blob_parameter_of_image_filelist<-function(image_files,
-                                                  output_dir,
-                                                  result_ID){
-
-  V <- "270422"
-
-  parameter_list <- purrr::map2_df(
-    image_files$image_path,
-    image_files$blob_filename,
-    ~extract_parameter_from_BLOB(.x,.y))
-
-  result_filename <- create_result_filepath(output_dir,
-                                            "Blob_parameters",
-                                            result_ID,
-                                            "csv")
-  data.table::fwrite(parameter_list,
-                     result_filename)
-
-  return(parameter_list)
-
-}
-#' export_list_all_image_files
-#'
-#' @param chip_IDs
-#' @param type
-#'
-#' @return
-#' @export
-#'
-#' @examples
-export_list_all_image_files <- function(chip_IDs,
-                                        result_ID,
-                                        output_dir){
-
-  # workflow function
-  # based on workflow documented in report: "find all blob image files_smarter.Rmd"
-  Version <- "250422"
-
-  tictoc::tic("find image files complete workflow")
-
-  #_____________________
-  # 1) find server paths----
-  server_paths <- find_server_path()
-  server_paths <- server_paths$server_path
-
-  #__________________
-  # 2) find chip_path----
-  chip_paths <- purrr::map_chr(chip_IDs,
-                               ~find_chip_path(.x,server_paths))
-
-  #__________________________
-  # 3) create imageServer_path----
-  imageServer_paths <- purrr::map2_chr(chip_paths,chip_IDs,
-                                       ~stringr::str_remove(.x,.y))
-
-  #______________________
-  # 4) combine to df: IDs----
-  IDs <- dplyr::tibble(
-    chip_ID = chip_IDs,
-    chip_path = chip_paths,
-    imageServer_path = imageServer_paths)
-
-  #______________________
-  # 5) create scanHistory----
-  ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)%>%
-    dplyr::bind_rows()
-
-  #_________________
-  # 6) add filterset----
-  ScanHistory <- ScanHistory%>%
-    dplyr::mutate(filterset = query_filterset_of_scanIDs(scan_ID))
-
-  #___________________________
-  # 7) query chipIDs ins scans----
-  query_chip_scans <- query_mongoDB("scans",
-                                    "channelUID",
-                                    chip_IDs)
-
-  #________________________
-  # 8) wrangle query result----
-  # 8a) select query columns
-  results_chip_scans <- purrr::map(query_chip_scans$result,
-                                   ~.x%>%
-                                     dplyr::select("chip_ID" = "channelUID",
-                                                   "scan_ID" = "UID",
-                                                   jobType,
-                                                   basePath,
-                                                   "Status" = "jobEndState",
-                                                   positions,
-                                                   `enabled-count`))
-
-  # 8b) subselect positions
-  results_chip_scans <- purrr::map(
-    results_chip_scans,
-    ~.x%>%
-      tidyr::unnest(cols="positions")%>%
-      dplyr::select(
-        dplyr::any_of(c("chip_ID",
-                        "scan_ID",
-                        "pos_ID" = "posid",
-                        "jobType",
-                        "basePath",
-                        "Status",
-                        "chipx",
-                        "chipy",
-                        "enabled",
-                        "bleach-time",
-                        "enabled-count"))))
-
-  # 8c) bind rows
-  results_chip_scans <- results_chip_scans%>%
-    dplyr::bind_rows()
-
-  #_________________________
-  # 9) join imageServer_path----
-  result_paths <- dplyr::left_join(results_chip_scans,
-                                   IDs,
-                                   by = "chip_ID")
-
-  #_________________
-  # 10) add pos_path----
-  result_paths <- result_paths%>%
-    dplyr::mutate(pos_path = create_pos_foldername(imageServer_path,
-                                                   basePath,
-                                                   pos_ID))
-
-  #_________________________
-  # 11) add dirs in pos_path----
-  result_paths <- result_paths%>%
-    dplyr::mutate(image_folder = purrr::map(pos_path,
-                                            ~list.dirs(.x,
-                                                       full.names = FALSE,
-                                                       recursive = FALSE)))%>%
-    tidyr::unnest(cols="image_folder")%>%
-    dplyr::mutate(image_path = file.path(pos_path,image_folder))
-
-  #_______________________________
-  # 12) list files in image_folder----
-  result_files <- result_paths%>%
-    dplyr::mutate(blob_filename = purrr::map(image_path,
-                                             ~list.files(.x)))%>%
-    tidyr::unnest(cols="blob_filename")
-
-  #_________________
-  # 13) add filetype----
-  result_files <- result_files%>%
-    dplyr::mutate(filetype = tools::file_ext(blob_filename))
-
-  #_____________________
-  # 14) join ScanHistory----
-  result_files <- dplyr::left_join(
-    result_files,
-    ScanHistory,
-    by = c("scan_ID", "Status"))
-
-  #___________
-  # 15) export----
-  # __15a) create name of result file
-  file <- create_result_filepath(output_dir,
-                                 name_string = "all_image_files_of_groupID",
-                                 result_ID,
-                                 type = "csv")
-  #__15b) export file
-  data.table::fwrite(result_files,
-                     file)
-
-  #________________________
-  # 16) return result_files----
-  tictoc::toc()
-  return(result_files)
 }
 
 #' extract_encoding_from_blob_parameter
@@ -463,7 +291,6 @@ export_list_all_image_files <- function(chip_IDs,
 #' @param blob_parameter
 #'
 #' @return
-#' @export
 #'
 #' @examples
 extract_encoding_from_blob_parameter <- function(blob_parameter){
@@ -482,7 +309,6 @@ extract_encoding_from_blob_parameter <- function(blob_parameter){
 #' @param blob_parameter
 #'
 #' @return
-#' @export
 #'
 #' @examples
 extract_h_pixels_from_blob_parameter <- function(blob_parameter){
@@ -503,7 +329,6 @@ extract_h_pixels_from_blob_parameter <- function(blob_parameter){
 #' @param blob_parameter
 #'
 #' @return
-#' @export
 #'
 #' @examples
 extract_image_path_from_blob_parameter<- function(blob_parameter){
@@ -521,7 +346,6 @@ extract_image_path_from_blob_parameter<- function(blob_parameter){
 #' @param blob_paramter
 #'
 #' @return
-#' @export
 #'
 #' @examples
 extract_image_heigth_from_blob_parameter <- function(blob_parameter){
@@ -542,7 +366,6 @@ extract_image_heigth_from_blob_parameter <- function(blob_parameter){
 #' @param blob_parameter
 #'
 #' @return
-#' @export
 #'
 #' @examples
 extract_image_resolution_from_blob_parameter <- function(blob_parameter){
@@ -570,7 +393,6 @@ extract_image_resolution_from_blob_parameter <- function(blob_parameter){
 #' @param blob_paramter
 #'
 #' @return
-#' @export
 #'
 #' @examples
 extract_image_width_from_blob_parameter <- function(blob_parameter){
@@ -591,7 +413,6 @@ extract_image_width_from_blob_parameter <- function(blob_parameter){
 #' @param blob_paramter
 #'
 #' @return
-#' @export
 #'
 #' @examples
 extract_n_pixels_from_blob_parameter <- function(blob_parameter){
@@ -610,7 +431,6 @@ extract_n_pixels_from_blob_parameter <- function(blob_parameter){
 #' @param blob_parameter
 #'
 #' @return
-#' @export
 #'
 #' @examples
 extract_v_pixels_from_blob_parameter <- function(blob_parameter){
@@ -632,7 +452,6 @@ extract_v_pixels_from_blob_parameter <- function(blob_parameter){
 #' @param blob_filename
 #'
 #' @return
-#' @export
 #'
 #' @examples
 extract_parameter_from_BLOB <- function(image_path,
@@ -665,7 +484,6 @@ extract_parameter_from_BLOB <- function(image_path,
 #' @param blob_parameter
 #'
 #' @return
-#' @export
 #'
 #' @examples
 extract_statistics_from_blob_parameter <- function(blob_parameter){
@@ -686,7 +504,6 @@ extract_statistics_from_blob_parameter <- function(blob_parameter){
 #' @param single_pos_entity
 #'
 #' @return
-#' @export
 #'
 #' @examples
 extract_enabled_positions <- function(single_pos_entity){
@@ -734,7 +551,6 @@ get_enabled_positions <- function(chip_ID){
 #' @param positions_list
 #'
 #' @return
-#' @export
 #'
 #' @examples
 get_enabled_positions_from_positions_list <- function(positions_list){
@@ -751,7 +567,6 @@ get_enabled_positions_from_positions_list <- function(positions_list){
 #' @param query_result
 #'
 #' @return
-#' @export
 #'
 #' @examples
 get_df_from_query_result<- function(query_result){
@@ -767,7 +582,6 @@ get_df_from_query_result<- function(query_result){
 #' @param query_result
 #'
 #' @return
-#' @export
 #'
 #' @examples
 get_positions_field_from_query_result <- function(query_result){
@@ -782,29 +596,12 @@ get_positions_field_from_query_result <- function(query_result){
   return(df)
 }
 
-#' list_BlobFileName_in_filepath
-#'
-#' @param image_filepath
-#'
-#' @return
-#' @export
-#'
-#' @examples
-list_BlobFileName_in_filepath <- function(image_filepath){
-  Files<-list.files(image_filepath)
-  BlobFiles<-Files[stringr::str_detect(Files,".blob32$")]
-  BlobFileName<-BlobFiles%>%stringr::str_remove(".blob32$")
-  if(length(BlobFileName)==0){
-    return(NA)
-  }else{return(BlobFileName)}
-}
 
 #' list_posFolders_in_ScanBasePath
 #'
 #' @param ScanBasePath
 #'
 #' @return
-#' @export
 #'
 #' @examples
 list_posFolders_in_ScanBasePath <- function(ScanBasePath){
@@ -1062,7 +859,6 @@ select_valid_image_files <- function(result_files, type=NULL){
 #' @param chip_IDs
 #'
 #' @return
-#' @export
 #'
 #' @examples
 query_UID_limsproc<- function(chip_IDs){
@@ -1084,7 +880,6 @@ query_UID_limsproc<- function(chip_IDs){
 #' @param scan_IDs
 #'
 #' @return
-#' @export
 #'
 #' @examples
 query_UID_scans<- function(scan_IDs){
@@ -1100,7 +895,6 @@ query_UID_scans<- function(scan_IDs){
 #' @param chip_IDs
 #'
 #' @return
-#' @export
 #'
 #' @examples
 query_chipID_channels <- function(chip_IDs){
