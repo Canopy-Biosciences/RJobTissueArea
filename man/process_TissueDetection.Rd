@@ -9,7 +9,9 @@ process_TissueDetection(
   output_dir,
   sigma = 15,
   threshold = 2,
-  window = 10
+  window = 10,
+  plot_image = TRUE,
+  result_ID = ""
 )
 }
 \arguments{

@@ -4,7 +4,7 @@
 \alias{calculate_data_sum}
 \title{calculate_data_sum}
 \usage{
-calculate_data_sum(image_list, filepath)
+calculate_data_sum(image_list)
 }
 \arguments{
 \item{filepath}{}

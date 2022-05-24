@@ -4,7 +4,7 @@
 \alias{process_data_sum_for_image_groups}
 \title{process_data_sum_for_image_groups}
 \usage{
-process_data_sum_for_image_groups(image_groups)
+process_data_sum_for_image_groups(image_groups, datasum_dir)
 }
 \arguments{
 \item{image_groups}{}

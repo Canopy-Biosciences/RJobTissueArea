@@ -4,7 +4,7 @@
 \alias{create_hdr_image_groups}
 \title{create_hdr_image_groups}
 \usage{
-create_hdr_image_groups(ScanHistory, input_dir_dataSum)
+create_hdr_image_groups(ScanHistory)
 }
 \arguments{
 \item{ScanHistory}{}

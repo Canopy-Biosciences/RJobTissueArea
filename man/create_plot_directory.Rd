@@ -4,7 +4,15 @@
 \alias{create_plot_directory}
 \title{create_plot_directory}
 \usage{
-create_plot_directory(output_dir, sigma, threshold, window, chip_ID, pos_ID)
+create_plot_directory(
+  output_dir,
+  sigma,
+  threshold,
+  window,
+  chip_ID,
+  pos_ID,
+  suffix_resultfile
+)
 }
 \arguments{
 \item{pos_ID}{}
