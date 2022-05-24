@@ -1,4 +1,4 @@
-V <- "230522"
+V <- "240522"
 helpers <- "ImageProcessing"
 
 assign(paste0("version.helpers.", helpers), V)
@@ -30,104 +30,8 @@ writeLines(
   ))
 
 
-#' export_image_result_tiffs
-#'
-#' @param image
-#' @param image_blurred
-#' @param image_binary
-#' @param output_dir
-#' @param chip_ID
-#' @param pos_ID
-#' @param sigma
-#' @param threshold
-#' @param ncols
-#' @param nrows
-#'
-#' @return
-#' @export
-#'
-#' @examples
-export_image_result_tiffs <- function(image,
-                                      image_blurred,
-                                      image_binary,
-                                      output_dir,
-                                      chip_ID,
-                                      pos_ID,
-                                      sigma,
-                                      threshold,
-                                      ncols,
-                                      nrows){
-  Version <- "030522"
-  # check output.dir
 
-  library(pixmap)
-  create_working_directory(output_dir)
 
-  # filename
-  result_ID <- create_name_result_ID(chip_ID,
-                                     pos_ID,
-                                     sigma,
-                                     threshold)
-  # complete filepath
-  file <- create_result_filepath(
-    output_dir,
-    "result_tiffs",
-    result_ID,
-    "tiff"
-  )
-
-  # create tiff object
-  tiff(filename = file,
-       width = ncols*3,
-       height = nrows)
-
-  par(mfrow=c(1,3))
-
-  # plot inital image
-  plot(image,
-       main = "grey value image",
-       sub = "sum values by pixels across all hdr images")
-
-  # plot blurred image
-  plot(image_blurred,
-       main = paste0("blurred with sigma = ",sigma),
-       sub = paste0("min: ", min(xb), "max: ",max(xb)))
-
-  # plot binary image
-  plot(image_binary,
-       main= paste0("threshold set to: ",threshold))
-
-  dev.off()
-
-  writeLines(c(
-    paste0("- successful exported processed image results of: ",result_ID)
-  ))
-}
-#' create_name_result_ID
-#'
-#' @param chip_ID
-#' @param pos
-#' @param sigma
-#' @param threshold
-#'
-#' @return
-#' @export
-#'
-#' @examples
-create_name_result_ID <- function(chip_ID,
-                                  pos_ID,
-                                  sigma,
-                                  threshold){
-
-  Version <- "030522"
-
-  result_ID <- paste0("chipID_",chip_ID,
-                      "_pos_",pos_ID,
-                      "_sigma_",sigma,
-                      "_threshold_",threshold)
-
-  return(result_ID)
-}
 
 #' Title
 #'
@@ -137,7 +41,6 @@ create_name_result_ID <- function(chip_ID,
 #' @param type
 #'
 #' @return
-#' @export
 #'
 #' @examples
 create_result_filepath <- function(output_dir,
@@ -154,133 +57,6 @@ create_result_filepath <- function(output_dir,
   return(path)
 }
 
-#' create_export_data_sum
-#'
-#' @param image_group_list
-#' @param group_ID
-#' @param output_dir
-#'
-#' @return
-#' @export
-#'
-#' @examples
-#' if(FALSE){
-#'
-#' data_sum_resultion <- create_export_data_sum(image_groups$data[[1]],
-#' image_groups$group_ID[1],
-#' output_dir)
-#'
-#' }
-create_export_data_sum <- function(image_group_list,
-                                   group_ID,
-                                   output_dir){
-#image_group_list <- image_groups$data[1][[1]]
-#group_ID <- image_groups$group_ID[1]
-  create_working_directory(output_dir)
-
-  for(i in 1:dim(image_group_list)[1]){
-
-    image_path <- image_group_list$image_path[i]
-    blob_filename <- image_group_list$blob_filename[i]
-
-    data_mat <- read_binary_image_as_matrix(image_path,
-                                            blob_filename)
-
-    if(i == 1){
-      data_sum <- data_mat
-    }else{
-
-      if(any(attr(data_mat,"image_resolution") != attr(data_sum,"image_resolution"))){
-        writeLines(c(
-          paste0("- image_resolution changed with scan_ID: ", image_group_list$scan_ID[i])
-        ))}
-
-      data_sum <- data_sum+data_mat
-
-    }
-  }
-
-  result_filename <- create_result_filepath(output_dir,
-                                            "data_sum",
-                                            group_ID,
-                                            type="csv")
-  data.table::fwrite(data_sum%>%
-                       data.table::data.table(),
-                     result_filename)
-
-  return(attr(data_sum,"image_resolution"))
-
-}
-
-#' perform_image_processing
-#'
-#' @param data
-#' @param cellres
-#' @param output_dir
-#' @param chip_ID
-#' @param pos
-#' @param sigma
-#' @param threshold
-#'
-#' @return
-#' @export
-#'
-#' @examples
-perform_image_processing <- function(m.data,
-                                     cellres = cellres,
-                                     output_dir = output_dir,
-                                     chip_ID,
-                                     pos_ID,
-                                     sigma = sigma,
-                                     threshold = threshold){
-  Version <- "220522"
-  #data <- data_sum
-
-
-  # create pixmap
-  # cellres: pixel resolution in horizontal and vertical direction
-  image <-pixmap::pixmapGrey(m.data,
-                             cellres=cellres)
-
-  # get grey values
-  grey_values <- image@grey * 255
-
-  # Low-pass Gaussian filter
-  #remotes::install_version("locfit",version="1.5.9.4")
-  #BiocManager::install("EBImage",force=TRUE)
-  #EBImage version: 4281
-  xb <- EBImage::gblur(grey_values,
-                       sigma)
-  # round values
-  xb <- round(xb,digits = 1)
-
-  # create blurred pixmap image
-  image_blurred <- pixmap::pixmapGrey(xb,
-                                      cellres=cellres)
-
-  #threshold filtering
-  pos <- which(xb > threshold)
-  xt <- xb
-  xt[which(xb > threshold)] <- 1
-  xt[which(xb <= threshold)] <- 0
-
-  # pixmap object of binary image
-  image_binary <- image
-  image_binary@grey <- xt
-
-  # create tiff of result images
-  export_image_result_tiffs(image,
-                            image_blurred,
-                            image_binary,
-                            output_dir,
-                            chip_ID,
-                            pos_ID,
-                            sigma,
-                            threshold,
-                            ncols,
-                            nrows)
-
-}
 
 #' create_hdr_image_groups
 #'
@@ -326,7 +102,6 @@ create_hdr_image_groups <- function(ScanHistory){
 #' @param filepath
 #'
 #' @return
-#' @export
 #'
 #' @examples
 calculate_data_sum <- function(image_list){
@@ -374,7 +149,7 @@ calculate_data_sum <- function(image_list){
   return(data_sum)
 }
 
-#' process_data_sum_for_image_groups
+#' export_data_sum
 #'
 #' @param image_groups
 #'
@@ -382,26 +157,32 @@ calculate_data_sum <- function(image_list){
 #' @export
 #'
 #' @examples
-process_data_sum_for_image_groups <- function(image_groups,
-                                              datasum_dir){
+export_data_sum <- function(image_groups,
+                            datasum_dir){
 
 
   V <- 2405022
   # UPDATE
   #- calculate_data_sum returns data_sum
   #- saveRDS
+  #- renamed
 
   create_working_directory(datasum_dir)
 
-  data_sum <- purrr::map(image_groups$data,
-                         ~calculate_data_sum(.x))
-
-  purrr::walk2(data_sum,
+  purrr::walk2(image_groups$data,
                image_groups$data_file,
-               ~saveRDS(.x,.y))
-
+               ~.x%>%
+                 calculate_data_sum()%>%
+                 saveRDS(.y))
 }
 
+#' Title
+#'
+#' @param data_sum
+#'
+#' @return
+#'
+#' @examples
 convert_image_vector_to_matrix <- function(data_sum){
 
   #_________________________
@@ -439,12 +220,11 @@ read_data_sum_as_matrix <- function(filepath){
   return(m_data_sum)
 }
 
-#' read_data_sum_image_resolution
+#' reads the resolution attribute of an image object
 #'
 #' @param filepath
 #'
 #' @return
-#' @export
 #'
 #' @examples
 extract_image_resolution <- function(image_data){
@@ -469,7 +249,6 @@ extract_image_resolution <- function(image_data){
 #' @param cellres
 #'
 #' @return
-#' @export
 #'
 #' @examples
 create_pixmap_greyvalues <- function(m.data,
@@ -488,88 +267,6 @@ create_pixmap_greyvalues <- function(m.data,
   return(grey_values)
 }
 
-#' process_tissue_detection_workflow
-#'
-#' @param m.data
-#' @param cellres
-#' @param sigma
-#' @param threshold
-#' @param window
-#'
-#' @return
-#' @export
-#'
-#' @examples
-process_tissue_detection_workflow <- function(m.data,
-                                              cellres,
-                                              sigma,
-                                              threshold,
-                                              window){
-
-
-  #create pixmap----
-  # cellres: pixel resolution in horizontal and vertical direction
-
-  image <-pixmap::pixmapGrey(m.data,
-                             cellres=cellres)
-
-  #_______________
-  #get grey values----
-  grey_values <- image@grey * 255
-
-  #________________________
-  #Low-pass Gaussian filter----
-  #remotes::install_version("locfit",version="1.5.9.4")
-  #BiocManager::install("EBImage",force=TRUE)
-  #EBImage version: 4281
-  xb <- EBImage::gblur(grey_values,
-                       sigma)
-
-  #____________
-  #round values----
-  xb <- round(xb,digits = 1)
-
-  #___________________________
-  #create blurred pixmap image----
-  image_blurred <- pixmap::pixmapGrey(xb,
-                                      cellres=cellres)
-
-  #___________________
-  #threshold filtering----
-  pos <- which(xb > threshold)
-  xt <- xb
-  xt[which(xb > threshold)] <- 1
-  xt[which(xb <= threshold)] <- 0
-
-  #_____________________________
-  #pixmap object of binary image----
-  image_binary <- image
-  image_binary@grey <- xt
-
-  #_______________
-  #adapting window----
-  xta <- EBImage::thresh(xt, w=1,h=1)
-
-  image_adaptedThreshold <- pixmap::pixmapGrey(xta,
-                                               cellres=cellres)
-
-  #________________________
-  #convert to imager object----
-
-  imager_pxset <- imager::as.cimg(image_binary@grey)
-
-  #___________
-  #grow binary----
-  xg <- imager::grow(imager_pxset, window, window, window)
-
-
-  #_____________
-  #shrink binary----
-  xs <-imager::shrink(xg,window, window, window)
-
-  return(xs)
-
-}
 
 #' create_plot_directory
 #'
@@ -581,7 +278,6 @@ process_tissue_detection_workflow <- function(m.data,
 #' @param pos_ID
 #'
 #' @return
-#' @export
 #'
 #' @examples
 create_plot_directory <- function(output_dir,
@@ -611,6 +307,16 @@ create_plot_directory <- function(output_dir,
   return(plot_filename)
 }
 
+#' Title
+#'
+#' @param m.data
+#' @param cellres
+#' @param pixelset
+#' @param filename
+#'
+#' @return
+#'
+#' @examples
 plot_tissue_detection <- function(m.data,
                                   cellres,
                                   pixelset,
@@ -643,11 +349,9 @@ plot_tissue_detection <- function(m.data,
 #' @param pixelset
 #'
 #' @return
-#' @export
 #'
 #' @examples
 calculate_perc_TissueArea <- function(pixelset){
-  #count tissue pixel----
   n_tissue_pixel <- calculate_n_TissuePixel(pixelset)
   n_pixel <- pixelset%>%length()
   perc_pixel <- round(n_tissue_pixel/n_pixel*100,digits=1)
@@ -660,7 +364,6 @@ calculate_perc_TissueArea <- function(pixelset){
 #' @param pixelset
 #'
 #' @return
-#' @export
 #'
 #' @examples
 calculate_n_TissuePixel <- function(pixelset){
@@ -675,7 +378,6 @@ calculate_n_TissuePixel <- function(pixelset){
 #' @param cellres
 #'
 #' @return
-#' @export
 #'
 #' @examples
 calculate_TissueArea <- function(n_pixel,cellres){

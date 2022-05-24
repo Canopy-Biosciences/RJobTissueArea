@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers_ImageProcessing.R
 \name{extract_image_resolution}
 \alias{extract_image_resolution}
-\title{read_data_sum_image_resolution}
+\title{reads the resolution attribute of an image object}
 \usage{
 extract_image_resolution(image_data)
 }
@@ -13,5 +13,5 @@ extract_image_resolution(image_data)
 
 }
 \description{
-read_data_sum_image_resolution
+reads the resolution attribute of an image object
 }
