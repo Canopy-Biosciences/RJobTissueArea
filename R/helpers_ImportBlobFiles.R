@@ -134,6 +134,22 @@ create_Pos_image_filepath <- function(ScanBasePath,
 
 }
 
+#' create_MethodHistory_of_chipIDs
+#'
+#' @param chip_IDs
+#'
+#' @return
+#'
+#' @examples
+create_MethodHistory_of_chipIDs <- function(chip_IDs){
+
+  query_results <- query_UID_limslager(chip_IDs = chip_IDs)
+  EDLs <- get_EDL_from_query_result(query_results)
+  MethodHistory <- purrr::map(EDLs,~create_MethodHistory_from_EDL(.x))
+
+  return(MethodHistory)
+}
+
 #' create_ScanHistory_of_chipIDs
 #'
 #' @param chip_IDs
@@ -787,6 +803,7 @@ read_XML_BLOB_parameter<- function(image_path, blob_filename) {
 #'
 #' @examples
 select_hdr_files <- function(result_files){
+
   hdr_files <- result_files%>%
     dplyr::filter(!is.na(hdr_filename))%>%
     #dplyr::filter(jobType == "FL")%>%
@@ -814,43 +831,43 @@ select_valid_image_files <- function(result_files, type=NULL){
   # - added NULL as default type
   # - include filtering of enabled flag
 
-  #_______________
-  # 0) check input----
+  #___________
+  #check input----
   type <- match.arg(type, choices =c("none","blob","blob32","png"))
 
-  #_________________________
-  # 1) remove excluded scans----
+  #_____________________
+  #remove excluded scans----
   result_files <- result_files%>%
     dplyr::filter(Excluded %in% c("FALSE"))%>%
     dplyr::filter(Status == "Finished")
 
-  #_______________________________
-  # 2) select image type to return----
-  # __2a) .blob----
+  #___________________________
+  #select image type to return----
+  # __blob----
   if(type == "blob"){
     result_files <- result_files%>%
       dplyr::filter(filetype == "blob")
   }
-  # __2b) .blob32----
+  # __blob32----
   if(type == "blob32"){
     result_files <- result_files%>%
       dplyr::filter(filetype == "blob32")
   }
-  # __2c) .png----
+  # __png----
   if(type == "png"){
     result_files <- result_files%>%
       dplyr::filter(filetype == "png")
   }
 
-  #____________________________
-  # 3) filter enabled positions
+  #________________________
+  #filter enabled positions
   if(1 %in% result_files$enabled){
     result_files <- result_files%>%
       dplyr::filter(enabled == 1)
   }
 
-  #_________________
-  # 4) return result----
+  #_____________
+  #return result----
   return(result_files)
 }
 

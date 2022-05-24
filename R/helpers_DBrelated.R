@@ -37,7 +37,6 @@ writeLines(
 #' @return mongo_connection: a client to mongo_collection, providing functions
 #' @family database related
 
-#' @export
 #' @examples
 #' \donttest{
 #' connect_mongoDB("limslager")
@@ -149,7 +148,6 @@ connect_mongoDB <- function(mongo_collection, # "limslager" oder "limsproc"
 #' @param XML
 #'
 #' @return
-#' @export
 #'
 #' @examples
 create_long_node_df_from_XML <- function(XML){

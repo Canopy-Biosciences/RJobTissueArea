@@ -21,24 +21,6 @@ writeLines(
     "- get_pos_colnames_in_MethodHistory()"
   ))
 
-
-#' create_MethodHistory_of_chipIDs
-#'
-#' @param chip_IDs
-#'
-#' @return
-#' @export
-#'
-#' @examples
-create_MethodHistory_of_chipIDs <- function(chip_IDs){
-
-  query_results <- query_UID_limslager(chip_IDs = chip_IDs)
-  EDLs <- get_EDL_from_query_result(query_results)
-  MethodHistory <- purrr::map(EDLs,~create_MethodHistory_from_EDL(.x))
-
-  return(MethodHistory)
-}
-
 #' create_pos_df_from_MethodHistory
 #'
 #' @param MethodHistory
@@ -68,35 +50,11 @@ create_pos_df_from_MethodHistory <- function(MethodHistory){
                    }else{return(.x)})
   return(df)
 }
-
-#' create_ScanHistory_of_chipIDs
-#'
-#' @param MethodHistory
-#'
-#' @return
-#' @export
-#'
-#' @examples
-create_ScanHistory_of_chipIDs<-function(chip_IDs){
-
-  MethodHistory <- create_MethodHistory_of_chipIDs(chip_IDs)
-
-  ScanHistorys <- purrr::map(MethodHistory,
-                             ~.x%>%
-                               dplyr::rename("scan_ID" = "UID")%>%
-                               dplyr::rename("cycle_ID" = "CycleUID")%>%
-                               tidyr::fill(cycle_ID,  .direction = "up")%>%
-                               dplyr::filter(Type == "Chipcytometry-Scan")%>%
-                               dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
-  return(ScanHistorys)
-}
-
 #' create_ScanHistory_from_MethodHistory
 #'
 #' @param MethodHistory
 #'
 #' @return
-#' @export
 #'
 #' @examples
 create_ScanHistory_from_MethodHistory<-function(MethodHistory){
