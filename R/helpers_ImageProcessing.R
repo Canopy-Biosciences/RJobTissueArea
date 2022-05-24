@@ -25,7 +25,8 @@ writeLines(
     "- calculate_perc_TissueArea()",
     "- calculate_n_TissuePixel()",
     "- create_plot_directory()",
-    "- process_TissueDetection()"
+    "- process_TissueDetection()",
+    "- calculate_TissueArea()"
   ))
 
 
@@ -289,8 +290,13 @@ perform_image_processing <- function(m.data,
 #' @export
 #'
 #' @examples
-create_hdr_image_groups <- function(ScanHistory,
-                                    input_dir_dataSum){
+create_hdr_image_groups <- function(ScanHistory){
+
+  V <- 240522
+  # UPDATE
+  # no data_file column
+  # no input_dir_dataSum
+
   #________________________
   #subset valid image files----
   result_files <- select_valid_image_files(result_files=ScanHistory,
@@ -303,13 +309,12 @@ create_hdr_image_groups <- function(ScanHistory,
   #___________________________
   #create list of image_groups----
   image_groups <- hdr_files%>%
+    #dplyr::mutate(hdr_file = file.path(hdr_filepath,hdr_filename))%>%
     dplyr::rename("image_path"="hdr_filepath",
                   "blob_filename"="hdr_filename")%>%
     dplyr::group_by(chip_ID,pos_ID)%>%
     tidyr::nest()%>%
-    dplyr::mutate(group_ID = paste0(chip_ID,"_",pos_ID))%>%
-    dplyr::mutate(data_file =  file.path(input_dir_dataSum,
-                                         paste0("dataSum_",chip_ID,"_",pos_ID,".rds")))
+    dplyr::mutate(group_ID = paste0(chip_ID,"_",pos_ID))
 
   return(image_groups)
 
@@ -324,8 +329,11 @@ create_hdr_image_groups <- function(ScanHistory,
 #' @export
 #'
 #' @examples
-calculate_data_sum <- function(image_list,
-                               filepath){
+calculate_data_sum <- function(image_list){
+
+  V <- 240522
+  # update
+  #- only return data.sum
 
  # j <- 1
  # image_group_list <- image_groups$data[[j]]
@@ -363,11 +371,7 @@ calculate_data_sum <- function(image_list,
 
     }
   }
-
-  #_______________
-  #export data_sum
-  saveRDS(data_sum,
-          filepath)
+  return(data_sum)
 }
 
 #' process_data_sum_for_image_groups
@@ -378,14 +382,36 @@ calculate_data_sum <- function(image_list,
 #' @export
 #'
 #' @examples
-process_data_sum_for_image_groups <- function(image_groups,datasum_dir){
+process_data_sum_for_image_groups <- function(image_groups,
+                                              datasum_dir){
 
+
+  V <- 2405022
+  # UPDATE
+  #- calculate_data_sum returns data_sum
+  #- saveRDS
 
   create_working_directory(datasum_dir)
 
-  purrr::map2(image_groups$data,
-              image_groups$data_file,
-              ~calculate_data_sum(.x,.y))
+  data_sum <- purrr::map(image_groups$data,
+                         ~calculate_data_sum(.x))
+
+  purrr::walk2(data_sum,
+               image_groups$data_file,
+               ~saveRDS(.x,.y))
+
+}
+
+convert_image_vector_to_matrix <- function(data_sum){
+
+  #_________________________
+  #create matrix of data_sum
+  m_data_sum <-matrix(data_sum,
+                      ncol=attr(data_sum,"h_pixel"),
+                      nrow=attr(data_sum,"v_pixel"),
+                      byrow=TRUE)
+
+  return(m_data_sum)
 
 }
 
@@ -398,16 +424,18 @@ process_data_sum_for_image_groups <- function(image_groups,datasum_dir){
 #'
 #' @examples
 read_data_sum_as_matrix <- function(filepath){
+  V <- 240522
+  # UPDATE
+  # matrix of data_sum by external function
+
   #________________
   #read in data_sum
   data_sum <- readRDS(filepath)
 
   #_________________________
   #create matrix of data_sum
-  m_data_sum <-matrix(data_sum,
-                      ncol=attr(data_sum,"h_pixel"),
-                      nrow=attr(data_sum,"v_pixel"),
-                      byrow=TRUE)
+  m_data_sum <- convert_image_vector_to_matrix(data_sum)
+
   return(m_data_sum)
 }
 
@@ -419,15 +447,18 @@ read_data_sum_as_matrix <- function(filepath){
 #' @export
 #'
 #' @examples
-read_data_sum_image_resolution <- function(filepath){
+extract_image_resolution <- function(image_data){
 
-  #________________
-  #read in data_sum
-  data_sum <- readRDS(filepath)
+  V <- 240522
+  # UPDATE
+  #- renamed
+  #- extraction of the attribute only
+  #- image data as input instead of filepath
 
   #________________________
   #extract image resolution
-  cellres <- as.vector(attr(data_sum,"image_resolution"))
+  cellres <- as.vector(attr(image_data,
+                            "image_resolution"))
 
   return(cellres)
 }
@@ -474,6 +505,8 @@ process_tissue_detection_workflow <- function(m.data,
                                               sigma,
                                               threshold,
                                               window){
+
+
   #create pixmap----
   # cellres: pixel resolution in horizontal and vertical direction
 
@@ -556,7 +589,8 @@ create_plot_directory <- function(output_dir,
                                  threshold,
                                  window,
                                  chip_ID,
-                                 pos_ID){
+                                 pos_ID,
+                                 suffix_resultfile){
   #create output directory----
   plot_filepath <- file.path(
     output_dir,
@@ -570,7 +604,7 @@ create_plot_directory <- function(output_dir,
   plot_filename <- create_result_filepath(
     plot_filepath,
     "ResultImages_",
-    paste0(chip_ID,"_",pos_ID),
+    paste0(chip_ID,"_",pos_ID,"_",suffix_resultfile),
     "png"
   )
 
@@ -634,6 +668,21 @@ calculate_n_TissuePixel <- function(pixelset){
   return(n_tissue_pixel)
 }
 
+
+#' calculate_TissueArea
+#'
+#' @param n_pixel
+#' @param cellres
+#'
+#' @return
+#' @export
+#'
+#' @examples
+calculate_TissueArea <- function(n_pixel,cellres){
+  area <- n_pixel*cellres[1]/1000*cellres[2]/1000
+  return(area)
+}
+
 #' process_TissueDetection
 #'
 #' @param image_groups
@@ -650,8 +699,19 @@ process_TissueDetection <- function(image_groups,
                                     output_dir,
                                     sigma = 15,
                                     threshold = 2,
-                                    window = 10){
+                                    window = 10,
+                                    plot_image = TRUE,
+                                    result_ID = ""){
+  V <- 240522
+  # UPDATE
+  # internal data_sum calculation
+  # optional plot generation
+  # TissueArea mm²
+  # chip-wised summarized results
+  # export and return result_df and summary_df
+  # result_ID as label in result filenames
 
+  #________________
   #create result_df----
   result_df <- tibble::tibble(
     group_ID = character(0), # group_ID
@@ -661,36 +721,33 @@ process_TissueDetection <- function(image_groups,
     threshold = numeric(0),
     GS_window = numeric(0),
     perc_TissueArea = double(0),
-    InputImageFile = character(0), # m_data_file
-    OutputPlotFile = character(0)
+    TissueArea_mm2 = double(0)
   )
 
-  #__________________________
-  #1) map through image group----
+  #________________________
+  #map through image groups----
 
   j=1
   for(j in 1:dim(image_groups)[1]){
 
-
-    #____________________________________________
-    #__select single entities of image_group list----
+    #________________________
+    #select single image list----
     image_group_list <- image_groups$data[[j]]
     group_ID <-  image_groups$group_ID[j]
     chip_ID <- image_groups$chip_ID[j]
     pos_ID <- image_groups$pos_ID[j]
-    data_file <- image_groups$data_file[j]
-
-
 
     #__________________
-    #__read in data_sum----
-    m.data <- read_data_sum_as_matrix(data_file)
+    #calculate data_sum----
+    data_sum <- calculate_data_sum(image_group_list)
 
+    #_________________
+    #convert to matrix----
+    m.data <- convert_image_vector_to_matrix(data_sum)
 
-    #_____________________
-    #read image resolution----
-    cellres <- read_data_sum_image_resolution(data_file)
-
+    #__________________
+    #extract resolution----
+    cellres <- extract_image_resolution(data_sum)
 
     #________________________________
     #apply tissue detection procedure----
@@ -705,23 +762,13 @@ process_TissueDetection <- function(image_groups,
     perc_pixel <- calculate_perc_TissueArea(pixelset)
 
     #_____________________
-    #generate result plots----
-    filename <- create_plot_directory(output_dir,
-                                      sigma,
-                                      threshold,
-                                      window,
-                                      chip_ID,
-                                      pos_ID)
+    # calculate TissueArea----
+    TissueArea <- pixelset%>%
+      calculate_n_TissuePixel()%>%
+      calculate_TissueArea(cellres)
 
-    plot_tissue_detection(m.data,
-                          cellres,
-                          pixelset,
-                          filename)
-
-
-    #________________________________
-    #____add pixel count to result_df----
-
+    #__________________
+    #complete result_df----
     result_df <- result_df %>%
       tibble::add_row(group_ID = group_ID,
                       chip_ID = chip_ID,
@@ -730,27 +777,64 @@ process_TissueDetection <- function(image_groups,
                       threshold = threshold,
                       GS_window = window,
                       perc_TissueArea = perc_pixel,
-                      InputImageFile = data_file,
-                      OutputPlotFile = filename
+                      TissueArea_mm2 = TissueArea
       )
 
+    #________________________________
+    #generate result plots (optional)----
+    if(plot_image){
+      filename <- create_plot_directory(output_dir,
+                                        sigma,
+                                        threshold,
+                                        window,
+                                        chip_ID,
+                                        pos_ID,
+                                        result_ID)
+
+      plot_tissue_detection(m.data,
+                            cellres,
+                            pixelset,
+                            filename)
+
+    }
   }
 
   #________________
-  #export result_df----
-  create_working_directory(file.path(output_dir,
-                                     "image_processing"))
-  result_filename <- file.path(output_dir,
-                               "image_processing",
-                               paste0("ResultTissueArea_",
-                                      sigma,"_",threshold,"_",window,"_",
-                                      group_ID,".csv"))
+  #chipwise summary----
+  result_df_summary <- result_df%>%
+    dplyr::group_by(chip_ID, sigma, threshold, GS_window)%>%
+    dplyr::summarize(n_positions = dplyr::n(),
+                     perc_TissueArea = sum(perc_TissueArea)/dplyr::n(),
+                     TissueArea_mm2 = sum(TissueArea_mm2),
+                     .groups = "keep")
 
+
+  #_______________________
+  #create result directory----
+  result_dir <- file.path(output_dir,
+                          "image_processing")
+  create_working_directory(result_dir)
+
+  #________________
+  #export result_df----
+  result_filename <- file.path(result_dir,
+                               paste0("ResultTissueArea_",
+                                      result_ID,".csv"))
 
   readr::write_csv(result_df,
                    result_filename)
 
+  #________________
+  #export result_df----
+  summary_filename <- file.path(result_dir,
+                               paste0("SummaryResultTissueArea_",
+                                      result_ID,".csv"))
 
-  return(result_df)
+  readr::write_csv(result_df_summary,
+                   summary_filename)
+
+
+  return(list(result_df=result_df,
+              summary_df = result_df_summary))
 
 }

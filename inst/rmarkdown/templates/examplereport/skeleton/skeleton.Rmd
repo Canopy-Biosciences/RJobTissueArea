@@ -1,36 +1,40 @@
 ---
-title: "Template Title"
+title: "Template RJob TissueArea"
 author: "Your Name"
-date: "The Date"
-output: output_format
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  html_document:
+    code_folding: hide
+    df_print: paged
+    fig_caption: yes
+    highlight: haddock
+    theme: cosmo
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scoll: yes
+abstract: "The aim of this "
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(RJobTissueArea)
 ```
 
 # set input
 
-```{r setup}
-library(RJobTissueArea)
-```
+- set chip_group_ID
 
-```{r,eval=FALSE}
+```{r}
 group_ID <- "P1761451"
 ```
 
-- set output directory
-
-```{r,eval=FALSE}
-output_dir <- "devel/data/data_output"
-```
-
-- check and create directories
+- set and check output directory
 
 ```{r}
+output_dir <- "test/data_output"
 RJobTissueArea:::create_working_directory(output_dir)
-input_dir_dataSum <- file.path(output_dir,"dataSum_collection")
-RJobTissueArea:::create_working_directory(input_dir_dataSum)
 ```
 
 # get all valid chip_IDs in chip_group 
@@ -41,40 +45,35 @@ chip_IDs <- find_valid_group_chip_IDs(group_ID)
 
 # create ScanHistory
 
-```{r,eval=FALSE}
+```{r}
 ScanHistory <- create_ScanHistory_extended(chip_IDs,
                                            output_dir,
-                                           group_ID)
-```
-
-- read ScanHistory file from output_dir
-
-```{r}
-ScanHistory <- read_ScanHistory(group_ID,
-                                output_dir)
+                                           result_ID = group_ID)
 ```
 
 # select valid hdr image groups
 
 ```{r}
-# subsetting image data listed in ScanHistory
-image_groups <- create_hdr_image_groups(ScanHistory,
-                                        input_dir_dataSum)
-```
-
-# accumulate all images
-
-```{r}
-# calculate data_sum for all image groups
-process_data_sum_for_image_groups(image_groups)
+image_groups <- create_hdr_image_groups(ScanHistory)
 ```
 
 # apply tissue detection workflow
 
 ```{r}
-process_TissueDetection(image_groups,
+process_TissueDetection(image_groups[1:4,],
                         output_dir,
                         sigma = 15,
-                        threshold = 2,
-                        window = 10)
+                        threshold = 4,
+                        window = 50,
+                        plot_image = TRUE,
+                        result_ID = group_ID)
+```
+
+# supplement
+
+- read ScanHistory file from output_dir
+
+```{r}
+ScanHistory <- read_ScanHistory(suffix_resultfile = group_ID,
+                                output_dir)
 ```
