@@ -33,7 +33,7 @@ group_ID <- "P1761451"
 - set and check output directory
 
 ```{r}
-output_dir <- "test/data_output"
+output_dir <- "data/data_output"
 RJobTissueArea:::create_working_directory(output_dir)
 ```
 
@@ -60,7 +60,7 @@ image_groups <- create_hdr_image_groups(ScanHistory)
 # apply tissue detection workflow
 
 ```{r}
-process_TissueDetection(image_groups[1:4,],
+process_TissueDetection(image_groups,
                         output_dir,
                         sigma = 15,
                         threshold = 4,
@@ -74,6 +74,6 @@ process_TissueDetection(image_groups[1:4,],
 - read ScanHistory file from output_dir
 
 ```{r}
-ScanHistory <- read_ScanHistory(suffix_resultfile = group_ID,
+ScanHistory <- read_ScanHistory(group_ID,
                                 output_dir)
 ```
