@@ -81,6 +81,7 @@ writeLines(
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 check_if_chip_data_exist <- function(chip_IDs){
@@ -117,6 +118,7 @@ check_if_chip_data_exist <- function(chip_IDs){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 check_if_gatefile_exist <- function(chip_path,segment_ID,gate_ID){
@@ -261,6 +263,7 @@ check.if.valid <- function(input.data, chip.IDs, jobtype) {
 #'
 #' @return List with \code{filesToProcess} without empty or not existing files,
 #'   and flag whether fatal errors occurred
+#' @keywords internal
 
 #' Check the imported file lists
 #'
@@ -285,6 +288,7 @@ check_imported_file_lists <- function(fl_file_names, gatenames) {
 #' @param gatesToProcess
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 check_input_files <- function(filesToProcess, gatesToProcess) {
@@ -346,6 +350,7 @@ check_input_files <- function(filesToProcess, gatesToProcess) {
 #' @param chip_path path to chip folder on image server
 #' @return df
 #' @export
+#' @keywords internal
 #'
 #' @examples
 #' chip_path <- c("\\\\intern.chipcytometry.com\\imagedata\\leipzig_volume0\\M986054")
@@ -431,6 +436,7 @@ copy_file_positionCSV <- function(xml_dir, chip_ID, output_dir) {
 #' @param segment_ID
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 create_cellsCSV_filepath <- function(chip_path,segment_ID){
@@ -445,6 +451,7 @@ create_cellsCSV_filepath <- function(chip_path,segment_ID){
 #' @param segment_ID
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 create_flvalues_allGate_filename <- function(output_dir, chip_ID,segment_ID){
@@ -460,6 +467,7 @@ create_flvalues_allGate_filename <- function(output_dir, chip_ID,segment_ID){
 #' @param gate_ID
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 create_gatecsv_filepath <- function(chip_path,segment_ID,gate_ID){
@@ -475,6 +483,7 @@ create_gatecsv_filepath <- function(chip_path,segment_ID,gate_ID){
 #' @param segment_ID
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 create_valuesCSV_filepath <- function(chip_path,segment_ID){
@@ -488,6 +497,7 @@ create_valuesCSV_filepath <- function(chip_path,segment_ID){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 create_MethodHistory_from_EDL<-function(EDL){
@@ -575,6 +585,7 @@ create_working_directory <- function(output_dir) {
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 determine_scan_position <- function(MethodHistory){
@@ -626,6 +637,7 @@ determine_scan_position <- function(MethodHistory){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 execute_mainscript_FDR <- function(chip_ID,markernames,RJob_ID,jobtype){
@@ -737,6 +749,7 @@ execute_mainscript_FDR <- function(chip_ID,markernames,RJob_ID,jobtype){
 #' @param chip_ID Chip UId
 #' @param RJob_ID R Job UID
 #' @param output_dir Output directory
+#' @keywords internal
 export_full_input <- function(all_files, fl_files, gate_files, chip_ID, RJob_ID, output_dir) {
   Version <- 080322
   #- added logger::log_debug
@@ -851,6 +864,7 @@ extract_chip_IDs <- function(xml_dir) {
 #' @param EDL
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 extract_chipIDs_from_groupEDL<- function(EDL){
@@ -892,6 +906,7 @@ extract_gate_names <- function(xml_dir) {
 #' @param chip_IDs
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 extract_gate_metadata <- function(chip_IDs){
@@ -953,6 +968,7 @@ extract_gate_metadata <- function(chip_IDs){
 #'
 #' @return Relevant information: Job UID, job type, all file and gate names
 #' @export
+#' @keywords internal
 extract_information_from_RService_XML <- function(xml_dir) {
   UID <- XML::xpathSApply(xml_dir, "//Job", XML::xmlGetAttr, "UID")
   jobtype <- XML::xpathSApply(xml_dir, "//Job", XML::xmlGetAttr, "Type")
@@ -976,6 +992,7 @@ extract_information_from_RService_XML <- function(xml_dir) {
 #' @param xml_dir Directory of the XML file
 #'
 #' @return File Paths of the FL value files
+#' @keywords internal
 extract_paths_of_fl_files <- function(xml_dir) {
 
   Version <- 080322
@@ -1007,6 +1024,7 @@ extract_paths_of_fl_files <- function(xml_dir) {
 #' @param xml_dir Directory of the XML file
 #'
 #' @return File paths for the gate files
+#' @keywords internal
 extract_paths_of_gates <- function(xml_dir) {
   Version <- 080322
   #- added logger::log_debug()
@@ -1051,7 +1069,8 @@ extract_paths_of_gates <- function(xml_dir) {
 #' @param EDL :character containing a XML string
 #'
 #' @return a list of 3 dataframes df, df_longer, df_wider
-#' @export find_all_attributes_in_EDL
+#' @export
+#' @keywords internal
 #' @family database related
 #'
 #' @examples
@@ -1178,7 +1197,7 @@ find_server_path <- function() {
 #' @param ChannelID chracter if the chip_ID
 #' @param server_path vector containing characters of server paths
 #' @keywords internal
-#' @export find_chip_path
+#' @export
 #'
 #' @examples
 #' \donttest{
@@ -1373,8 +1392,9 @@ find_valid_group_chip_IDs <- function(group_ID){
 #'
 #' @param EDL
 #'
-#' @return#'
+#' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 get_identityID_from_EDL<-function(EDL){
@@ -1392,6 +1412,7 @@ get_identityID_from_EDL<-function(EDL){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 get_EDL_from_query_result <- function(result){
@@ -1412,6 +1433,7 @@ get_EDL_from_query_result <- function(result){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 get_gate_ID_of_AllGate<- function(chip_ID,segment_ID){
@@ -1440,6 +1462,7 @@ get_gate_ID_of_AllGate<- function(chip_ID,segment_ID){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 get_sampleType_from_MethodHistory<-function(MethodHistory){
@@ -1472,6 +1495,7 @@ get_sampleType_from_MethodHistory<-function(MethodHistory){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 get_segment_ID_of_chipID <- function(chip_ID){
@@ -1497,6 +1521,7 @@ get_segment_ID_of_chipID <- function(chip_ID){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 get_valid_chip_IDs <- function(chipCSV,
@@ -1579,6 +1604,7 @@ handle_trycache_error <- function(err,task,enable.quit=FALSE) {
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 import_customer_form <- function(chipCSV,
@@ -1602,6 +1628,7 @@ import_customer_form <- function(chipCSV,
 #' @param segment_ID Segmentation job UID
 #'
 #' @return File path of the parsed XML
+#' @keywords internal
 import_R_Service_XML_file <- function(XML_filepath, output_dir, RJob_ID, chip_ID, segment_ID) {
   if (rlang::is_null(XML_filepath)) {
     XML_filepath <- find_RService_XML_on_imageserver(
@@ -1648,6 +1675,7 @@ import_R_Service_XML_file <- function(XML_filepath, output_dir, RJob_ID, chip_ID
 #' @param jobtype Type of the job that is being executed
 #'
 #' @return A tidy \code{.csv} file imported as \code{data.table}
+#' @keywords internal
 import_single_fl_file <- function(file_path, csv_type, chip_ID, jobtype) {
   content_temp <- data.table::fread(file_path)
   fl_file <- check.if.valid(content_temp, chip_ID, jobtype)
@@ -1663,6 +1691,7 @@ import_single_fl_file <- function(file_path, csv_type, chip_ID, jobtype) {
 #' @param jobtype Type of the job that is to be executed
 #'
 #' @return List with all \code{.csv} files imported as \code{data.table}
+#' @keywords internal
 import_all_fl_files <- function(all_file_paths,
                                 csv_type = "FLCSV", chip_IDs, jobtype) {
   if (!(length(all_file_paths == length(chip_IDs)))) {
@@ -1686,6 +1715,7 @@ import_all_fl_files <- function(all_file_paths,
 #' @param file_path A valid file path
 #'
 #' @return Gate file as \code{data.table}
+#' @keywords internal
 import_single_gate_file <- function(file_path) {
   gate_file <- data.table::fread(file_path)
 
@@ -1705,6 +1735,7 @@ import_single_gate_file <- function(file_path) {
 #' @param chip_ID Chip UID
 #'
 #' @return List of gate files as \code{data.table}s
+#' @keywords internal
 import_all_gate_files <- function(all_file_paths, gatenames, chip_ID) {
   if (!(length(all_file_paths == length(gatenames)))) {
     error_text <- "Number of gate files is not the same as number of gatenames."
@@ -1731,6 +1762,7 @@ import_all_gate_files <- function(all_file_paths, gatenames, chip_ID) {
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 import_ZKW_rawdata_to_flvalues <- function(chip_path,chip_ID,segment_ID,gate_ID,markernames="CD4"){
@@ -1811,7 +1843,7 @@ import_ZKW_rawdata_to_flvalues <- function(chip_path,chip_ID,segment_ID,gate_ID,
 #'  null standard is subdirectory data/chip_ID/mainscript
 #' @export
 #' @family RJob mainscript
-#' @keywords MainScript
+#' @keywords internal
 #' @examples
 #' \donttest{
 #' chip_ID <- "M1153570"
@@ -1932,6 +1964,7 @@ load_mainscript_output <- function(chip_ID, RJob_ID, input.dir = NULL) {
 #'   chip UID. Each list element is itself a list element containing the FL
 #'   values of all the chips within this gate and further information as
 #'   produced by \code{\link{import_all_fl_files}}.
+#' @keywords internal
 merge_fl_and_gate_files <- function(gate_files, curr_fl_file, chip_ID) {
   curr_chip <- list()
 
@@ -1965,6 +1998,7 @@ merge_fl_and_gate_files <- function(gate_files, curr_fl_file, chip_ID) {
 #' @param output_dir Output directory
 #' @param chip_ID Chip UID
 #' @param RJob_ID R Job UId
+#' @keywords internal
 merge_all_input_files_to_one_list_and_export <- function(gate_files, fl_files, XML_file_content, output_dir, chip_ID, RJob_ID) {
   chip_IDs <- XML_file_content[["chip_IDs"]]
 
@@ -1995,6 +2029,7 @@ merge_all_input_files_to_one_list_and_export <- function(gate_files, fl_files, X
 #' @param df
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 remove_comp <- function(df){
@@ -2020,6 +2055,7 @@ remove_comp <- function(df){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 return_segment_metadata <- function(chip_IDs){
@@ -2059,6 +2095,7 @@ return_segment_metadata <- function(chip_IDs){
 #' @param segment_IDs
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 select_segment_ID<- function(segment_IDs){
@@ -2086,6 +2123,7 @@ select_segment_ID<- function(segment_IDs){
 #' @param RJob_ID R Job UID
 #'
 #' @return \code{full_input} with attributes
+#' @keywords internal
 set_attrs_full_input <- function(full_input, tidy_XML_file_content, output_dir, RJob_ID) {
   attr(full_input, "ServiceEDL") <- create_XML_filename(RJob_ID)
   attr(full_input, "output_dir") <- output_dir
@@ -2099,6 +2137,7 @@ set_attrs_full_input <- function(full_input, tidy_XML_file_content, output_dir, 
 #' Stop execution
 #'
 #' @param message Message to be shown when execution is stopped
+#' @keywords internal
 stop_if_fatal <- function(message = "Please see chunk output above.") {
   logger::log_fatal("{message}")
   stop(message, call. = FALSE)
@@ -2116,6 +2155,7 @@ stop_if_fatal <- function(message = "Please see chunk output above.") {
 #'   produced by \code{\link{extract_information_from_RService_XML}}
 #'
 #' @return Tidied XML file content
+#' @keywords internal
 tidy_up_XML_file_content <- function(XML_file_content) {
   gatesToProcess <- XML_file_content[["gatesToProcess"]]
   chip_IDs <- XML_file_content[["chip_IDs"]]
@@ -2304,6 +2344,7 @@ query_mongoDB <- function(mongo_collection,
 #'
 #' @return data.frame
 #' @export
+#' @keywords internal
 #'
 #' @examples
 #' segment_IDs <- c("EZKL122811","EZKL207112","EZKL289562")
@@ -2355,6 +2396,7 @@ query_segment_ID <- function(segment_IDs){
 #'
 #' @return result
 #' @export
+#' @keywords internal
 #'
 #' @examples
 #' chip_path <- c("\\\\intern.chipcytometry.com\\imagedata\\leipzig_volume0\\M986054")

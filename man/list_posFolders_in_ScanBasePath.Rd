@@ -15,3 +15,4 @@ list_posFolders_in_ScanBasePath(ScanBasePath)
 \description{
 list_posFolders_in_ScanBasePath
 }
+\keyword{internal}

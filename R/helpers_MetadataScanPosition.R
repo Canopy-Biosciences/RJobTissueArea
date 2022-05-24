@@ -26,6 +26,7 @@ writeLines(
 #' @param MethodHistory
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 create_pos_df_from_MethodHistory <- function(MethodHistory){
@@ -55,6 +56,7 @@ create_pos_df_from_MethodHistory <- function(MethodHistory){
 #' @param MethodHistory
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 create_ScanHistory_from_MethodHistory<-function(MethodHistory){
@@ -75,6 +77,7 @@ create_ScanHistory_from_MethodHistory<-function(MethodHistory){
 #' @param MethodHistory
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 extract_cycle_sequence_from_MethodHistory <- function(MethodHistory){
@@ -93,6 +96,7 @@ extract_cycle_sequence_from_MethodHistory <- function(MethodHistory){
 #' @param MethodHistory
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 extract_OK_pos_from_MethodHistory <- function(MethodHistory){
@@ -123,6 +127,7 @@ extract_OK_pos_from_MethodHistory <- function(MethodHistory){
 #' @param MethodHistory
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 extract_Ref_pos_from_MethodHistory <- function(MethodHistory){
@@ -154,6 +159,7 @@ extract_Ref_pos_from_MethodHistory <- function(MethodHistory){
 #' @param MethodHistory
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 extract_XYvalues_pos_from_MethodHistory <- function(MethodHistory){
@@ -212,6 +218,7 @@ extract_XYvalues_pos_from_MethodHistory <- function(MethodHistory){
 #' @param MH
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 get_pos_colnames_in_MethodHistory <- function(MH){

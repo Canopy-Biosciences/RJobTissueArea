@@ -15,3 +15,4 @@ create_ScanHistory_from_MethodHistory(MethodHistory)
 \description{
 create_ScanHistory_from_MethodHistory
 }
+\keyword{internal}

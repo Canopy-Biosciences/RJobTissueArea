@@ -15,3 +15,4 @@ get_df_from_query_result(query_result)
 \description{
 get_df_from_query_result
 }
+\keyword{internal}

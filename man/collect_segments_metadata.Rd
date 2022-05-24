@@ -22,3 +22,4 @@ details
 chip_path <- c("\\\\\\\\intern.chipcytometry.com\\\\imagedata\\\\leipzig_volume0\\\\M986054")
 collect_segments_metadata(chip_path)
 }
+\keyword{internal}

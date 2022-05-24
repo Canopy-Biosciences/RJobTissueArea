@@ -15,3 +15,4 @@ get_gate_ID_of_AllGate(chip_ID, segment_ID)
 \description{
 Title
 }
+\keyword{internal}

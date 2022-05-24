@@ -15,3 +15,4 @@ Gate file as \code{data.table}
 \description{
 Import a single gate file
 }
+\keyword{internal}

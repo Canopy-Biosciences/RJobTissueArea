@@ -15,3 +15,4 @@ calculate_TissueArea(n_pixel, cellres)
 \description{
 calculate_TissueArea
 }
+\keyword{internal}

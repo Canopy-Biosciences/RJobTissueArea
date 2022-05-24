@@ -15,3 +15,4 @@ plot_tissue_detection(m.data, cellres, pixelset, filename)
 \description{
 Title
 }
+\keyword{internal}

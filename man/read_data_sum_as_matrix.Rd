@@ -15,3 +15,4 @@ read_data_sum_as_matrix(filepath)
 \description{
 read_data_sum_as_matrix
 }
+\keyword{internal}

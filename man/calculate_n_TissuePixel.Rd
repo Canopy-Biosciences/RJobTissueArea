@@ -15,3 +15,4 @@ calculate_n_TissuePixel(pixelset)
 \description{
 calculate_n_TissuePixel
 }
+\keyword{internal}

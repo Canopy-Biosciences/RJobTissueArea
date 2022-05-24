@@ -15,3 +15,4 @@ extract_statistics_from_blob_parameter(blob_parameter)
 \description{
 extract_statistics_from_blob_parameter
 }
+\keyword{internal}

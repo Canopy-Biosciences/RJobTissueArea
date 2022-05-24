@@ -15,3 +15,4 @@ create_ScanHistory_of_chipIDs(chip_IDs)
 \description{
 create_ScanHistory_of_chipIDs
 }
+\keyword{internal}

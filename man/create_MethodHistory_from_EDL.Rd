@@ -15,3 +15,4 @@ create_MethodHistory_from_EDL(EDL)
 \description{
 Title
 }
+\keyword{internal}

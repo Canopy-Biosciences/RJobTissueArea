@@ -20,9 +20,14 @@ gates, tidied up by \code{\link{tidy_up_XML_file_content}}}
 \value{
 List with \code{filesToProcess} without empty or not existing files,
 and flag whether fatal errors occurred
-Check the imported file lists
 }
 \description{
 This function checks whether at least one fluorescence file and gate files
 are present. Empty files are removed.
 }
+\keyword{Check}
+\keyword{file}
+\keyword{imported}
+\keyword{internal}
+\keyword{lists}
+\keyword{the}

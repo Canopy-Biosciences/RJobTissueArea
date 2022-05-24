@@ -15,3 +15,4 @@ extract_image_resolution(image_data)
 \description{
 reads the resolution attribute of an image object
 }
+\keyword{internal}

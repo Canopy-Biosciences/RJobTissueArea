@@ -15,3 +15,4 @@ query_chipID_channels(chip_IDs)
 \description{
 Title
 }
+\keyword{internal}

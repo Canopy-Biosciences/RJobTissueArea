@@ -15,3 +15,4 @@ get_EDL_from_query_result(result)
 \description{
 Title
 }
+\keyword{internal}

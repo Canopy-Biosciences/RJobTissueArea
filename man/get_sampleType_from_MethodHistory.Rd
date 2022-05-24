@@ -15,3 +15,4 @@ get_sampleType_from_MethodHistory(MethodHistory)
 \description{
 Title
 }
+\keyword{internal}

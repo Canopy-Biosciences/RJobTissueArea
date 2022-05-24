@@ -15,3 +15,4 @@ get_positions_field_from_query_result(query_result)
 \description{
 get_positions_field_from_query_result
 }
+\keyword{internal}

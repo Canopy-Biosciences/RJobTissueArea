@@ -15,3 +15,4 @@ get_enabled_positions(chip_ID)
 \description{
 get_enabled_positions
 }
+\keyword{internal}

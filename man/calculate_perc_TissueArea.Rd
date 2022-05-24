@@ -15,3 +15,4 @@ calculate_perc_TissueArea(pixelset)
 \description{
 calculate_perc_TissueArea
 }
+\keyword{internal}

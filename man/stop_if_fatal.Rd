@@ -12,3 +12,4 @@ stop_if_fatal(message = "Please see chunk output above.")
 \description{
 Stop execution
 }
+\keyword{internal}

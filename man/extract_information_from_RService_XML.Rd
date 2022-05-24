@@ -15,3 +15,4 @@ Relevant information: Job UID, job type, all file and gate names
 \description{
 Get relevant information from the input XML
 }
+\keyword{internal}

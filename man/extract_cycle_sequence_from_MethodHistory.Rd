@@ -15,3 +15,4 @@ extract_cycle_sequence_from_MethodHistory(MethodHistory)
 \description{
 extract_cycle_sequence_from_MethodHistory
 }
+\keyword{internal}

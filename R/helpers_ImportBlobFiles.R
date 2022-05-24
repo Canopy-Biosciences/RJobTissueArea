@@ -56,6 +56,8 @@ writeLines(
 #' @param pos_ID
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 create_hdr_filepath <- function(chip_path,scan_ID,pos_ID){
@@ -77,6 +79,8 @@ create_hdr_filepath <- function(chip_path,scan_ID,pos_ID){
 #' @param encoding
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 convert_binsize_from_encoding <- function(encoding){
@@ -96,6 +100,8 @@ convert_binsize_from_encoding <- function(encoding){
 #' @param pos_ID
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 create_pos_foldername <- function(imageServer_path,basePath,pos_ID){
@@ -116,6 +122,8 @@ create_pos_foldername <- function(imageServer_path,basePath,pos_ID){
 #' @param Type
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 create_Pos_image_filepath <- function(ScanBasePath,
@@ -139,6 +147,8 @@ create_Pos_image_filepath <- function(ScanBasePath,
 #' @param chip_IDs
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 create_MethodHistory_of_chipIDs <- function(chip_IDs){
@@ -155,6 +165,8 @@ create_MethodHistory_of_chipIDs <- function(chip_IDs){
 #' @param chip_IDs
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 create_ScanHistory_of_chipIDs<-function(chip_IDs){
@@ -307,6 +319,8 @@ create_ScanHistory_extended <- function(chip_IDs,
 #' @param blob_parameter
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 extract_encoding_from_blob_parameter <- function(blob_parameter){
@@ -325,6 +339,8 @@ extract_encoding_from_blob_parameter <- function(blob_parameter){
 #' @param blob_parameter
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 extract_h_pixels_from_blob_parameter <- function(blob_parameter){
@@ -345,6 +361,8 @@ extract_h_pixels_from_blob_parameter <- function(blob_parameter){
 #' @param blob_parameter
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 extract_image_path_from_blob_parameter<- function(blob_parameter){
@@ -362,6 +380,8 @@ extract_image_path_from_blob_parameter<- function(blob_parameter){
 #' @param blob_paramter
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 extract_image_heigth_from_blob_parameter <- function(blob_parameter){
@@ -382,6 +402,8 @@ extract_image_heigth_from_blob_parameter <- function(blob_parameter){
 #' @param blob_parameter
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 extract_image_resolution_from_blob_parameter <- function(blob_parameter){
@@ -409,6 +431,8 @@ extract_image_resolution_from_blob_parameter <- function(blob_parameter){
 #' @param blob_paramter
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 extract_image_width_from_blob_parameter <- function(blob_parameter){
@@ -429,6 +453,8 @@ extract_image_width_from_blob_parameter <- function(blob_parameter){
 #' @param blob_paramter
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 extract_n_pixels_from_blob_parameter <- function(blob_parameter){
@@ -447,6 +473,8 @@ extract_n_pixels_from_blob_parameter <- function(blob_parameter){
 #' @param blob_parameter
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 extract_v_pixels_from_blob_parameter <- function(blob_parameter){
@@ -468,6 +496,8 @@ extract_v_pixels_from_blob_parameter <- function(blob_parameter){
 #' @param blob_filename
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 extract_parameter_from_BLOB <- function(image_path,
@@ -500,6 +530,8 @@ extract_parameter_from_BLOB <- function(image_path,
 #' @param blob_parameter
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 extract_statistics_from_blob_parameter <- function(blob_parameter){
@@ -520,6 +552,8 @@ extract_statistics_from_blob_parameter <- function(blob_parameter){
 #' @param single_pos_entity
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 extract_enabled_positions <- function(single_pos_entity){
@@ -537,6 +571,7 @@ extract_enabled_positions <- function(single_pos_entity){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 find_scan_basepath <- function(scan_IDs){
@@ -551,6 +586,7 @@ find_scan_basepath <- function(scan_IDs){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 get_enabled_positions <- function(chip_ID){
@@ -567,6 +603,8 @@ get_enabled_positions <- function(chip_ID){
 #' @param positions_list
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 get_enabled_positions_from_positions_list <- function(positions_list){
@@ -583,6 +621,8 @@ get_enabled_positions_from_positions_list <- function(positions_list){
 #' @param query_result
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 get_df_from_query_result<- function(query_result){
@@ -598,6 +638,8 @@ get_df_from_query_result<- function(query_result){
 #' @param query_result
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 get_positions_field_from_query_result <- function(query_result){
@@ -618,6 +660,8 @@ get_positions_field_from_query_result <- function(query_result){
 #' @param ScanBasePath
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 list_posFolders_in_ScanBasePath <- function(ScanBasePath){
@@ -632,6 +676,7 @@ list_posFolders_in_ScanBasePath <- function(ScanBasePath){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 query_filterset_of_scanIDs <- function(scan_IDs){
@@ -659,6 +704,7 @@ query_filterset_of_scanIDs <- function(scan_IDs){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 read_binary_image_as_matrix <- function(image_path,
@@ -687,6 +733,7 @@ read_binary_image_as_matrix <- function(image_path,
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 read_binary_image_as_vector<- function(image_path,
@@ -708,6 +755,7 @@ read_binary_image_as_vector<- function(image_path,
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 read_image_binary_file <- function(blob_parameter) {
@@ -746,6 +794,7 @@ read_image_binary_file <- function(blob_parameter) {
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 read_XML_BLOB_parameter<- function(image_path, blob_filename) {
@@ -800,6 +849,7 @@ read_XML_BLOB_parameter<- function(image_path, blob_filename) {
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 select_hdr_files <- function(result_files){
@@ -822,6 +872,7 @@ select_hdr_files <- function(result_files){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 select_valid_image_files <- function(result_files, type=NULL){
@@ -876,6 +927,8 @@ select_valid_image_files <- function(result_files, type=NULL){
 #' @param chip_IDs
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 query_UID_limsproc<- function(chip_IDs){
@@ -897,6 +950,8 @@ query_UID_limsproc<- function(chip_IDs){
 #' @param scan_IDs
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 query_UID_scans<- function(scan_IDs){
@@ -912,6 +967,8 @@ query_UID_scans<- function(scan_IDs){
 #' @param chip_IDs
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 query_chipID_channels <- function(chip_IDs){
@@ -928,6 +985,8 @@ query_chipID_channels <- function(chip_IDs){
 #'
 #' @return
 #' @export
+#' @keywords internal
+#'
 #'
 #' @examples
 read_ScanHistory <- function(group_ID,

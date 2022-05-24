@@ -148,6 +148,8 @@ connect_mongoDB <- function(mongo_collection, # "limslager" oder "limsproc"
 #' @param XML
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 create_long_node_df_from_XML <- function(XML){

@@ -15,3 +15,4 @@ extract_chipIDs_from_groupEDL(EDL)
 \description{
 Title
 }
+\keyword{internal}

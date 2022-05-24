@@ -15,3 +15,4 @@ export_data_sum(image_groups, datasum_dir)
 \description{
 export_data_sum
 }
+\keyword{internal}

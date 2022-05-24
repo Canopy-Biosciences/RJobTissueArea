@@ -41,6 +41,8 @@ writeLines(
 #' @param type
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 create_result_filepath <- function(output_dir,
@@ -102,6 +104,8 @@ create_hdr_image_groups <- function(ScanHistory){
 #' @param filepath
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 calculate_data_sum <- function(image_list){
@@ -155,6 +159,7 @@ calculate_data_sum <- function(image_list){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 export_data_sum <- function(image_groups,
@@ -181,6 +186,8 @@ export_data_sum <- function(image_groups,
 #' @param data_sum
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 convert_image_vector_to_matrix <- function(data_sum){
@@ -202,6 +209,7 @@ convert_image_vector_to_matrix <- function(data_sum){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 read_data_sum_as_matrix <- function(filepath){
@@ -225,6 +233,8 @@ read_data_sum_as_matrix <- function(filepath){
 #' @param filepath
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 extract_image_resolution <- function(image_data){
@@ -249,6 +259,8 @@ extract_image_resolution <- function(image_data){
 #' @param cellres
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 create_pixmap_greyvalues <- function(m.data,
@@ -278,6 +290,8 @@ create_pixmap_greyvalues <- function(m.data,
 #' @param pos_ID
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 create_plot_directory <- function(output_dir,
@@ -315,6 +329,8 @@ create_plot_directory <- function(output_dir,
 #' @param filename
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 plot_tissue_detection <- function(m.data,
@@ -349,6 +365,8 @@ plot_tissue_detection <- function(m.data,
 #' @param pixelset
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 calculate_perc_TissueArea <- function(pixelset){
@@ -364,6 +382,8 @@ calculate_perc_TissueArea <- function(pixelset){
 #' @param pixelset
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 calculate_n_TissuePixel <- function(pixelset){
@@ -378,6 +398,8 @@ calculate_n_TissuePixel <- function(pixelset){
 #' @param cellres
 #'
 #' @return
+#' @export
+#' @keywords internal
 #'
 #' @examples
 calculate_TissueArea <- function(n_pixel,cellres){

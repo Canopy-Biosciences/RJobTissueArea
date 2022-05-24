@@ -15,3 +15,4 @@ get_pos_colnames_in_MethodHistory(MH)
 \description{
 get_pos_colnames_in_MethodHistory
 }
+\keyword{internal}

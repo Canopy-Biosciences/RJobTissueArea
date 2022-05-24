@@ -21,3 +21,4 @@ set_attrs_full_input(full_input, tidy_XML_file_content, output_dir, RJob_ID)
 \description{
 Save job metadata as attributes
 }
+\keyword{internal}
