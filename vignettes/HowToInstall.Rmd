@@ -46,37 +46,41 @@ here::i_am("vignettes/HowToInstall.Rmd")
     > -   install the R package mongolite 1.0 by executing the following code in RStudio:
     >
     >          remotes::install_version("mongolite","1.0")
-
-2.  get and install the actual version of the *ZKW distance calculation R package*:
-
-    > -   go to Github webpage: 
     >
-    >     <https://github.com/juleZWK/RJobDistanceMetric/>
+    > -   install Bioconductor packages
+    >
+    >          remotes::install_version("locfit",version="1.5.9.4")
+    >
+    >          BiocManager::install("EBImage",force=TRUE)
+
+2.  get and install the actual version of the *ZKW TissueArea calculation R package*:
+
+    > -   go to Github webpage:
+    >
+    >     <https://github.com/juleZWK/RJobTissueArea/>
     >
     > -   klick on newest release and download it
     >
-    >    <image src = "figures/GitHub_new_package_release.png" align="center" width="600"/>
+    > <image src = "figures/GitHub_new_package_release.png" align="center" width="600"/>
     >
     > -   choose the tar.gz file and save it on your local disk
     >
-    > -   in RStudio set the working directory to the folder where you have downloaded the tar.gz file, you may use the following R command:
+    > -   in RStudio set the path and the name of the tar.gz file
     >
-    >         setwd(choose.dir())
+    >         package_dir <- choose.dir()
+    >         package_name <- "RJobTissueArea_0.0.0.13.tar.gz"
     >
-    > -   install the ZKW distance calculation package by executing the following code in RStudio (edit filename and set it to the name of the downloaded tar.gz file, if necessary):
+    > -   install the ZKW distance calculation package by executing the following code in RStudio:
     >
-    >         filename <- "RJobDistanceMetric_3.0.0.tar.gz"
-    >         tmpdir <- tempdir()
-    >         untar(filename, exdir = tmpdir)
-    >         devtools::install(file.path(tmpdir, "RJobDistanceMetric"), dependencies = TRUE)
+    >         devtools::install(file.path(package_dir, package_name), dependencies = TRUE)
 
 3.  start your analysis in RStudio:
 
-    > -   in RStudio create a “New Project” and name it approbiately or select a existing project, where you want to add the distance calculation
+    > -   in RStudio create a "New Project" and name it approbiately or select a existing project, where you want to add the distance calculation
     >
-    > -   create a “New File” and choose the “RMarkdown” file type
+    > -   create a "New File" and choose the "RMarkdown" file type
     >
-    > -   select “From Template” and choose the “Distance Calculation” template
+    > -   select "From Template" and choose the "ExampleReport" template
     >
     > -   save a copy into your project directory and follow instructions in the template
 
@@ -86,7 +90,7 @@ here::i_am("vignettes/HowToInstall.Rmd")
 
 -   The **developmental package** version can be installed from github repository directly. To do so, execute the following code in RStudio.:
 
-        devtools::install_github("juleZWK/RJobDistanceMetric")
+        devtools::install_github("juleZWK/RJobTissueArea")
 
 -   If you need to have the flowCore package installed:
 
