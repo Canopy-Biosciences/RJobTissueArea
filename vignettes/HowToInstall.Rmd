@@ -25,7 +25,7 @@ here::i_am("vignettes/HowToInstall.Rmd")
 
 ```
 
-1.  setup your system:
+1.  setup PC for using R:
 
     > -   install R 3.6.3
     >
@@ -37,23 +37,28 @@ here::i_am("vignettes/HowToInstall.Rmd")
     >
     > -   install the R packages needed for installation by executing the following code in RStudio:
     >
-    >         install.packages(c("devtools","installr","remotes"))
+    >         install.packages("installr")
     >
     > -   install RTools 35 by executing the following code in RStudio:
     >
     >         installr::install_rtools()
-    >
-    > -   install the R package mongolite 1.0 by executing the following code in RStudio:
-    >
-    >          remotes::install_version("mongolite","1.0")
-    >
-    > -   install Bioconductor packages
-    >
-    >          remotes::install_version("locfit",version="1.5.9.4")
-    >
-    >          BiocManager::install("EBImage",force=TRUE)
 
-2.  get and install the actual version of the *ZKW TissueArea calculation R package*:
+2.  setup R for using this package:
+
+    > -   install internal R tools:
+    >
+    >         install.packages(c("remotes","biocmanager"))
+    >
+    > -   install a package needed for accessing the mongoDB
+    >
+    >         remotes::install_version("mongolite","1.0")
+    >
+    > -   install packages needed for image processing
+    >
+    >         remotes::install_version("locfit",version="1.5.9.4") 
+    >         BiocManager::install("EBImage",force=TRUE)
+
+3.  get and install the actual version of the *ZKW TissueArea calculation R package*:
 
     > -   go to Github webpage:
     >
@@ -72,7 +77,7 @@ here::i_am("vignettes/HowToInstall.Rmd")
     >
     >         devtools::install(file.path(package_dir, package_name), dependencies = TRUE)
 
-3.  start your analysis in RStudio:
+4.  start your analysis in RStudio:
 
     > -   in RStudio create a "New Project" and name it approbiately or select a existing project, where you want to add the distance calculation
     >
