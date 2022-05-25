@@ -175,7 +175,9 @@ create_ScanHistory_of_chipIDs<-function(chip_IDs){
 #' @examples
 create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
 
-  Version <- "290422"
+  Version <- "250522"
+  # UPDATE
+  #- select_valid_image_files call included
 
   tictoc::tic("create extended ScanHistory")
 
@@ -204,9 +206,10 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
                                                       positions,
                                                       `enabled-count`))
 
-  # join ScanHistory
+  # join ScanHistory and select valid entities
   ScanHistory2 <- dplyr::full_join(ScanHistory,
-                                  results_chip_scans, by = "scan_ID")
+                                  results_chip_scans, by = "scan_ID")%>%
+    select_valid_image_files()
 
   # subselect columns position
   ScanHistory3 <- ScanHistory2%>%
