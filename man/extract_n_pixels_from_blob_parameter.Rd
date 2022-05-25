@@ -15,3 +15,4 @@ extract_n_pixels_from_blob_parameter(blob_parameter)
 \description{
 extract_n_pixels_from_blob_parameter
 }
+\keyword{internal}

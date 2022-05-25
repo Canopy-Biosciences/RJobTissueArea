@@ -18,3 +18,4 @@ Title
 \examples{
 segment_IDs <- c("EZKL122811","EZKL207112","EZKL289562")
 }
+\keyword{internal}

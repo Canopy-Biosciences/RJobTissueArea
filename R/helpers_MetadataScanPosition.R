@@ -1,4 +1,4 @@
-V <- "130322"
+V <- "250522"
 helpers <- "MetadataScanPosition"
 
 assign(paste0("version.helpers.", helpers), V)
@@ -10,16 +10,62 @@ writeLines(
   c(
     "---------------------",
     "functions: ",
-    "- create_ScanHistory_from_MethodHistory()",
+    "- create_MethodHistory_from_EDL()",
     "- create_MethodHistory_of_chipIDs()",
     "- create_ScanHistory_of_chipIDs()",
+    "- create_ScanHistory_extended()",
+    "- create_ScanHistory_from_MethodHistory()",
     "- create_pos_df_from_MethodHistory()",
+    "- determine_scan_position()",
     "- extract_cycle_sequence_from_MethodHistory()",
     "- extract_OK_pos_from_MethodHistory()",
     "- extract_Ref_pos_from_MethodHistory()",
     "- extract_XYvalues_pos_from_MethodHistory()",
-    "- get_pos_colnames_in_MethodHistory()"
+    "- get_gate_ID_of_AllGate()",
+    "- get_segment_ID_of_chipID()",
+    "- get_pos_colnames_in_MethodHistory()",
+    "- get_sampleType_from_MethodHistory()",
+    "- read_ScanHistory()",
+    "- return_segment_metadata()",
+    "- select_segment_ID()"
   ))
+
+#' Title
+#'
+#' @param EDL
+#'
+#' @return
+#' @export
+#' @keywords internal
+#'
+#' @examples
+create_MethodHistory_from_EDL<-function(EDL){
+
+  # Version taken from Rmd report:
+  # "!_final_Markdown_collect_FLvalues_allStains_180920_withCode_COMPLEMENT.Rmd"
+  V <- 210921
+
+  if((stringr::str_detect(EDL,"error_"))==TRUE){
+    return(EDL)
+  }else{
+
+    output<-try(EDL%>%
+                  xml2::read_xml()%>%
+                  xml2::xml_child("MethodHistory")%>%
+                  xml2::xml_children()%>%
+                  purrr::map(xml2::xml_attrs)%>%
+                  purrr::map_df(~as.list(.)),
+                silent = TRUE)
+
+    if(inherits(output,'try-error')==TRUE){
+      return(Error=("error_no_MethodHistory in EDLchannel"))
+    }
+    else
+    {
+      return(output)
+    }
+  }}
+
 
 
 #' create_MethodHistory_of_chipIDs
@@ -28,6 +74,7 @@ writeLines(
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 create_MethodHistory_of_chipIDs <- function(chip_IDs){
@@ -39,11 +86,186 @@ create_MethodHistory_of_chipIDs <- function(chip_IDs){
   return(MethodHistory)
 }
 
+#' create_ScanHistory_of_chipIDs
+#'
+#' @param chip_IDs
+#'
+#' @return
+#' @export
+#' @keywords internal
+#'
+#' @examples
+create_ScanHistory_of_chipIDs<-function(chip_IDs){
+
+  Version <- "290422"
+  #update:
+  #- purrr::map_df
+  MethodHistory <- create_MethodHistory_of_chipIDs(chip_IDs)
+
+  ScanHistorys <- purrr::map_df(MethodHistory,
+                                ~.x%>%
+                                  dplyr::rename("scan_ID" = "UID")%>%
+                                  dplyr::rename("cycle_ID" = "CycleUID")%>%
+                                  tidyr::fill(cycle_ID,  .direction = "up")%>%
+                                  dplyr::filter(Type == "Chipcytometry-Scan")%>%
+                                  dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
+  return(ScanHistorys)
+}
+
+#' create_ScanHistory_extended
+#'
+#' @param chip_IDs
+#' @param output_dir
+#' @param result_ID
+#'
+#' @return
+#' @export
+#'
+#' @examples
+create_ScanHistory_extended <- function(chip_IDs,
+                                        output_dir,
+                                        result_ID){
+
+  Version <- "290422"
+
+  tictoc::tic("create extended ScanHistory")
+
+  #_____________________________________
+  # create scanHistory (query limslager)----
+  ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)%>%
+    data.table::rbindlist()
+
+  #_______________________________
+  # add filterset (query limsproc)----
+  ScanHistory <- ScanHistory%>%
+    dplyr::mutate(filterset = query_filterset_of_scanIDs(scan_ID))
+
+  #______________________________
+  # query result chipID ins scans----
+  query_chip_scans <- query_mongoDB("scans",
+                                    "channelUID",
+                                    chip_IDs)
+
+  #_______________
+  # select columns----
+  results_chip_scans <- purrr::map_df(query_chip_scans$result,
+                                      ~.x%>%
+                                        dplyr::select("chip_ID" = "channelUID",
+                                                      "scan_ID" = "UID",
+                                                      jobType,
+                                                      basePath,
+                                                      "jobEndState",
+                                                      "success",
+                                                      positions,
+                                                      `enabled-count`))
+
+  #_________________
+  # join ScanHistory----
+  ScanHistory2 <- dplyr::full_join(ScanHistory,
+                                   results_chip_scans, by = "scan_ID")
+
+  #___________________________
+  # subselect columns position----
+  ScanHistory3 <- ScanHistory2%>%
+    dplyr::mutate(positions = purrr::map(
+      positions,
+      ~.x%>%
+        dplyr::select(
+          dplyr::any_of(c("chip_ID",
+                          "scan_ID",
+                          "pos_ID" = "posid",
+                          "jobType",
+                          "basePath",
+                          "Status",
+                          "chipx",
+                          "chipy",
+                          "bleach-time",
+                          "enabled-count",
+                          "hdr"
+                          #,
+                          #"flimages",
+                          #"posref",
+                          #"focus",
+                          #"deltaTL"
+          )))))
+
+  #____________________________________
+  #unnest selected columns in positions----
+  ScanHistory4 <- ScanHistory3%>%
+    tidyr::unnest(positions)
+
+  #________________________________
+  # extract hdr column in positions----
+  ScanHistory5 <- ScanHistory4%>%
+    dplyr::mutate(hdr_filename = purrr::map(ScanHistory4$hdr,~.x)$filename)%>%
+    dplyr::select(-hdr)
+
+  # Image_list <- ScanHistory4%>%
+  #   dplyr::select(chip_ID,scan_ID,pos_ID,hdr,flimages,focus,deltaTL,posref)
+
+
+  #__________________________________________
+  # get enabled positions (query in channels)----
+  enabled_positions <- get_enabled_positions(chip_IDs)
+
+  #___________________________
+  # join enabled position flag----
+  ScanHistory6<- dplyr::left_join(ScanHistory5,
+                                  enabled_positions,
+                                  by=c("chip_ID", "pos_ID"="posid"))
+
+  #_____________
+  #add chip_path----
+  serverpath <- find_server_path()
+
+  chip_paths <- data.frame(
+    chip_ID = chip_IDs,
+    chip_path = purrr::map_chr(chip_IDs,
+                               ~find_chip_path(.x)))
+
+  ScanHistory7 <- ScanHistory6%>%
+    dplyr::left_join(chip_paths,by="chip_ID")
+
+  #___________________
+  # export ScanHistory----
+  result_filename <- create_result_filepath(output_dir,
+                                            "extendedScanHistory",
+                                            result_ID,
+                                            "csv")
+  data.table::fwrite(ScanHistory7,result_filename)
+
+  tictoc::toc()
+
+  return(ScanHistory7)
+
+}
+
+#' create_ScanHistory_from_MethodHistory
+#'
+#' @param MethodHistory
+#'
+#' @return
+#' @keywords internal
+#'
+#' @examples
+create_ScanHistory_from_MethodHistory<-function(MethodHistory){
+
+  ScanHistorys <- purrr::map(MethodHistory,
+                             ~.x%>%
+                               dplyr::rename("scan_ID" = "UID")%>%
+                               dplyr::rename("cycle_ID" = "CycleUID")%>%
+                               tidyr::fill(cycle_ID,  .direction = "up")%>%
+                               dplyr::filter(Type == "Chipcytometry-Scan")%>%
+                               dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
+  return(ScanHistorys)
+}
+
 #' create_pos_df_from_MethodHistory
 #'
 #' @param MethodHistory
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 create_pos_df_from_MethodHistory <- function(MethodHistory){
@@ -69,46 +291,52 @@ create_pos_df_from_MethodHistory <- function(MethodHistory){
   return(df)
 }
 
-#' create_ScanHistory_of_chipIDs
+#' Title
 #'
 #' @param MethodHistory
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
-create_ScanHistory_of_chipIDs<-function(chip_IDs){
+determine_scan_position <- function(MethodHistory){
+  # !!! adapted from get_Metadata_from_EDL()
+  #     Version taken from Rmd report:
+  # "!_final_Markdown_collect_FLvalues_allStains_180920_withCode_COMPLEMENT.Rmd"
 
-  MethodHistory <- create_MethodHistory_of_chipIDs(chip_IDs)
+  Error <- character()
 
-  ScanHistorys <- purrr::map(MethodHistory,
-                             ~.x%>%
-                               dplyr::rename("scan_ID" = "UID")%>%
-                               dplyr::rename("cycle_ID" = "CycleUID")%>%
-                               tidyr::fill(cycle_ID,  .direction = "up")%>%
-                               dplyr::filter(Type == "Chipcytometry-Scan")%>%
-                               dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
-  return(ScanHistorys)
-}
+  if("Tag" %in% colnames(MethodHistory)==FALSE){
+    Error=c(Error,paste0("error_no Tag metadata"))
+  }
 
-#' create_ScanHistory_from_MethodHistory
-#'
-#' @param MethodHistory
-#'
-#' @return
-#' @export
-#'
-#' @examples
-create_ScanHistory_from_MethodHistory<-function(MethodHistory){
+  if(any(!is.na(MethodHistory$Tag))==FALSE){
+    Error=c(Error,paste0("error_no data for Tag, BG or bleaching"))
+  }
 
-  ScanHistorys <- purrr::map(MethodHistory,
-                             ~.x%>%
-                               dplyr::rename("scan_ID" = "UID")%>%
-                               dplyr::rename("cycle_ID" = "CycleUID")%>%
-                               tidyr::fill(cycle_ID,  .direction = "up")%>%
-                               dplyr::filter(Type == "Chipcytometry-Scan")%>%
-                               dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
-  return(ScanHistorys)
+  MethodHistory<-MethodHistory%>%
+    dplyr::filter(!is.na(Tag))
+
+  if((length(MethodHistory$Tag))<1){
+    Error=c(Error,paste0("error_no data listed in Tag"))
+  }
+  n_scans<-dim(MethodHistory)[1]
+  MethodHistory$ScanPosition=3:(n_scans+2)
+  MethodHistory$n_scans<-n_scans
+
+  MethodHistory<-MethodHistory%>%
+    dplyr::filter(!Tag=="*")%>%
+    dplyr::filter(!Tag == "BG")
+
+  if(length(MethodHistory$Tag)<1){
+    Error=c(Error,paste0("error_scans with a stain listed in Tag column"))
+  }
+
+  MethodHistory$Error <- paste0(Error,collapse=", ")
+  return(MethodHistory%>%
+           dplyr::select("Scan_UID"="UID",Type,Tag,ScanPosition))
+
 }
 
 
@@ -117,6 +345,7 @@ create_ScanHistory_from_MethodHistory<-function(MethodHistory){
 #' @param MethodHistory
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 extract_cycle_sequence_from_MethodHistory <- function(MethodHistory){
@@ -135,6 +364,7 @@ extract_cycle_sequence_from_MethodHistory <- function(MethodHistory){
 #' @param MethodHistory
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 extract_OK_pos_from_MethodHistory <- function(MethodHistory){
@@ -165,6 +395,7 @@ extract_OK_pos_from_MethodHistory <- function(MethodHistory){
 #' @param MethodHistory
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 extract_Ref_pos_from_MethodHistory <- function(MethodHistory){
@@ -196,6 +427,7 @@ extract_Ref_pos_from_MethodHistory <- function(MethodHistory){
 #' @param MethodHistory
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 extract_XYvalues_pos_from_MethodHistory <- function(MethodHistory){
@@ -247,6 +479,60 @@ extract_XYvalues_pos_from_MethodHistory <- function(MethodHistory){
 
 }
 
+#' Title
+#'
+#' @param chip_ID
+#' @param segment_ID
+#'
+#' @return
+#' @export
+#' @keywords internal
+#'
+#' @examples
+get_gate_ID_of_AllGate<- function(chip_ID,segment_ID){
+  V<-"230222"
+  # changes IDs$chip_ID to IDs$UID
+  # changes "IDs$allObjRefs" to IDs$UID
+  # bugfix
+  pos <- integer(0)
+  IDs <- extract_gate_metadata(chip_IDs = chip_ID)
+  pos<-which(IDs$chip_ID == chip_ID &
+               IDs$ParentSegmentation == segment_ID&
+               IDs$Ref_Name == "All")
+
+  gate_ID <- IDs$UID[pos]
+
+  if(length(pos)>0){
+    return(gate_ID)
+  }else{stop("found no All in ObjRef names")}
+
+}
+
+
+
+#' Title
+#'
+#' @param chip_ID
+#'
+#' @return
+#' @export
+#' @keywords internal
+#'
+#' @examples
+get_segment_ID_of_chipID <- function(chip_ID){
+  segment_ID <- character(0)
+  segment_ID <- chip_ID%>%
+    as.character()%>%
+    return_segment_metadata()%>%
+    select_segment_ID()
+
+
+  if(length(segment_ID)==1){
+    return(segment_ID)
+
+  }else{stop("failed getting segment_ID chip_ID")}
+}
+
 
 
 #' get_pos_colnames_in_MethodHistory
@@ -254,6 +540,7 @@ extract_XYvalues_pos_from_MethodHistory <- function(MethodHistory){
 #' @param MH
 #'
 #' @return
+#' @keywords internal
 #'
 #' @examples
 get_pos_colnames_in_MethodHistory <- function(MH){
@@ -262,3 +549,132 @@ get_pos_colnames_in_MethodHistory <- function(MH){
   col_scanID <- which(cols %in% c("UID","CycleUID","Taq","Excluded","PreparedForDataviz"))
   return(c(col_scanID,col_pos))
 }
+
+
+#' Title
+#'
+#' @param MethodHistory
+#'
+#' @return
+#' @export
+#' @keywords internal
+#'
+#' @examples
+get_sampleType_from_MethodHistory<-function(MethodHistory){
+
+  V <- 080322
+  #- added stats::
+
+  if(any(MethodHistory%>%
+         purrr::simplify()%>%
+         stats::na.exclude()%>%
+         stringr::str_detect("error_")==TRUE)){
+    if((is.character(MethodHistory) & length(MethodHistory)==1)){
+      return(MethodHistory)
+    }else{return("error_no MethodHistory")}
+
+  }else{
+
+    Type=MethodHistory$Type
+
+    sampleType<-dplyr::case_when(any(stringr::str_detect(Type%>%na.exclude(), "tissue"))~"tissue",
+                                 any(stringr::str_detect(Type%>%na.exclude(),"cellsolution")) ~ "cellsolution",
+                                 TRUE ~ "error_sampleType not found")
+    return(sampleType)
+  }
+}
+
+#' read_ScanHistory
+#'
+#' @param group_ID
+#' @param output_dir
+#'
+#' @return
+#' @export
+#' @keywords internal
+#'
+#'
+#' @examples
+read_ScanHistory <- function(group_ID,
+                             output_dir){
+  filename <- create_result_filepath(output_dir,
+                                     "extendedScanHistory",
+                                     group_ID,
+                                     "csv")
+
+  ScanHistory <- data.table::fread(filename)
+
+  return(ScanHistory)
+}
+
+### **return_segments_metadata()**
+
+#- calls find_chip_path() and collect_segment_metadata() for several chipIDs
+
+
+#' Title
+#'
+#' @param chip_IDs
+#'
+#' @return
+#' @export
+#' @keywords internal
+#'
+#' @examples
+return_segment_metadata <- function(chip_IDs){
+
+  V <- 120222 # initial version
+  #____________________________
+
+  IDs <- data.frame(
+    chip_ID = chip_IDs,
+    chip_path = purrr::map_chr(
+      chip_IDs,
+      ~find_chip_path(.x)))%>%
+    tidyr::nest(data = c(chip_path))%>%
+    dplyr::mutate(segments = purrr::map(
+      data,
+      ~collect_segments_metadata(.x$chip_path)))%>%
+    tidyr::unnest(cols = c(data, segments))
+
+  return(IDs)
+}
+
+##test hannover
+#chip_IDs<- "M912067"
+##test leipziog
+##chip_IDs<- c("M407766","M583196","M986054")
+#return_segment_metadata(chip_IDs)
+#```
+#### **select_segment_ID()**
+#
+#- takes df containing segment metadata
+#- filteres for those segmentations with status c("Edited","Finished")
+#- returns the folder which was recently modiefied using the DBentry
+#
+
+#' Title
+#'
+#' @param segment_IDs
+#'
+#' @return
+#' @keywords internal
+#'
+#' @examples
+select_segment_ID<- function(segment_IDs){
+
+  V <- 120222 # initial version
+  V <- 080322
+  # - added dplyr::desc
+  #____________________________
+
+  segment_ID <- segment_IDs %>%
+    dplyr::filter(status %in% c("Edited","Finished"))%>%
+    dplyr::group_by(chip_ID)%>%
+    dplyr::arrange(dplyr::desc(lastchange))%>%
+    dplyr::slice(1)%>%
+    dplyr::pull(segment_ID)
+
+  return(segment_ID)
+}
+

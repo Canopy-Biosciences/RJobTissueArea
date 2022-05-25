@@ -10,8 +10,9 @@ get_identityID_from_EDL(EDL)
 \item{EDL}{}
 }
 \value{
-#'
+
 }
 \description{
 Title
 }
+\keyword{internal}

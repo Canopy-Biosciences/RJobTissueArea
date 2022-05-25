@@ -447,6 +447,560 @@ list_BlobFileName_in_filepath <- function(HDRimage_filepath){
 }
 ```
 
+# image files
+
+## export_list_all_image_files
+
+```{r}
+#' export_list_all_image_files
+#'
+#' @param chip_IDs
+#' @param type
+#'
+#' @return
+#' @export
+#'
+#' @examples
+export_list_all_image_files <- function(chip_IDs,
+                                        result_ID,
+                                        output_dir){
+
+  # workflow function
+  # based on workflow documented in report: "find all blob image files_smarter.Rmd"
+  Version <- "250422"
+
+  tictoc::tic("find image files complete workflow")
+
+  #_____________________
+  # 1) find server paths----
+  server_paths <- find_server_path()
+  server_paths <- server_paths$server_path
+
+  #__________________
+  # 2) find chip_path----
+  chip_paths <- purrr::map_chr(chip_IDs,
+                               ~find_chip_path(.x,server_paths))
+
+  #__________________________
+  # 3) create imageServer_path----
+  imageServer_paths <- purrr::map2_chr(chip_paths,chip_IDs,
+                                       ~stringr::str_remove(.x,.y))
+
+  #______________________
+  # 4) combine to df: IDs----
+  IDs <- dplyr::tibble(
+    chip_ID = chip_IDs,
+    chip_path = chip_paths,
+    imageServer_path = imageServer_paths)
+
+  #______________________
+  # 5) create scanHistory----
+  ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)%>%
+    dplyr::bind_rows()
+
+  #_________________
+  # 6) add filterset----
+  ScanHistory <- ScanHistory%>%
+    dplyr::mutate(filterset = query_filterset_of_scanIDs(scan_ID))
+
+  #___________________________
+  # 7) query chipIDs ins scans----
+  query_chip_scans <- query_mongoDB("scans",
+                                    "channelUID",
+                                    chip_IDs)
+
+  #________________________
+  # 8) wrangle query result----
+  # 8a) select query columns
+  results_chip_scans <- purrr::map(query_chip_scans$result,
+                                   ~.x%>%
+                                     dplyr::select("chip_ID" = "channelUID",
+                                                   "scan_ID" = "UID",
+                                                   jobType,
+                                                   basePath,
+                                                   "Status" = "jobEndState",
+                                                   positions,
+                                                   `enabled-count`))
+
+  # 8b) subselect positions
+  results_chip_scans <- purrr::map(
+    results_chip_scans,
+    ~.x%>%
+      tidyr::unnest(cols="positions")%>%
+      dplyr::select(
+        dplyr::any_of(c("chip_ID",
+                        "scan_ID",
+                        "pos_ID" = "posid",
+                        "jobType",
+                        "basePath",
+                        "Status",
+                        "chipx",
+                        "chipy",
+                        "enabled",
+                        "bleach-time",
+                        "enabled-count"))))
+
+  # 8c) bind rows
+  results_chip_scans <- results_chip_scans%>%
+    dplyr::bind_rows()
+
+  #_________________________
+  # 9) join imageServer_path----
+  result_paths <- dplyr::left_join(results_chip_scans,
+                                   IDs,
+                                   by = "chip_ID")
+
+  #_________________
+  # 10) add pos_path----
+  result_paths <- result_paths%>%
+    dplyr::mutate(pos_path = create_pos_foldername(imageServer_path,
+                                                   basePath,
+                                                   pos_ID))
+
+  #_________________________
+  # 11) add dirs in pos_path----
+  result_paths <- result_paths%>%
+    dplyr::mutate(image_folder = purrr::map(pos_path,
+                                            ~list.dirs(.x,
+                                                       full.names = FALSE,
+                                                       recursive = FALSE)))%>%
+    tidyr::unnest(cols="image_folder")%>%
+    dplyr::mutate(image_path = file.path(pos_path,image_folder))
+
+  #_______________________________
+  # 12) list files in image_folder----
+  result_files <- result_paths%>%
+    dplyr::mutate(blob_filename = purrr::map(image_path,
+                                             ~list.files(.x)))%>%
+    tidyr::unnest(cols="blob_filename")
+
+  #_________________
+  # 13) add filetype----
+  result_files <- result_files%>%
+    dplyr::mutate(filetype = tools::file_ext(blob_filename))
+
+  #_____________________
+  # 14) join ScanHistory----
+  result_files <- dplyr::left_join(
+    result_files,
+    ScanHistory,
+    by = c("scan_ID", "Status"))
+
+  #___________
+  # 15) export----
+  # __15a) create name of result file
+  file <- create_result_filepath(output_dir,
+                                 name_string = "all_image_files_of_groupID",
+                                 result_ID,
+                                 type = "csv")
+  #__15b) export file
+  data.table::fwrite(result_files,
+                     file)
+
+  #________________________
+  # 16) return result_files----
+  tictoc::toc()
+  return(result_files)
+}
+```
+
+# blob parameter
+
+## list_BlobFileName_in_filepath()
+
+```{r}
+#' list_BlobFileName_in_filepath
+#'
+#' @param image_filepath
+#'
+#' @return
+#' @export
+#'
+#' @examples
+list_BlobFileName_in_filepath <- function(image_filepath){
+  Files<-list.files(image_filepath)
+  BlobFiles<-Files[stringr::str_detect(Files,".blob32$")]
+  BlobFileName<-BlobFiles%>%stringr::str_remove(".blob32$")
+  if(length(BlobFileName)==0){
+    return(NA)
+  }else{return(BlobFileName)}
+}
+
+```
+
+## export_blob_parameter_of_image_filelist()
+
+```{r}
+#' export_blob_parameter_of_image_filelist
+#'
+#' @param image_files
+#' @param output_dir
+#' @param result_ID
+#'
+#' @return
+#' @export
+#'
+#' @examples
+export_blob_parameter_of_image_filelist<-function(image_files,
+                                                  output_dir,
+                                                  result_ID){
+
+  V <- "270422"
+
+  parameter_list <- purrr::map2_df(
+    image_files$image_path,
+    image_files$blob_filename,
+    ~extract_parameter_from_BLOB(.x,.y))
+
+  result_filename <- create_result_filepath(output_dir,
+                                            "Blob_parameters",
+                                            result_ID,
+                                            "csv")
+  data.table::fwrite(parameter_list,
+                     result_filename)
+
+  return(parameter_list)
+
+}
+```
+
+# image processing - workflow
+
+## create_export_data_sum()
+
+```{r}
+#' create_export_data_sum
+#'
+#' @param image_group_list
+#' @param group_ID
+#' @param output_dir
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' if(FALSE){
+#'
+#' data_sum_resultion <- create_export_data_sum(image_groups$data[[1]],
+#' image_groups$group_ID[1],
+#' output_dir)
+#'
+#' }
+create_export_data_sum <- function(image_group_list,
+                                   group_ID,
+                                   output_dir){
+#image_group_list <- image_groups$data[1][[1]]
+#group_ID <- image_groups$group_ID[1]
+  create_working_directory(output_dir)
+
+  for(i in 1:dim(image_group_list)[1]){
+
+    image_path <- image_group_list$image_path[i]
+    blob_filename <- image_group_list$blob_filename[i]
+
+    data_mat <- read_binary_image_as_matrix(image_path,
+                                            blob_filename)
+
+    if(i == 1){
+      data_sum <- data_mat
+    }else{
+
+      if(any(attr(data_mat,"image_resolution") != attr(data_sum,"image_resolution"))){
+        writeLines(c(
+          paste0("- image_resolution changed with scan_ID: ", image_group_list$scan_ID[i])
+        ))}
+
+      data_sum <- data_sum+data_mat
+
+    }
+  }
+
+  result_filename <- create_result_filepath(output_dir,
+                                            "data_sum",
+                                            group_ID,
+                                            type="csv")
+  data.table::fwrite(data_sum%>%
+                       data.table::data.table(),
+                     result_filename)
+
+  return(attr(data_sum,"image_resolution"))
+
+}
+
+```
+
+## perform_image_processing()
+
+```{r}
+#' perform_image_processing
+#'
+#' @param data
+#' @param cellres
+#' @param output_dir
+#' @param chip_ID
+#' @param pos
+#' @param sigma
+#' @param threshold
+#'
+#' @return
+#' @export
+#'
+#' @examples
+perform_image_processing <- function(m.data,
+                                     cellres = cellres,
+                                     output_dir = output_dir,
+                                     chip_ID,
+                                     pos_ID,
+                                     sigma = sigma,
+                                     threshold = threshold){
+  Version <- "220522"
+  #data <- data_sum
 
 
+  # create pixmap
+  # cellres: pixel resolution in horizontal and vertical direction
+  image <-pixmap::pixmapGrey(m.data,
+                             cellres=cellres)
+
+  # get grey values
+  grey_values <- image@grey * 255
+
+  # Low-pass Gaussian filter
+  #remotes::install_version("locfit",version="1.5.9.4")
+  #BiocManager::install("EBImage",force=TRUE)
+  #EBImage version: 4281
+  xb <- EBImage::gblur(grey_values,
+                       sigma)
+  # round values
+  xb <- round(xb,digits = 1)
+
+  # create blurred pixmap image
+  image_blurred <- pixmap::pixmapGrey(xb,
+                                      cellres=cellres)
+
+  #threshold filtering
+  pos <- which(xb > threshold)
+  xt <- xb
+  xt[which(xb > threshold)] <- 1
+  xt[which(xb <= threshold)] <- 0
+
+  # pixmap object of binary image
+  image_binary <- image
+  image_binary@grey <- xt
+
+  # create tiff of result images
+  export_image_result_tiffs(image,
+                            image_blurred,
+                            image_binary,
+                            output_dir,
+                            chip_ID,
+                            pos_ID,
+                            sigma,
+                            threshold,
+                            ncols,
+                            nrows)
+
+}
+```
+
+## process_tissue_detection_workflow()
+
+```{r}
+#' process_tissue_detection_workflow
+#'
+#' @param m.data
+#' @param cellres
+#' @param sigma
+#' @param threshold
+#' @param window
+#'
+#' @return
+#' @export
+#'
+#' @examples
+process_tissue_detection_workflow <- function(m.data,
+                                              cellres,
+                                              sigma,
+                                              threshold,
+                                              window){
+
+
+  #create pixmap----
+  # cellres: pixel resolution in horizontal and vertical direction
+
+  image <-pixmap::pixmapGrey(m.data,
+                             cellres=cellres)
+
+  #_______________
+  #get grey values----
+  grey_values <- image@grey * 255
+
+  #________________________
+  #Low-pass Gaussian filter----
+  #remotes::install_version("locfit",version="1.5.9.4")
+  #BiocManager::install("EBImage",force=TRUE)
+  #EBImage version: 4281
+  xb <- EBImage::gblur(grey_values,
+                       sigma)
+
+  #____________
+  #round values----
+  xb <- round(xb,digits = 1)
+
+  #___________________________
+  #create blurred pixmap image----
+  image_blurred <- pixmap::pixmapGrey(xb,
+                                      cellres=cellres)
+
+  #___________________
+  #threshold filtering----
+  pos <- which(xb > threshold)
+  xt <- xb
+  xt[which(xb > threshold)] <- 1
+  xt[which(xb <= threshold)] <- 0
+
+  #_____________________________
+  #pixmap object of binary image----
+  image_binary <- image
+  image_binary@grey <- xt
+
+  #_______________
+  #adapting window----
+  xta <- EBImage::thresh(xt, w=1,h=1)
+
+  image_adaptedThreshold <- pixmap::pixmapGrey(xta,
+                                               cellres=cellres)
+
+  #________________________
+  #convert to imager object----
+
+  imager_pxset <- imager::as.cimg(image_binary@grey)
+
+  #___________
+  #grow binary----
+  xg <- imager::grow(imager_pxset, window, window, window)
+
+
+  #_____________
+  #shrink binary----
+  xs <-imager::shrink(xg,window, window, window)
+
+  return(xs)
+
+}
+
+```
+
+# image processing - plot results
+
+## export_image_result_tiffs()
+
+```{r}
+#' export_image_result_tiffs
+#'
+#' @param image
+#' @param image_blurred
+#' @param image_binary
+#' @param output_dir
+#' @param chip_ID
+#' @param pos_ID
+#' @param sigma
+#' @param threshold
+#' @param ncols
+#' @param nrows
+#'
+#' @return
+#' @export
+#'
+#' @examples
+export_image_result_tiffs <- function(image,
+                                      image_blurred,
+                                      image_binary,
+                                      output_dir,
+                                      chip_ID,
+                                      pos_ID,
+                                      sigma,
+                                      threshold,
+                                      ncols,
+                                      nrows){
+  Version <- "030522"
+  # check output.dir
+
+  library(pixmap)
+  create_working_directory(output_dir)
+
+  # filename
+  result_ID <- create_name_result_ID(chip_ID,
+                                     pos_ID,
+                                     sigma,
+                                     threshold)
+  # complete filepath
+  file <- create_result_filepath(
+    output_dir,
+    "result_tiffs",
+    result_ID,
+    "tiff"
+  )
+
+  # create tiff object
+  tiff(filename = file,
+       width = ncols*3,
+       height = nrows)
+
+  par(mfrow=c(1,3))
+
+  # plot inital image
+  plot(image,
+       main = "grey value image",
+       sub = "sum values by pixels across all hdr images")
+
+  # plot blurred image
+  plot(image_blurred,
+       main = paste0("blurred with sigma = ",sigma),
+       sub = paste0("min: ", min(xb), "max: ",max(xb)))
+
+  # plot binary image
+  plot(image_binary,
+       main= paste0("threshold set to: ",threshold))
+
+  dev.off()
+
+  writeLines(c(
+    paste0("- successful exported processed image results of: ",result_ID)
+  ))
+}
+```
+
+
+# naming
+
+## create_name_result_ID()
+
+```{r}
+#' create_name_result_ID
+#'
+#' @param chip_ID
+#' @param pos
+#' @param sigma
+#' @param threshold
+#'
+#' @return
+#' @export
+#'
+#' @examples
+create_name_result_ID <- function(chip_ID,
+                                  pos_ID,
+                                  sigma,
+                                  threshold){
+
+  Version <- "030522"
+
+  result_ID <- paste0("chipID_",chip_ID,
+                      "_pos_",pos_ID,
+                      "_sigma_",sigma,
+                      "_threshold_",threshold)
+
+  return(result_ID)
+}
+```
 

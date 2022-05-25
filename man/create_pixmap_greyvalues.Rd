@@ -15,3 +15,4 @@ create_pixmap_greyvalues(m.data, cellres)
 \description{
 create_pixmap_greyvalues
 }
+\keyword{internal}

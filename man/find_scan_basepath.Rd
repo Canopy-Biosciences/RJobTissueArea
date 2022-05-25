@@ -15,3 +15,4 @@ find_scan_basepath(scan_IDs)
 \description{
 find_scan_basepath
 }
+\keyword{internal}

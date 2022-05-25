@@ -15,3 +15,4 @@ File paths for the gate files
 \description{
 Extract the paths of the gate files used for the job
 }
+\keyword{internal}

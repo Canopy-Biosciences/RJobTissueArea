@@ -1,4 +1,4 @@
-V <- "230522"
+V <- "250522"
 helpers <- "ImportBlobFiles"
 
 assign(paste0("version.helpers.", helpers), V)
@@ -10,43 +10,29 @@ writeLines(
   c(
     "---------------------",
     "functions: ",
+    "- create_hdr_filepath()",
     "- create_pos_foldername()",
     "- create_Pos_image_filepath()",
-    "- create_ScanHistory_of_chipIDs()",
-    "- find_scan_basepath()",
-    "- get_df_from_query_result()",
-    "- list_BlobFileName_in_filepath()",
-    "- list_posFolders_in_ScanBasePath()",
-    "- query_filterset_of_scanIDs()",
-    "- query_UID_limsproc()",
-    "- query_UID_scans()",
-    "- export_list_all_image_files()",
-    "- select_valid_image_files()",
-    "- read_BLOB_parameter_from_XML()",
-    "- read_image_binary_file()",
-    "- extract_encoding_from_blob_parameter()",
     "- convert_binsize_from_encoding()",
+    "- extract_enabled_positions()",
+    "- extract_encoding_from_blob_parameter()",
     "- extract_h_pixels_from_blob_parameter()",
-    "- extract_v_pixel_from_blob_parameter()",
-    "- extract_n_pixels_from_blob_parameter()",
     "- extract_image_path_from_blob_parameter()",
-    "- extract_image_width_from_blob_parameter()",
     "- extract_image_heigth_from_blob_parameter()",
     "- extract_image_resolution_from_blob_parameter()",
-    "- read_binary_image_as_matrix()",
-    "- extract_statistics_from_blob_parameter()",
+    "- extract_image_width_from_blob_parameter()",
+    "- extract_n_pixels_from_blob_parameter()",
+    "- extract_v_pixel_from_blob_parameter()",
     "- extract_parameter_from_BLOB()",
-    "- export_blob_parameter_of_image_filelist()",
-    "- create_ScanHistory_extended()",
-    "- create_hdr_filepath()",
-    "- select_hdr_files()",
-    "- query_chipID_channels()",
-    "- extract_enabled_positions()",
+    "- extract_statistics_from_blob_parameter()",
     "- get_enabled_positions_from_positions_list()",
-    "- get_enabled_positions()",
-    "- get_positions_field_from_query_result()",
+    "- list_posFolders_in_ScanBasePath()",
+    "- read_binary_image_as_matrix()",
     "- read_binary_image_as_vector()",
-    "- read_ScanHistory()"
+    "- read_image_binary_file()",
+    "- read_XML_BLOB_parameter()",
+    "- select_hdr_files()",
+    "- select_valid_image_files()"
   ))
 
 #' create_hdr_filepath
@@ -57,6 +43,7 @@ writeLines(
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 create_hdr_filepath <- function(chip_path,scan_ID,pos_ID){
@@ -73,23 +60,6 @@ create_hdr_filepath <- function(chip_path,scan_ID,pos_ID){
   )
 }
 
-#' convert_binsize_from_encoding
-#'
-#' @param encoding
-#'
-#' @return
-#' @export
-#'
-#' @examples
-convert_binsize_from_encoding <- function(encoding){
-
-  Version <- "270422"
-
-  bin_size <- dplyr::case_when(encoding == "32bit little-endian" ~ 4,
-                               encoding == "16bit little-endian" ~ 2)
-
-  return(bin_size)
-}
 
 #' create_pos_foldername
 #'
@@ -99,6 +69,7 @@ convert_binsize_from_encoding <- function(encoding){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 create_pos_foldername <- function(imageServer_path,basePath,pos_ID){
@@ -120,6 +91,7 @@ create_pos_foldername <- function(imageServer_path,basePath,pos_ID){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 create_Pos_image_filepath <- function(ScanBasePath,
@@ -138,39 +110,32 @@ create_Pos_image_filepath <- function(ScanBasePath,
 
 }
 
-#' create_ScanHistory_of_chipIDs
+#' convert_binsize_from_encoding
 #'
-#' @param chip_IDs
+#' @param encoding
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
-create_ScanHistory_of_chipIDs<-function(chip_IDs){
+convert_binsize_from_encoding <- function(encoding){
 
-  Version <- "290422"
-  #update:
-  #- purrr::map_df
-  MethodHistory <- create_MethodHistory_of_chipIDs(chip_IDs)
+  Version <- "270422"
 
-  ScanHistorys <- purrr::map_df(MethodHistory,
-                             ~.x%>%
-                               dplyr::rename("scan_ID" = "UID")%>%
-                               dplyr::rename("cycle_ID" = "CycleUID")%>%
-                               tidyr::fill(cycle_ID,  .direction = "up")%>%
-                               dplyr::filter(Type == "Chipcytometry-Scan")%>%
-                               dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
-  return(ScanHistorys)
+  bin_size <- dplyr::case_when(encoding == "32bit little-endian" ~ 4,
+                               encoding == "16bit little-endian" ~ 2)
+
+  return(bin_size)
 }
 
-#' create_ScanHistory_extended
+#' extract_enabled_positions
 #'
-#' @param chip_IDs
-#' @param output_dir
-#' @param result_ID
+#' @param single_pos_entity
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
@@ -461,12 +426,22 @@ export_list_all_image_files <- function(chip_IDs,
   return(result_files)
 }
 
+extract_enabled_positions <- function(single_pos_entity){
+  df <- data.frame(
+    pos_ID = single_pos_entity['posid'],
+    enabled = single_pos_entity['enabled']
+  )#%>%
+  #  dplyr::filter(enabled == 1)
+  return(df)
+}
+
 #' extract_encoding_from_blob_parameter
 #'
 #' @param blob_parameter
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 extract_encoding_from_blob_parameter <- function(blob_parameter){
@@ -486,6 +461,7 @@ extract_encoding_from_blob_parameter <- function(blob_parameter){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 extract_h_pixels_from_blob_parameter <- function(blob_parameter){
@@ -507,6 +483,7 @@ extract_h_pixels_from_blob_parameter <- function(blob_parameter){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 extract_image_path_from_blob_parameter<- function(blob_parameter){
@@ -525,6 +502,7 @@ extract_image_path_from_blob_parameter<- function(blob_parameter){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 extract_image_heigth_from_blob_parameter <- function(blob_parameter){
@@ -546,6 +524,7 @@ extract_image_heigth_from_blob_parameter <- function(blob_parameter){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 extract_image_resolution_from_blob_parameter <- function(blob_parameter){
@@ -574,6 +553,7 @@ extract_image_resolution_from_blob_parameter <- function(blob_parameter){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 extract_image_width_from_blob_parameter <- function(blob_parameter){
@@ -595,6 +575,7 @@ extract_image_width_from_blob_parameter <- function(blob_parameter){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 extract_n_pixels_from_blob_parameter <- function(blob_parameter){
@@ -614,6 +595,7 @@ extract_n_pixels_from_blob_parameter <- function(blob_parameter){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 extract_v_pixels_from_blob_parameter <- function(blob_parameter){
@@ -636,6 +618,7 @@ extract_v_pixels_from_blob_parameter <- function(blob_parameter){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 extract_parameter_from_BLOB <- function(image_path,
@@ -669,6 +652,7 @@ extract_parameter_from_BLOB <- function(image_path,
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 extract_statistics_from_blob_parameter <- function(blob_parameter){
@@ -684,53 +668,10 @@ extract_statistics_from_blob_parameter <- function(blob_parameter){
   return(statistics)
 }
 
-#' extract_enabled_positions
-#'
-#' @param single_pos_entity
-#'
-#' @return
-#' @export
-#'
-#' @examples
-extract_enabled_positions <- function(single_pos_entity){
-  df <- data.frame(
-    pos_ID = single_pos_entity['posid'],
-    enabled = single_pos_entity['enabled']
-  )#%>%
-  #  dplyr::filter(enabled == 1)
-  return(df)
-}
 
-#' find_scan_basepath
-#'
-#' @param scan_IDs
-#'
-#' @return
-#' @export
-#'
-#' @examples
-find_scan_basepath <- function(scan_IDs){
-  query_result <- query_UID_scans(scan_IDs)
-  df <- get_df_from_query_result(query_result)
-  return(df$basePath)
 
-}
-#' get_enabled_positions
-#'
-#' @param chip_ID
-#'
-#' @return
-#' @export
-#'
-#' @examples
-get_enabled_positions <- function(chip_ID){
 
-  query_result<-query_chipID_channels(chip_IDs)
-  positions_list <- get_positions_field_from_query_result(query_result)
-  enabled_positions <- get_enabled_positions_from_positions_list(positions_list)
 
-  return(enabled_positions)
-}
 
 #' get_enabled_positions_from_positions_list
 #'
@@ -738,6 +679,7 @@ get_enabled_positions <- function(chip_ID){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 get_enabled_positions_from_positions_list <- function(positions_list){
@@ -749,58 +691,7 @@ get_enabled_positions_from_positions_list <- function(positions_list){
     tidyr::unnest(cols=c("enabled_positions"))
 }
 
-#' get_df_from_query_result
-#'
-#' @param query_result
-#'
-#' @return
-#' @export
-#'
-#' @examples
-get_df_from_query_result<- function(query_result){
 
-  result <- purrr::map_df(query_result$result, ~.x)
-
-  return(result)
-
-}
-
-#' get_positions_field_from_query_result
-#'
-#' @param query_result
-#'
-#' @return
-#' @export
-#'
-#' @examples
-get_positions_field_from_query_result <- function(query_result){
-
-  df <- tibble::tibble(
-    chip_ID = purrr::map_chr(query_result$result,
-                             ~.x$UID),
-    positions = purrr::map(query_result$result,
-                           ~.x$positions%>%
-                             purrr::flatten()))
-
-  return(df)
-}
-
-#' list_BlobFileName_in_filepath
-#'
-#' @param image_filepath
-#'
-#' @return
-#' @export
-#'
-#' @examples
-list_BlobFileName_in_filepath <- function(image_filepath){
-  Files<-list.files(image_filepath)
-  BlobFiles<-Files[stringr::str_detect(Files,".blob32$")]
-  BlobFileName<-BlobFiles%>%stringr::str_remove(".blob32$")
-  if(length(BlobFileName)==0){
-    return(NA)
-  }else{return(BlobFileName)}
-}
 
 #' list_posFolders_in_ScanBasePath
 #'
@@ -808,6 +699,7 @@ list_BlobFileName_in_filepath <- function(image_filepath){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 list_posFolders_in_ScanBasePath <- function(ScanBasePath){
@@ -816,31 +708,9 @@ list_posFolders_in_ScanBasePath <- function(ScanBasePath){
   return(positions)
 }
 
-#' query_filterset_of_scanIDs
-#'
-#' @param scan_IDs
-#'
-#' @return
-#' @export
-#'
-#' @examples
-query_filterset_of_scanIDs <- function(scan_IDs){
 
-  # query scanIDs in scans
-  query_scan_scans <- query_UID_limsproc(scan_IDs)
 
-  # get EDL
-  EDL <-get_EDL_from_query_result(query_scan_scans)
 
-  # select node: Active Filterset-ID
-  filterset <- purrr::map_chr(EDL,
-                              ~.x%>%xml2::read_xml()%>%
-                                xml2::xml_find_all('/Method/Machine/SpecificParameters/SpecificParameter[@Name = "Active Filterset-ID"]')%>%
-                                xml2::xml_attr("Value"))
-
-  return(filterset)
-
-}
 
 #' read_binary_image_as_matrix
 #'
@@ -849,6 +719,7 @@ query_filterset_of_scanIDs <- function(scan_IDs){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 read_binary_image_as_matrix <- function(image_path,
@@ -877,6 +748,7 @@ read_binary_image_as_matrix <- function(image_path,
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 read_binary_image_as_vector<- function(image_path,
@@ -898,6 +770,7 @@ read_binary_image_as_vector<- function(image_path,
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 read_image_binary_file <- function(blob_parameter) {
@@ -936,6 +809,7 @@ read_image_binary_file <- function(blob_parameter) {
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 read_XML_BLOB_parameter<- function(image_path, blob_filename) {
@@ -990,9 +864,11 @@ read_XML_BLOB_parameter<- function(image_path, blob_filename) {
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 select_hdr_files <- function(result_files){
+
   hdr_files <- result_files%>%
     dplyr::filter(!is.na(hdr_filename))%>%
     #dplyr::filter(jobType == "FL")%>%
@@ -1011,6 +887,7 @@ select_hdr_files <- function(result_files){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 select_valid_image_files <- function(result_files, type=NULL){
@@ -1020,117 +897,43 @@ select_valid_image_files <- function(result_files, type=NULL){
   # - added NULL as default type
   # - include filtering of enabled flag
 
-  #_______________
-  # 0) check input----
+  #___________
+  #check input----
   type <- match.arg(type, choices =c("none","blob","blob32","png"))
 
-  #_________________________
-  # 1) remove excluded scans----
+  #_____________________
+  #remove excluded scans----
   result_files <- result_files%>%
     dplyr::filter(Excluded %in% c("FALSE"))%>%
     dplyr::filter(Status == "Finished")
 
-  #_______________________________
-  # 2) select image type to return----
-  # __2a) .blob----
+  #___________________________
+  #select image type to return----
+  # __blob----
   if(type == "blob"){
     result_files <- result_files%>%
       dplyr::filter(filetype == "blob")
   }
-  # __2b) .blob32----
+  # __blob32----
   if(type == "blob32"){
     result_files <- result_files%>%
       dplyr::filter(filetype == "blob32")
   }
-  # __2c) .png----
+  # __png----
   if(type == "png"){
     result_files <- result_files%>%
       dplyr::filter(filetype == "png")
   }
 
-  #____________________________
-  # 3) filter enabled positions
+  #________________________
+  #filter enabled positions
   if(1 %in% result_files$enabled){
     result_files <- result_files%>%
       dplyr::filter(enabled == 1)
   }
 
-  #_________________
-  # 4) return result----
+  #_____________
+  #return result----
   return(result_files)
-}
-
-#' query_UID_limsproc
-#'
-#' @param chip_IDs
-#'
-#' @return
-#' @export
-#'
-#' @examples
-query_UID_limsproc<- function(chip_IDs){
-
-  V <- 130222 # initial Version
-  V <- 080322
-  #- added return(result)
-  #____________________________
-
-  result <- query_mongoDB("limsproc",
-                          "UID",
-                          chip_IDs)
-
-  return(result)
-}
-
-#' query_UID_scans
-#'
-#' @param scan_IDs
-#'
-#' @return
-#' @export
-#'
-#' @examples
-query_UID_scans<- function(scan_IDs){
-  result <- query_mongoDB("scans",
-                          "UID",
-                          scan_IDs)
-
-  return(result)
-}
-
-#' Title
-#'
-#' @param chip_IDs
-#'
-#' @return
-#' @export
-#'
-#' @examples
-query_chipID_channels <- function(chip_IDs){
-
-  query_result <- query_mongoDB("channels","UID",chip_IDs)
-  return(query_result)
-
-}
-
-#' read_ScanHistory
-#'
-#' @param group_ID
-#' @param output_dir
-#'
-#' @return
-#' @export
-#'
-#' @examples
-read_ScanHistory <- function(group_ID,
-                             output_dir){
-  filename <- create_result_filepath(output_dir,
-                                     "extendedScanHistory",
-                                     group_ID,
-                                     "csv")
-
-  ScanHistory <- data.table::fread(filename)
-
-  return(ScanHistory)
 }
 

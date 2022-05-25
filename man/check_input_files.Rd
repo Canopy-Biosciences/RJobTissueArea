@@ -15,3 +15,4 @@ check_input_files(filesToProcess, gatesToProcess)
 \description{
 Title
 }
+\keyword{internal}

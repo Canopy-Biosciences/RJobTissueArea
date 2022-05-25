@@ -15,3 +15,4 @@ create_result_filepath(output_dir, name_string, result_ID, type)
 \description{
 Title
 }
+\keyword{internal}

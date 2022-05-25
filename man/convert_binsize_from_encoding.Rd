@@ -15,3 +15,4 @@ convert_binsize_from_encoding(encoding)
 \description{
 convert_binsize_from_encoding
 }
+\keyword{internal}

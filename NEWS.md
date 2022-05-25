@@ -1,3 +1,10 @@
+# RJobTissueArea 0.0.0.13
+
+* removed unused functions from help documentation
+* updated vignettes HowToUse, HowToInstall
+* updated Readme
+* included pkg_sources
+
 # RJobTissueArea 0.0.0.12
 
 * USER template 
@@ -62,9 +69,3 @@
 # RJobTissueArea 0.0.0.1
 
 * Added helpers_GenerateInputData.R (from FDR project, new Version: 080322: bugfix dependencies)
-
-
-
-
-
-

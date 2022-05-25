@@ -15,3 +15,4 @@ query_UID_limsproc(chip_IDs)
 \description{
 query_UID_limsproc
 }
+\keyword{internal}

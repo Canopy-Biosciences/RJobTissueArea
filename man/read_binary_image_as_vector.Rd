@@ -15,3 +15,4 @@ read_binary_image_as_vector(image_path, blob_filename)
 \description{
 read_binary_image_as_vector
 }
+\keyword{internal}

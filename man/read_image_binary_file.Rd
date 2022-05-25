@@ -15,3 +15,4 @@ read_image_binary_file(blob_parameter)
 \description{
 read_image_binary_file
 }
+\keyword{internal}

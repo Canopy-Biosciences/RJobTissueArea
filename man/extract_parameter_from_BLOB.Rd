@@ -15,3 +15,4 @@ extract_parameter_from_BLOB(image_path, blob_filename)
 \description{
 extract_parameter_from_BLOB
 }
+\keyword{internal}

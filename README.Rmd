@@ -20,15 +20,11 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-The goal of RJobTissueArea is to ...
+The goal of RJobTissueArea is to detect tissue on images and calculate its size.
 
 ## Installation
 
-You can install the development version from [GitHub](https://github.com/) with:
-
-``` r
-# install.packages("devtools")
-devtools::install_github("juleZWK/RJobTissueArea")
+```{r child= file.path(getwd(),"vignettes","HowToInstall.Rmd")}
 ```
 
 ## HowToUse

@@ -15,3 +15,4 @@ extract_image_resolution_from_blob_parameter(blob_parameter)
 \description{
 extract_image_resolution_from_blob_parameter
 }
+\keyword{internal}

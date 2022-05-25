@@ -21,3 +21,4 @@ A tidy \code{.csv} file imported as \code{data.table}
 \description{
 Import one .csv file
 }
+\keyword{internal}

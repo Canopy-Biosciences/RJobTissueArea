@@ -43,3 +43,4 @@ Other database related:
 \code{\link{query_mongoDB}()}
 }
 \concept{database related}
+\keyword{internal}

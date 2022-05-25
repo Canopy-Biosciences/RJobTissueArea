@@ -15,3 +15,4 @@ determine_scan_position(MethodHistory)
 \description{
 Title
 }
+\keyword{internal}

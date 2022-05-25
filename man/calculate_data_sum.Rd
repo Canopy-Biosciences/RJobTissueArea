@@ -15,3 +15,4 @@ calculate_data_sum(image_list)
 \description{
 calculate_data_sum
 }
+\keyword{internal}

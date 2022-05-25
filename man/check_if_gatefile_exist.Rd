@@ -15,3 +15,4 @@ check_if_gatefile_exist(chip_path, segment_ID, gate_ID)
 \description{
 Title
 }
+\keyword{internal}

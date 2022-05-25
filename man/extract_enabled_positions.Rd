@@ -15,3 +15,4 @@ extract_enabled_positions(single_pos_entity)
 \description{
 extract_enabled_positions
 }
+\keyword{internal}

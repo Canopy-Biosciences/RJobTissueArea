@@ -40,4 +40,4 @@ Other RJob mainscript:
 \code{\link{find_RService_XML_on_imageserver}()}
 }
 \concept{RJob mainscript}
-\keyword{MainScript}
+\keyword{internal}

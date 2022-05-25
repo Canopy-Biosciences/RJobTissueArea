@@ -15,3 +15,4 @@ create_hdr_filepath(chip_path, scan_ID, pos_ID)
 \description{
 create_hdr_filepath
 }
+\keyword{internal}

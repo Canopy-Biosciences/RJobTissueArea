@@ -23,3 +23,4 @@ create_plot_directory(
 \description{
 create_plot_directory
 }
+\keyword{internal}

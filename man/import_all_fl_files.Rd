@@ -21,3 +21,4 @@ List with all \code{.csv} files imported as \code{data.table}
 \description{
 Import multiple .csv files
 }
+\keyword{internal}

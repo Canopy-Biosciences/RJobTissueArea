@@ -15,3 +15,4 @@ select_valid_image_files(result_files, type = NULL)
 \description{
 select_valid_image_files
 }
+\keyword{internal}

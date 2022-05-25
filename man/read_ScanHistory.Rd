@@ -15,3 +15,4 @@ read_ScanHistory(group_ID, output_dir)
 \description{
 read_ScanHistory
 }
+\keyword{internal}

@@ -15,3 +15,4 @@ read_XML_BLOB_parameter(image_path, blob_filename)
 \description{
 read_XML_BLOB_parameter
 }
+\keyword{internal}

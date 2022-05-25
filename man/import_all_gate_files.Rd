@@ -19,3 +19,4 @@ List of gate files as \code{data.table}s
 \description{
 Import a list of gate files
 }
+\keyword{internal}
