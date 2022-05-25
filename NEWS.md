@@ -3,6 +3,7 @@
 * removed unused functions from help documentation
 * updated vignettes HowToUse, HowToInstall
 * updated Readme
+* included pkg_sources
 
 # RJobTissueArea 0.0.0.12
 
