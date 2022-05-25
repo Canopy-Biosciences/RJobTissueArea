@@ -20,11 +20,11 @@ knitr::opts_knit$set(cache=FALSE,
                      base.dir=file.path(getwd())
 )
 
-here::here()
+package_dir <- rprojroot::find_rstudio_root_file()
 here::i_am("vignettes/HowToUse.Rmd")
 
 ```
 
-```{r, child= "inst/rmarkdown/templates/examplereport/skeleton/skeleton.Rmd"}
+```{r, child= file.path(package_dir,"inst/rmarkdown/templates/examplereport/skeleton/skeleton.Rmd")}
 ```
 
