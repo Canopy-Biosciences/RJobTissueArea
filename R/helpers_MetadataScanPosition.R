@@ -122,32 +122,30 @@ create_ScanHistory_of_chipIDs<-function(chip_IDs){
 #' @export
 #'
 #' @examples
-create_ScanHistory_extended <- function(chip_IDs,
-                                        output_dir,
-                                        result_ID){
 
-  Version <- "290422"
+
+create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
+
+  Version <- "250522"
+  # UPDATE
+  #- select_valid_image_files call included
 
   tictoc::tic("create extended ScanHistory")
 
-  #_____________________________________
-  # create scanHistory (query limslager)----
+  # create scanHistory (query limslager)
   ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)%>%
     data.table::rbindlist()
 
-  #_______________________________
-  # add filterset (query limsproc)----
+  # add filterset (query limsproc)
   ScanHistory <- ScanHistory%>%
     dplyr::mutate(filterset = query_filterset_of_scanIDs(scan_ID))
 
-  #______________________________
-  # query result chipID ins scans----
+  # query result chipID ins scans
   query_chip_scans <- query_mongoDB("scans",
                                     "channelUID",
                                     chip_IDs)
 
-  #_______________
-  # select columns----
+  # select columns
   results_chip_scans <- purrr::map_df(query_chip_scans$result,
                                       ~.x%>%
                                         dplyr::select("chip_ID" = "channelUID",
@@ -159,13 +157,12 @@ create_ScanHistory_extended <- function(chip_IDs,
                                                       positions,
                                                       `enabled-count`))
 
-  #_________________
-  # join ScanHistory----
+  # join ScanHistory and select valid entities
   ScanHistory2 <- dplyr::full_join(ScanHistory,
-                                   results_chip_scans, by = "scan_ID")
+                                   results_chip_scans, by = "scan_ID")%>%
+    select_valid_image_files()
 
-  #___________________________
-  # subselect columns position----
+  # subselect columns position
   ScanHistory3 <- ScanHistory2%>%
     dplyr::mutate(positions = purrr::map(
       positions,
@@ -189,13 +186,11 @@ create_ScanHistory_extended <- function(chip_IDs,
                           #"deltaTL"
           )))))
 
-  #____________________________________
-  #unnest selected columns in positions----
+  #unnest selected columns in positions
   ScanHistory4 <- ScanHistory3%>%
     tidyr::unnest(positions)
 
-  #________________________________
-  # extract hdr column in positions----
+  # extract hdr column in positions
   ScanHistory5 <- ScanHistory4%>%
     dplyr::mutate(hdr_filename = purrr::map(ScanHistory4$hdr,~.x)$filename)%>%
     dplyr::select(-hdr)
@@ -204,30 +199,26 @@ create_ScanHistory_extended <- function(chip_IDs,
   #   dplyr::select(chip_ID,scan_ID,pos_ID,hdr,flimages,focus,deltaTL,posref)
 
 
-  #__________________________________________
-  # get enabled positions (query in channels)----
+  # get enabled positions (query in channels)
   enabled_positions <- get_enabled_positions(chip_IDs)
 
-  #___________________________
-  # join enabled position flag----
+  # join enabled position flag
+
   ScanHistory6<- dplyr::left_join(ScanHistory5,
                                   enabled_positions,
                                   by=c("chip_ID", "pos_ID"="posid"))
 
-  #_____________
-  #add chip_path----
+  #add chip_path
   serverpath <- find_server_path()
 
   chip_paths <- data.frame(
     chip_ID = chip_IDs,
-    chip_path = purrr::map_chr(chip_IDs,
-                               ~find_chip_path(.x)))
+    chip_path = purrr::map_chr(chip_IDs,~find_chip_path(.x)))
 
   ScanHistory7 <- ScanHistory6%>%
     dplyr::left_join(chip_paths,by="chip_ID")
 
-  #___________________
-  # export ScanHistory----
+  # export ScanHistory
   result_filename <- create_result_filepath(output_dir,
                                             "extendedScanHistory",
                                             result_ID,
@@ -235,10 +226,10 @@ create_ScanHistory_extended <- function(chip_IDs,
   data.table::fwrite(ScanHistory7,result_filename)
 
   tictoc::toc()
-
   return(ScanHistory7)
 
 }
+
 
 #' create_ScanHistory_from_MethodHistory
 #'
