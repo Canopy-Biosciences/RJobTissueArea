@@ -28,4 +28,4 @@ here::i_am("vignettes/HowToUse.Rmd")
 ```{r, child= file.path(package_dir,"inst/rmarkdown/templates/examplereport/skeleton/skeleton.Rmd")}
 ```
 
-This example code is also content of the Rmd template "examplereport" provided within the package installation.
+This example code is also content of the Rmd template "examplereport", provided within the package installation.
