@@ -9,7 +9,8 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-The goal of RJobTissueArea is to …
+The goal of RJobTissueArea is to detect tissue on images and calculate
+its size.
 
 ## Installation
 
