@@ -1,6 +1,8 @@
 # RJobTissueArea 0.0.0.13
 
-* removed unused functions
+* removed unused functions from help documentation
+* updated vignettes HowToUse, HowToInstall
+* updated Readme
 
 # RJobTissueArea 0.0.0.12
 
