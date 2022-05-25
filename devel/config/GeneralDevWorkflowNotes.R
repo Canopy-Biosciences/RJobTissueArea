@@ -26,7 +26,7 @@ devtools::check()
 devtools::build()
 devtools::install(dependencies =TRUE, build_vignettes = TRUE)
 
-3usethis::use_package()
+usethis::use_package()
 
 usethis::use_version()
 renv::restore()

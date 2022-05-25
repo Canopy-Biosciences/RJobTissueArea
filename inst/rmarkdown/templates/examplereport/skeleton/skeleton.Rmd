@@ -23,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE,
 library(RJobTissueArea)
 ```
 
-# set input
+**set input**
 
 - set chip_group_ID
 
@@ -38,13 +38,13 @@ output_dir <- "data/data_output"
 RJobTissueArea:::create_working_directory(output_dir)
 ```
 
-# get all valid chip_IDs in chip_group 
+**get all valid chip_IDs in chip_group**
 
 ```{r}
 chip_IDs <- find_valid_group_chip_IDs(group_ID)
 ```
 
-# create ScanHistory
+**create ScanHistory**
 
 ```{r}
 ScanHistory <- create_ScanHistory_extended(chip_IDs,
@@ -52,13 +52,13 @@ ScanHistory <- create_ScanHistory_extended(chip_IDs,
                                            result_ID = group_ID)
 ```
 
-# select valid hdr image groups
+**select valid hdr image groups**
 
 ```{r}
 image_groups <- create_hdr_image_groups(ScanHistory)
 ```
 
-# apply tissue detection workflow
+**apply tissue detection workflow**
 
 ```{r}
 process_TissueDetection(image_groups,

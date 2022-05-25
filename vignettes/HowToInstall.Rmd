@@ -61,8 +61,6 @@ here::i_am("vignettes/HowToInstall.Rmd")
     >
     > -   klick on newest release and download it
     >
-    > <image src = "figures/GitHub_new_package_release.png" align="center" width="600"/>
-    >
     > -   choose the tar.gz file and save it on your local disk
     >
     > -   in RStudio set the path and the name of the tar.gz file

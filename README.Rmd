@@ -24,11 +24,7 @@ The goal of RJobTissueArea is to ...
 
 ## Installation
 
-You can install the development version from [GitHub](https://github.com/) with:
-
-``` r
-# install.packages("devtools")
-devtools::install_github("juleZWK/RJobTissueArea")
+```{r child= file.path(getwd(),"vignettes","HowToInstall.Rmd")}
 ```
 
 ## HowToUse
