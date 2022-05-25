@@ -1,4 +1,4 @@
-V <- "230522"
+V <- "250522"
 helpers <- "ImportBlobFiles"
 
 assign(paste0("version.helpers.", helpers), V)
@@ -10,43 +10,29 @@ writeLines(
   c(
     "---------------------",
     "functions: ",
+    "- create_hdr_filepath()",
     "- create_pos_foldername()",
     "- create_Pos_image_filepath()",
-    "- create_ScanHistory_of_chipIDs()",
-    "- find_scan_basepath()",
-    "- get_df_from_query_result()",
-    "- list_BlobFileName_in_filepath()",
-    "- list_posFolders_in_ScanBasePath()",
-    "- query_filterset_of_scanIDs()",
-    "- query_UID_limsproc()",
-    "- query_UID_scans()",
-    "- export_list_all_image_files()",
-    "- select_valid_image_files()",
-    "- read_BLOB_parameter_from_XML()",
-    "- read_image_binary_file()",
-    "- extract_encoding_from_blob_parameter()",
     "- convert_binsize_from_encoding()",
+    "- extract_enabled_positions()",
+    "- extract_encoding_from_blob_parameter()",
     "- extract_h_pixels_from_blob_parameter()",
-    "- extract_v_pixel_from_blob_parameter()",
-    "- extract_n_pixels_from_blob_parameter()",
     "- extract_image_path_from_blob_parameter()",
-    "- extract_image_width_from_blob_parameter()",
     "- extract_image_heigth_from_blob_parameter()",
     "- extract_image_resolution_from_blob_parameter()",
-    "- read_binary_image_as_matrix()",
-    "- extract_statistics_from_blob_parameter()",
+    "- extract_image_width_from_blob_parameter()",
+    "- extract_n_pixels_from_blob_parameter()",
+    "- extract_v_pixel_from_blob_parameter()",
     "- extract_parameter_from_BLOB()",
-    "- export_blob_parameter_of_image_filelist()",
-    "- create_ScanHistory_extended()",
-    "- create_hdr_filepath()",
-    "- select_hdr_files()",
-    "- query_chipID_channels()",
-    "- extract_enabled_positions()",
+    "- extract_statistics_from_blob_parameter()",
     "- get_enabled_positions_from_positions_list()",
-    "- get_enabled_positions()",
-    "- get_positions_field_from_query_result()",
+    "- list_posFolders_in_ScanBasePath()",
+    "- read_binary_image_as_matrix()",
     "- read_binary_image_as_vector()",
-    "- read_ScanHistory()"
+    "- read_image_binary_file()",
+    "- read_XML_BLOB_parameter()",
+    "- select_hdr_files()",
+    "- select_valid_image_files()"
   ))
 
 #' create_hdr_filepath
@@ -74,24 +60,6 @@ create_hdr_filepath <- function(chip_path,scan_ID,pos_ID){
   )
 }
 
-#' convert_binsize_from_encoding
-#'
-#' @param encoding
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-convert_binsize_from_encoding <- function(encoding){
-
-  Version <- "270422"
-
-  bin_size <- dplyr::case_when(encoding == "32bit little-endian" ~ 4,
-                               encoding == "16bit little-endian" ~ 2)
-
-  return(bin_size)
-}
 
 #' create_pos_foldername
 #'
@@ -142,176 +110,41 @@ create_Pos_image_filepath <- function(ScanBasePath,
 
 }
 
-#' create_MethodHistory_of_chipIDs
+#' convert_binsize_from_encoding
 #'
-#' @param chip_IDs
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-create_MethodHistory_of_chipIDs <- function(chip_IDs){
-
-  query_results <- query_UID_limslager(chip_IDs = chip_IDs)
-  EDLs <- get_EDL_from_query_result(query_results)
-  MethodHistory <- purrr::map(EDLs,~create_MethodHistory_from_EDL(.x))
-
-  return(MethodHistory)
-}
-
-#' create_ScanHistory_of_chipIDs
-#'
-#' @param chip_IDs
+#' @param encoding
 #'
 #' @return
 #' @export
 #' @keywords internal
 #'
 #' @examples
-create_ScanHistory_of_chipIDs<-function(chip_IDs){
+convert_binsize_from_encoding <- function(encoding){
 
-  Version <- "290422"
-  #update:
-  #- purrr::map_df
-  MethodHistory <- create_MethodHistory_of_chipIDs(chip_IDs)
+  Version <- "270422"
 
-  ScanHistorys <- purrr::map_df(MethodHistory,
-                             ~.x%>%
-                               dplyr::rename("scan_ID" = "UID")%>%
-                               dplyr::rename("cycle_ID" = "CycleUID")%>%
-                               tidyr::fill(cycle_ID,  .direction = "up")%>%
-                               dplyr::filter(Type == "Chipcytometry-Scan")%>%
-                               dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
-  return(ScanHistorys)
+  bin_size <- dplyr::case_when(encoding == "32bit little-endian" ~ 4,
+                               encoding == "16bit little-endian" ~ 2)
+
+  return(bin_size)
 }
 
-#' create_ScanHistory_extended
+#' extract_enabled_positions
 #'
-#' @param chip_IDs
-#' @param output_dir
-#' @param result_ID
+#' @param single_pos_entity
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
-create_ScanHistory_extended <- function(chip_IDs,
-                                        output_dir,
-                                        result_ID){
-
-  Version <- "290422"
-
-  tictoc::tic("create extended ScanHistory")
-
-  #_____________________________________
-  # create scanHistory (query limslager)----
-  ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)%>%
-    data.table::rbindlist()
-
-  #_______________________________
-  # add filterset (query limsproc)----
-  ScanHistory <- ScanHistory%>%
-    dplyr::mutate(filterset = query_filterset_of_scanIDs(scan_ID))
-
-  #______________________________
-  # query result chipID ins scans----
-  query_chip_scans <- query_mongoDB("scans",
-                                    "channelUID",
-                                    chip_IDs)
-
-  #_______________
-  # select columns----
-  results_chip_scans <- purrr::map_df(query_chip_scans$result,
-                                      ~.x%>%
-                                        dplyr::select("chip_ID" = "channelUID",
-                                                      "scan_ID" = "UID",
-                                                      jobType,
-                                                      basePath,
-                                                      "jobEndState",
-                                                      "success",
-                                                      positions,
-                                                      `enabled-count`))
-
-  #_________________
-  # join ScanHistory----
-  ScanHistory2 <- dplyr::full_join(ScanHistory,
-                                  results_chip_scans, by = "scan_ID")
-
-  #___________________________
-  # subselect columns position----
-  ScanHistory3 <- ScanHistory2%>%
-    dplyr::mutate(positions = purrr::map(
-      positions,
-      ~.x%>%
-        dplyr::select(
-          dplyr::any_of(c("chip_ID",
-                          "scan_ID",
-                          "pos_ID" = "posid",
-                          "jobType",
-                          "basePath",
-                          "Status",
-                          "chipx",
-                          "chipy",
-                          "bleach-time",
-                          "enabled-count",
-                          "hdr"
-                          #,
-                          #"flimages",
-                          #"posref",
-                          #"focus",
-                          #"deltaTL"
-                          )))))
-
-  #____________________________________
-  #unnest selected columns in positions----
-  ScanHistory4 <- ScanHistory3%>%
-    tidyr::unnest(positions)
-
-  #________________________________
-  # extract hdr column in positions----
-  ScanHistory5 <- ScanHistory4%>%
-    dplyr::mutate(hdr_filename = purrr::map(ScanHistory4$hdr,~.x)$filename)%>%
-    dplyr::select(-hdr)
-
- # Image_list <- ScanHistory4%>%
- #   dplyr::select(chip_ID,scan_ID,pos_ID,hdr,flimages,focus,deltaTL,posref)
-
-
-  #__________________________________________
-  # get enabled positions (query in channels)----
-  enabled_positions <- get_enabled_positions(chip_IDs)
-
-  #___________________________
-  # join enabled position flag----
-  ScanHistory6<- dplyr::left_join(ScanHistory5,
-                                 enabled_positions,
-                                 by=c("chip_ID", "pos_ID"="posid"))
-
-  #_____________
-  #add chip_path----
-  serverpath <- find_server_path()
-
-  chip_paths <- data.frame(
-    chip_ID = chip_IDs,
-    chip_path = purrr::map_chr(chip_IDs,
-                               ~find_chip_path(.x)))
-
-  ScanHistory7 <- ScanHistory6%>%
-    dplyr::left_join(chip_paths,by="chip_ID")
-
-  #___________________
-  # export ScanHistory----
-  result_filename <- create_result_filepath(output_dir,
-                                            "extendedScanHistory",
-                                            result_ID,
-                                            "csv")
-  data.table::fwrite(ScanHistory7,result_filename)
-
-  tictoc::toc()
-
-  return(ScanHistory7)
-
+extract_enabled_positions <- function(single_pos_entity){
+  df <- data.frame(
+    pos_ID = single_pos_entity['posid'],
+    enabled = single_pos_entity['enabled']
+  )#%>%
+  #  dplyr::filter(enabled == 1)
+  return(df)
 }
 
 #' extract_encoding_from_blob_parameter
@@ -547,56 +380,10 @@ extract_statistics_from_blob_parameter <- function(blob_parameter){
   return(statistics)
 }
 
-#' extract_enabled_positions
-#'
-#' @param single_pos_entity
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-extract_enabled_positions <- function(single_pos_entity){
-  df <- data.frame(
-    pos_ID = single_pos_entity['posid'],
-    enabled = single_pos_entity['enabled']
-  )#%>%
-  #  dplyr::filter(enabled == 1)
-  return(df)
-}
 
-#' find_scan_basepath
-#'
-#' @param scan_IDs
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-find_scan_basepath <- function(scan_IDs){
-  query_result <- query_UID_scans(scan_IDs)
-  df <- get_df_from_query_result(query_result)
-  return(df$basePath)
 
-}
-#' get_enabled_positions
-#'
-#' @param chip_ID
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-get_enabled_positions <- function(chip_ID){
 
-  query_result<-query_chipID_channels(chip_IDs)
-  positions_list <- get_positions_field_from_query_result(query_result)
-  enabled_positions <- get_enabled_positions_from_positions_list(positions_list)
 
-  return(enabled_positions)
-}
 
 #' get_enabled_positions_from_positions_list
 #'
@@ -616,43 +403,6 @@ get_enabled_positions_from_positions_list <- function(positions_list){
     tidyr::unnest(cols=c("enabled_positions"))
 }
 
-#' get_df_from_query_result
-#'
-#' @param query_result
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-get_df_from_query_result<- function(query_result){
-
-  result <- purrr::map_df(query_result$result, ~.x)
-
-  return(result)
-
-}
-
-#' get_positions_field_from_query_result
-#'
-#' @param query_result
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-get_positions_field_from_query_result <- function(query_result){
-
-  df <- tibble::tibble(
-    chip_ID = purrr::map_chr(query_result$result,
-                             ~.x$UID),
-    positions = purrr::map(query_result$result,
-                           ~.x$positions%>%
-                             purrr::flatten()))
-
-  return(df)
-}
 
 
 #' list_posFolders_in_ScanBasePath
@@ -670,32 +420,9 @@ list_posFolders_in_ScanBasePath <- function(ScanBasePath){
   return(positions)
 }
 
-#' query_filterset_of_scanIDs
-#'
-#' @param scan_IDs
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-query_filterset_of_scanIDs <- function(scan_IDs){
 
-  # query scanIDs in scans
-  query_scan_scans <- query_UID_limsproc(scan_IDs)
 
-  # get EDL
-  EDL <-get_EDL_from_query_result(query_scan_scans)
 
-  # select node: Active Filterset-ID
-  filterset <- purrr::map_chr(EDL,
-                              ~.x%>%xml2::read_xml()%>%
-                                xml2::xml_find_all('/Method/Machine/SpecificParameters/SpecificParameter[@Name = "Active Filterset-ID"]')%>%
-                                xml2::xml_attr("Value"))
-
-  return(filterset)
-
-}
 
 #' read_binary_image_as_matrix
 #'
@@ -920,84 +647,5 @@ select_valid_image_files <- function(result_files, type=NULL){
   #_____________
   #return result----
   return(result_files)
-}
-
-#' query_UID_limsproc
-#'
-#' @param chip_IDs
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-query_UID_limsproc<- function(chip_IDs){
-
-  V <- 130222 # initial Version
-  V <- 080322
-  #- added return(result)
-  #____________________________
-
-  result <- query_mongoDB("limsproc",
-                          "UID",
-                          chip_IDs)
-
-  return(result)
-}
-
-#' query_UID_scans
-#'
-#' @param scan_IDs
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-query_UID_scans<- function(scan_IDs){
-  result <- query_mongoDB("scans",
-                          "UID",
-                          scan_IDs)
-
-  return(result)
-}
-
-#' Title
-#'
-#' @param chip_IDs
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-query_chipID_channels <- function(chip_IDs){
-
-  query_result <- query_mongoDB("channels","UID",chip_IDs)
-  return(query_result)
-
-}
-
-#' read_ScanHistory
-#'
-#' @param group_ID
-#' @param output_dir
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#'
-#' @examples
-read_ScanHistory <- function(group_ID,
-                             output_dir){
-  filename <- create_result_filepath(output_dir,
-                                     "extendedScanHistory",
-                                     group_ID,
-                                     "csv")
-
-  ScanHistory <- data.table::fread(filename)
-
-  return(ScanHistory)
 }
 
