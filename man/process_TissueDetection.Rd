@@ -23,3 +23,7 @@ process_TissueDetection(
 \description{
 process_TissueDetection
 }
+\examples{
+output_dir <- "devel/data/data_output"
+result_ID <- "P1761451"
+}

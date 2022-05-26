@@ -398,6 +398,8 @@ plot_tissue_detection <- function(m.data,
 #' @export
 #'
 #' @examples
+#' output_dir <- "devel/data/data_output"
+#' result_ID <- "P1761451"
 process_TissueDetection <- function(image_groups,
                                     output_dir,
                                     sigma = 15,
@@ -405,7 +407,7 @@ process_TissueDetection <- function(image_groups,
                                     window = 10,
                                     plot_image = TRUE,
                                     result_ID = ""){
-  V <- 240522
+  V <- 260622
   # UPDATE
   # internal data_sum calculation
   # optional plot generation
@@ -413,7 +415,18 @@ process_TissueDetection <- function(image_groups,
   # chip-wised summarized results
   # export and return result_df and summary_df
   # result_ID as label in result filenames
+  # include check if result file exist and load it or create new result_df
 
+  #_______________________
+  #create result_dirname----
+  result_dir <- file.path(output_dir,
+                          "image_processing")
+
+  #______________________
+  #create result_filename----
+  result_filename <- file.path(result_dir,
+                               paste0("ResultTissueArea_",
+                                      result_ID,".csv"))
   #________________
   #create result_df----
   result_df <- tibble::tibble(
@@ -426,10 +439,12 @@ process_TissueDetection <- function(image_groups,
     perc_TissueArea = double(0),
     TissueArea_mm2 = double(0)
   )
+  #_________________
+  #add existing data----
+  read_result_file(result_df,result_filename)
 
   #________________________
   #map through image groups----
-
   j=1
   for(j in 1:dim(image_groups)[1]){
 
@@ -511,19 +526,8 @@ process_TissueDetection <- function(image_groups,
                      TissueArea_mm2 = sum(TissueArea_mm2),
                      .groups = "keep")
 
-
-  #_______________________
-  #create result directory----
-  result_dir <- file.path(output_dir,
-                          "image_processing")
-  create_working_directory(result_dir)
-
   #________________
   #export result_df----
-  result_filename <- file.path(result_dir,
-                               paste0("ResultTissueArea_",
-                                      result_ID,".csv"))
-
   readr::write_csv(result_df,
                    result_filename)
 
