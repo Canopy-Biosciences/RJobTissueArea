@@ -14,7 +14,7 @@ its size.
 
 ## Installation
 
-1.  setup your system:
+1.  setup PC for using R:
 
     > -   install R 3.6.3
     >
@@ -27,24 +27,28 @@ its size.
     > -   install the R packages needed for installation by executing
     >     the following code in RStudio:
     >
-    >         install.packages(c("devtools","installr","remotes"))
+    >         install.packages("installr")
     >
     > -   install RTools 35 by executing the following code in RStudio:
     >
     >         installr::install_rtools()
-    >
-    > -   install the R package mongolite 1.0 by executing the following
-    >     code in RStudio:
-    >
-    >          remotes::install_version("mongolite","1.0")
-    >
-    > -   install Bioconductor packages
-    >
-    >          remotes::install_version("locfit",version="1.5.9.4")
-    >
-    >          BiocManager::install("EBImage",force=TRUE)
 
-2.  get and install the actual version of the *ZKW TissueArea
+2.  setup R for using this package:
+
+    > -   install internal R tools:
+    >
+    >         install.packages(c("remotes","biocmanager"))
+    >
+    > -   install a package needed for accessing the mongoDB
+    >
+    >         remotes::install_version("mongolite","1.0")
+    >
+    > -   install packages needed for image processing
+    >
+    >         remotes::install_version("locfit",version="1.5.9.4") 
+    >         BiocManager::install("EBImage",force=TRUE)
+
+3.  get and install the actual version of the *ZKW TissueArea
     calculation R package*:
 
     > -   go to Github webpage:
@@ -65,7 +69,7 @@ its size.
     >
     >         devtools::install(file.path(package_dir, package_name), dependencies = TRUE)
 
-3.  start your analysis in RStudio:
+4.  start your analysis in RStudio:
 
     > -   in RStudio create a “New Project” and name it approbiately or
     >     select a existing project, where you want to add the distance
@@ -101,7 +105,7 @@ its size.
 
 **set input**
 
--   set chip\_group\_ID
+-   set chip_group_ID
 
 ``` r
 group_ID <- "P1761451"
@@ -110,11 +114,11 @@ group_ID <- "P1761451"
 -   set and check output directory
 
 ``` r
-output_dir <- "data/data_output"
+output_dir <- "data_output"
 RJobTissueArea:::create_working_directory(output_dir)
 ```
 
-**get all valid chip\_IDs in chip\_group**
+**get all valid chip_IDs in chip_group**
 
 ``` r
 chip_IDs <- find_valid_group_chip_IDs(group_ID)
@@ -148,9 +152,12 @@ process_TissueDetection(image_groups,
 
 # supplement
 
--   read ScanHistory file from output\_dir
+-   read ScanHistory file from output_dir
 
 ``` r
 ScanHistory <- read_ScanHistory(group_ID,
                                 output_dir)
 ```
+
+This example code is also content of the Rmd template “examplereport”,
+provided within the package installation.
