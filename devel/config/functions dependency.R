@@ -1,3 +1,15 @@
+#________________
+#unused functions----
+library(mvbutils)
+result <- fw<-foodweb(where="package:RJobTissueArea",plotting=FALSE)
+# The following line returns the number of times each function is called
+res <- sapply(rownames(result$funmat), function(n) length(callers.of(n,fw)))
+# Get those functions that are never called:
+names(res[res==0])
+
+#_____________________
+
+
 library(pkgapi)
 
 uno <- pkgapi::extract_api()
