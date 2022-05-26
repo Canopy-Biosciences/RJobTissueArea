@@ -14,6 +14,7 @@ writeLines(
     "- collect_segments_metadata()",
     "- connect_mongo_DB() - behelfsweise",
     "- create_long_node_df_from_XML()",
+    "- extract_chipIDs_from_groupEDL()",
     "- extract_gate_metadata()",
     "- find_all_attributes_in_EDL()",
     "- find_chip_path()",
@@ -288,6 +289,20 @@ create_long_node_df_from_XML <- function(XML){
   return(df_longer)
 }
 
+#' Title
+#'
+#' @param EDL
+#'
+#' @return
+#' @keywords internal
+#'
+#' @examples
+extract_chipIDs_from_groupEDL<- function(EDL){
+  EDL%>%
+    xml2::read_xml()%>%
+    xml2::xml_find_all("/Obj/EncapsulatedObjectsRef/ObjRef")%>%
+    xml2::xml_attr("UID")
+}
 
 #' Title
 #'
@@ -680,16 +695,30 @@ find_server_path <- function() {
 
 
 
-#' Title
+#' finds valid chipIDs of a chipgroup
 #'
-#' @param group_ID
+#' searches for chipIDs of a chip group and returns a character vector containing chipIDs for which data are available. chipIDs without data were printed into the console.
 #'
-#' @return
+#' In limslager the groupID is searched for and the UID attribute of all ObjRef's in EncapsulatedObjectsRef is extracted from the EDL object. These chipIDs are then searched for on all available ImageServers. The chipIDs for which a folder exists are returned as valid.
+#'
+#' @param group_ID character of chipgroupID
+#'
+#' @return character vector containing chipIDs for which data is available
 #' @export
 #' @family database related
 #'
 #' @examples
+#' \dontrun{
+#' group_ID <- "P1761451"
+#' chip_IDs <- find_valid_group_chip_IDs(group_ID)
+#' }
 find_valid_group_chip_IDs <- function(group_ID){
+
+  #V270522 - UPDATE
+  #- variableBinding added
+  #- documentation added
+
+  query_result <- EDL <- chip_IDs <- valid_chipIDs <- NULL
 
   query_result <- query_mongoDB("limslager","UID",group_ID)
 
