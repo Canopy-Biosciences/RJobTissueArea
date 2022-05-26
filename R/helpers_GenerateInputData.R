@@ -26,7 +26,6 @@ writeLines(
     "- extract_gates_to_process()",
     "- extract_jobtype()",
     "- extract_chip_IDs()",
-    "- extract_chipIDs_from_groupEDL()",
     "- extract_gate_names()",
     "- extract_information_from_RService_XML()",
     "- extract_paths_of_fl_files()",
@@ -633,20 +632,7 @@ extract_chip_IDs <- function(xml_dir) {
   return(chip_IDs)
 }
 
-#' Title
-#'
-#' @param EDL
-#'
-#' @return
-#' @keywords internal
-#'
-#' @examples
-extract_chipIDs_from_groupEDL<- function(EDL){
-  EDL%>%
-    xml2::read_xml()%>%
-    xml2::xml_find_all("/Obj/EncapsulatedObjectsRef/ObjRef")%>%
-    xml2::xml_attr("UID")
-}
+
 
 
 

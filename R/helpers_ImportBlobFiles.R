@@ -139,6 +139,7 @@ convert_binsize_from_encoding <- function(encoding){
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 export_blob_parameter_of_image_filelist<-function(image_files,

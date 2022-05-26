@@ -94,6 +94,7 @@ create_working_directory <- function(output_dir) {
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 #' if(FALSE){
@@ -153,6 +154,7 @@ download_pkg_sources <- function(Package,
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 #' if(FALSE){
@@ -255,6 +257,7 @@ handle_trycache_error <- function(err,task,enable.quit=FALSE) {
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
 #' result_df <- tibble::tibble(

@@ -2,18 +2,27 @@
 % Please edit documentation in R/helpers_DBrelated.R
 \name{find_valid_group_chip_IDs}
 \alias{find_valid_group_chip_IDs}
-\title{Title}
+\title{finds valid chipIDs of a chipgroup}
 \usage{
 find_valid_group_chip_IDs(group_ID)
 }
 \arguments{
-\item{group_ID}{}
+\item{group_ID}{character of chipgroupID}
 }
 \value{
-
+character vector containing chipIDs for which data is available
 }
 \description{
-Title
+searches for chipIDs of a chip group and returns a character vector containing chipIDs for which data are available. chipIDs without data were printed into the console.
+}
+\details{
+In limslager the groupID is searched for and the UID attribute of all ObjRef's in EncapsulatedObjectsRef is extracted from the EDL object. These chipIDs are then searched for on all available ImageServers. The chipIDs for which a folder exists are returned as valid.
+}
+\examples{
+\dontrun{
+group_ID <- "P1761451"
+chip_IDs <- find_valid_group_chip_IDs(group_ID)
+}
 }
 \seealso{
 Other database related: 

@@ -32,3 +32,4 @@ ignore_package <- "RJobTissueArea"
  )
  }
 }
+\keyword{internal}
