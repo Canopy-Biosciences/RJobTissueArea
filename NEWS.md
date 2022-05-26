@@ -4,6 +4,7 @@
 * updated vignettes HowToUse, HowToInstall
 * updated Readme
 * included pkg_sources
+* helpers_DevelTools: dependencies
 
 # RJobTissueArea 0.0.0.12
 
