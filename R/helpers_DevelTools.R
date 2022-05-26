@@ -10,13 +10,45 @@ writeLines(
   c(
     "---------------------",
     "functions: ",
-    "- create_working_directory",
+    "- add_pkg_to_DESCRIPTION()",
+    "- create_working_directory()",
     "- handle_trychache_error()",
     "- stop_if_fatal()",
-    "- write_lines_task"
+    "- write_lines_task()"
   ))
 
+#' find and add all package dependencies to DESCRIPTION file
+#'
+#'
+#'
+#' @param exact_version character vector of package names where exact version is obligatory
+#' @param ignore_folder character vector of folder names in pkg directory which are build-ignored
+#' @param ignore_package character vector of package names to remove from final list
+#'
+#' @return the DESCRIPTION file is overwritten
+#' @export
+#' @keywords internal
+#'
+#' @examples
+#' add_dependencies_to_DESCRIPTION(
+#' exact_version = c("mongolite","locfit","EBImage"),
+#' ignore_folder <- c("devel"),
+#' ignore_package <- "RJobTissueArea"
+#'  )
+add_dependencies_to_DESCRIPTION <- function(exact_version = "mongolite",
+                                   ignore_folder = "devel",
+                                   ignore_package = "RJobTissueArea"){
 
+  deps_import <- get_package_dependencies(exact_version ,ignore_folder, ignore_package)
+
+  purrr::walk(deps_import$Package,
+              ~usethis::use_package(.x,"imports"))
+  #add exact version to DESCRIPTION
+  purrr::walk2(exact_version,
+               rep(TRUE,length(exact_version)),
+               ~usethis::use_package(.x,"imports",.y))
+
+}
 #' Create working directory if necessary
 #'
 #' This function checks whether the provided path to the working directory is
@@ -49,6 +81,113 @@ create_working_directory <- function(output_dir) {
   return(output_dir)
 }
 
+#' Title
+#'
+#' @param Package
+#' @param Version
+#' @param lib_path
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' if(FALSE){
+#' dep_pkg <- get_package_dependencies()
+#' Package <- dep_pkg$Package
+#' Version <- dep_pkg$Version
+#' download_pkg_sources(Package,Version)
+#' }
+download_pkg_sources <- function(Package,
+                                 Version,
+                                 lib_path = "devel/pkg_sources"){
+
+  CRAN <- "https://cran.rstudio.com/src/contrib"
+  #create output directory
+  RJobTissueArea:::create_working_directory(lib_path)
+  #replace _ in Version
+  Version <- stringr::str_replace(Version,"_",".")
+  #create package URL
+  pkg_Folder <- paste0(Package,"_",Version,".tar.gz")
+  URL <- paste0(CRAN,"/",pkg_Folder)
+  #download
+  e <- purrr::walk(URL,
+                   ~try(
+                     download.file(
+                       url = .x,
+                       destfile = paste0(file.path(lib_path,
+                                                   basename(.x))))))
+  # check what is present
+  down_files <- list.files(lib_path)
+  pos <- which(!pkg_Folder %in% down_files)
+  # select packages to download from archieve
+  URL_archive <- paste0(CRAN,"/Archive/",Package[pos],"/",pkg_Folder[pos])
+
+  # then download
+  e <- purrr::walk(URL_archive,
+                   ~try(
+                     download.file(
+                       url = .x,
+                       destfile = paste0(file.path(lib_path,
+                                                   basename(.x))))))
+
+  # check success
+  down_files <- list.files(lib_path)
+
+  # list of tar.gz files which needs manual download
+  pos <- which(!pkg_Folder %in% down_files)
+
+  writeLines(c("-packages remain to be downloaded manually:",
+               Package[pos]))
+}
+
+#' create df of package dependencies
+#'
+#' @param exact_version character vector of package names where exact version is obligatory
+#' @param ignore_folder character vector of folder names in pkg directory which are build-ignored
+#' @param ignore_package character vector of package names to remove from final list
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' get_package_dependencies(
+#' exact_version = c("mongolite","locfit","EBImage"),
+#' ignore_folder <- c("devel"),
+#' ignore_package <- "RJobTissueArea"
+#'  )
+get_package_dependencies <- function(exact_version = "mongolite",
+                                     ignore_folder = "devel",
+                                     ignore_package = "RJobTissueArea"){
+  #get all package dependencies
+  deps<-renv::dependencies()
+  #get all packages installed
+  inst_pkg <- installed.packages()%>%
+    as.data.frame()
+  #add Installed Version of package dependencies
+  deps <- dplyr::left_join(deps,
+                           inst_pkg%>%
+                             dplyr::select(Package,"InstalledVersion"="Version"),
+                           by = "Package")
+  #ignore folder
+  ignore_pos <- purrr::map(ignore_folder,
+                           ~stringr::str_detect(deps$Source,.x)%>%
+                             which())%>%
+    unlist()
+  if(length(ignore_pos)>=1){
+    deps <- deps[-ignore_pos,]
+  }
+  #summarize pkg and version
+  deps_import <- deps%>%
+    dplyr::group_by(Package)%>%
+    dplyr::summarize(Version = unique(InstalledVersion))
+  #filter pkg
+  deps_import <- deps_import%>%
+    dplyr::filter(Package != ignore_package)%>%
+    dplyr::mutate(Version = as.character(Version))
+
+  return(deps_import)
+
+}
 
 #' how to proced in terms of an trycache error
 #'
