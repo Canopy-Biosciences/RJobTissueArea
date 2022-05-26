@@ -30,74 +30,17 @@ usethis::use_package()
 
 usethis::use_version()
 renv::restore()
-#_____________________________
-#1) add package to Description----
 
-library(magrittr)
-pkg_name <- "RJobTissueArea"
-exact_version <- c("mongolite","locfit","EBImage")
-
-deps<-renv::dependencies()
-inst_pkg <- installed.packages()%>%as.data.frame()
-deps <- dplyr::left_join(deps,
-                         inst_pkg%>%
-                           dplyr::select(Package,"InstalledVersion"="Version"))
-
-
-deps_import <- deps%>%
-  dplyr::filter(!stringr::str_detect(Source,"devel"))%>%
-  dplyr::group_by(Package)%>%
-  dplyr::summarize(Version = unique(InstalledVersion))%>%
-  dplyr::filter(Package != pkg_name)
-
-purrr::walk(deps_import$Package,
-            ~usethis::use_package(.x,"imports"))
-
-purrr::walk2(exact_version,
-             rep(TRUE,length(exact_version)),
-            ~usethis::use_package(.x,"imports",.y))
+#1) add pkgs to description
+add_pkg_to_DESCRIPTION(
+  exact_version = c("mongolite","locfit","EBImage"),
+  ignore_folder <- c("devel"),
+  ignore_package <- "RJobTissueArea"
+)
 
 #__________________
 #2) download tar.gz----
-CRAN <- "https://cran.rstudio.com/src/contrib"
-lib_path <- "devel/pkg_sources"
-RJobTissueArea:::create_working_directory(lib_path)
-p <- available.packages()
 
-deps_import <- deps_import%>%
-  dplyr::mutate(pkg_folder = paste0(Package,"_",Version,".tar.gz"))%>%
-  dplyr::mutate(pkg_URL = paste0(CRAN,"/",pkg_folder))
-
-# then download
-e <- purrr::walk(deps_import$pkg_URL,
-                 ~try(
-                   download.file(
-                     url = .x,
-                     destfile = paste0(file.path(lib_path,
-                                                 basename(.x))))))
-
-# check what is present
-down_files <- list.files(lib_path)
-
-# select packages to download from archieve
-to_load <- deps_import%>%
-  dplyr::filter(!pkg_folder %in% down_files)%>%
-  dplyr::mutate(pkg_URL=paste0(CRAN,"/Archive/",Package,"/",pkg_folder))
-
-# then download
-e <- purrr::walk(to_load$pkg_URL,
-                 ~try(
-                   download.file(
-                     url = .x,
-                     destfile = paste0(file.path(lib_path,
-                                                 basename(.x))))))
-
-# check success
-down_files <- list.files(lib_path)
-
-# list of tar.gz files which needs manual download
-to_load <- deps_import%>%
-  dplyr::filter(!pkg_folder %in% down_files)
 
 # daily work agreements
 #======================
