@@ -441,7 +441,7 @@ process_TissueDetection <- function(image_groups,
   )
   #_________________
   #add existing data----
-  read_result_file(result_df,result_filename)
+  result_df<-read_result_file(result_df,result_filename)
 
   #________________________
   #map through image groups----
@@ -531,8 +531,8 @@ process_TissueDetection <- function(image_groups,
   readr::write_csv(result_df,
                    result_filename)
 
-  #________________
-  #export result_df----
+  #_____________________
+  #export summary_result----
   summary_filename <- file.path(result_dir,
                                paste0("SummaryResultTissueArea_",
                                       result_ID,".csv"))
@@ -541,11 +541,95 @@ process_TissueDetection <- function(image_groups,
                    summary_filename)
 
 
+  #_______________________________
+  #return result_df and summary_df----
   return(list(result_df=result_df,
               summary_df = result_df_summary))
 
 }
 
+#' process_tissue_detection_workflow
+#'
+#' @param m.data
+#' @param cellres
+#' @param sigma
+#' @param threshold
+#' @param window
+#'
+#' @return
+#' @export
+#'
+#' @examples
+process_tissue_detection_workflow <- function(m.data,
+                                              cellres,
+                                              sigma,
+                                              threshold,
+                                              window){
+
+
+  #create pixmap----
+  # cellres: pixel resolution in horizontal and vertical direction
+
+  image <-pixmap::pixmapGrey(m.data,
+                             cellres=cellres)
+
+  #_______________
+  #get grey values----
+  grey_values <- image@grey * 255
+
+  #________________________
+  #Low-pass Gaussian filter----
+  #remotes::install_version("locfit",version="1.5.9.4")
+  #BiocManager::install("EBImage",force=TRUE)
+  #EBImage version: 4281
+  xb <- EBImage::gblur(grey_values,
+                       sigma)
+
+  #____________
+  #round values----
+  xb <- round(xb,digits = 1)
+
+  #___________________________
+  #create blurred pixmap image----
+  image_blurred <- pixmap::pixmapGrey(xb,
+                                      cellres=cellres)
+
+  #___________________
+  #threshold filtering----
+  pos <- which(xb > threshold)
+  xt <- xb
+  xt[which(xb > threshold)] <- 1
+  xt[which(xb <= threshold)] <- 0
+
+  #_____________________________
+  #pixmap object of binary image----
+  image_binary <- image
+  image_binary@grey <- xt
+
+  #_______________
+  #adapting window----
+  xta <- EBImage::thresh(xt, w=1,h=1)
+
+  image_adaptedThreshold <- pixmap::pixmapGrey(xta,
+                                               cellres=cellres)
+
+  #________________________
+  #convert to imager object----
+
+  imager_pxset <- imager::as.cimg(image_binary@grey)
+
+  #___________
+  #grow binary----
+  xg <- imager::grow(imager_pxset, window, window, window)
+
+
+  #_____________
+  #shrink binary----
+  xs <-imager::shrink(xg,window, window, window)
+
+  return(xs)
+
+}
 #' read_data_sum_as_matrix
 #'
 #' @param filepath

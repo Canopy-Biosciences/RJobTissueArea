@@ -34,7 +34,7 @@ group_ID <- "P1761451"
 - set and check output directory
 
 ```{r}
-output_dir <- "data/data_output"
+output_dir <- "data_output"
 RJobTissueArea:::create_working_directory(output_dir)
 ```
 
