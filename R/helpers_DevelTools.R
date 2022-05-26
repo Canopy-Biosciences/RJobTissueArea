@@ -1,4 +1,4 @@
-V <- "250522"
+V <- "260522"
 helpers <- "DevelTools"
 
 assign(paste0("version.helpers.", helpers), V)
