@@ -1,7 +1,7 @@
 library(pkgapi)
 
+uno <- pkgapi::extract_api()
 map <- pkgapi::map_package()
-
 str(map$defs)
 
 str(map$calls)
@@ -30,3 +30,4 @@ edges <- internal_calls[, c("from", "to")]
 visNetwork(nodes, edges, height = "500px") %>%
   visLayout(randomSeed = 42) %>%
   visNodes(size = 10)
+pkgapi::api_roclet()
