@@ -10,8 +10,10 @@ writeLines(
   c(
     "---------------------",
     "functions: ",
-    "- add_pkg_to_DESCRIPTION()",
+    "- add_dependencies_to_DESCRIPTION()",
     "- create_working_directory()",
+    "- download_pkg_sources()",
+    "- get_package_dependencies()",
     "- handle_trychache_error()",
     "- stop_if_fatal()",
     "- write_lines_task()"
