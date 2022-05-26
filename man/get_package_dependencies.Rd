@@ -24,9 +24,11 @@ get_package_dependencies(
 create df of package dependencies
 }
 \examples{
+if(FALSE){
 get_package_dependencies(
 exact_version = c("mongolite","locfit","EBImage"),
 ignore_folder <- c("devel"),
 ignore_package <- "RJobTissueArea"
  )
+ }
 }

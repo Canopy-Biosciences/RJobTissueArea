@@ -24,10 +24,12 @@ the DESCRIPTION file is overwritten
 find and add all package dependencies to DESCRIPTION file
 }
 \examples{
+if(FALSE){
 add_dependencies_to_DESCRIPTION(
 exact_version = c("mongolite","locfit","EBImage"),
 ignore_folder <- c("devel"),
 ignore_package <- "RJobTissueArea"
  )
+ }
 }
 \keyword{internal}

@@ -33,11 +33,13 @@ writeLines(
 #' @keywords internal
 #'
 #' @examples
+#' if(FALSE){
 #' add_dependencies_to_DESCRIPTION(
 #' exact_version = c("mongolite","locfit","EBImage"),
 #' ignore_folder <- c("devel"),
 #' ignore_package <- "RJobTissueArea"
 #'  )
+#'  }
 add_dependencies_to_DESCRIPTION <- function(exact_version = "mongolite",
                                    ignore_folder = "devel",
                                    ignore_package = "RJobTissueArea"){
@@ -153,11 +155,13 @@ download_pkg_sources <- function(Package,
 #' @export
 #'
 #' @examples
+#' if(FALSE){
 #' get_package_dependencies(
 #' exact_version = c("mongolite","locfit","EBImage"),
 #' ignore_folder <- c("devel"),
 #' ignore_package <- "RJobTissueArea"
 #'  )
+#'  }
 get_package_dependencies <- function(exact_version = "mongolite",
                                      ignore_folder = "devel",
                                      ignore_package = "RJobTissueArea"){
