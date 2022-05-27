@@ -15,10 +15,10 @@ knitr::opts_chunk$set(
   cache=FALSE
 )
 
+package_dir <- rprojroot::find_rstudio_root_file()
 knitr::opts_knit$set(cache=FALSE,
-                     root.dir=file.path(getwd()),
-                     base.dir=file.path(getwd())
-)
+                     root.dir=package_dir,
+                     base.dir=file.path(package_dir,"vignettes","figures"))
 
 here::here()
 here::i_am("vignettes/HowToInstall.Rmd")
