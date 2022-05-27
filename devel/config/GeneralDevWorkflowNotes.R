@@ -44,6 +44,14 @@ add_pkg_to_DESCRIPTION(exact_version,ignore_folder,ignore_package)
 #2) download tar.gz----
 download_pkg_sources(dep$Package,dep$Version)
 
+#
+#pkg dok data----
+tempfile()
+dput
+dget
+deparse
+dump
+dump(ls(as.environment("package:RJobTissueArea")))
 
 # daily work agreements
 #======================
