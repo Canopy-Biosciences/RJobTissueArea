@@ -24,7 +24,7 @@ devtools::build_vignettes()
 devtools::build_readme()
 devtools::check()
 devtools::build()
-devtools::install(dependencies =TRUE, build_vignettes = FALSE)
+devtools::install(dependencies =TRUE, build_vignettes = TRUE)
 
 usethis::use_package()
 
@@ -71,9 +71,12 @@ dump(ls(as.environment("package:RJobTissueArea")))
 #    + Bhelper_script_function
 #    + Cinternal_script_function
 #
-# add new variable names to globals.R
+# avoid adding dd new variable names to globals.R, INSTEAD
+# visible binding of variables in functions definition ELSE
+# adding variables as data to package AND refer using rlang::.data AND
+# adding GlobalVariables names() add package dok
 #
-# anytime a external packahge us used,
+# anytime a external package us used,
 #    + include it into Description using: usethis::use_package AND
 #    + add manually to the list in initialize_package_project.R
 #    # and update package_dependencies

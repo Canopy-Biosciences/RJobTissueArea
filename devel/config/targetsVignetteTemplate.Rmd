@@ -1,0 +1,130 @@
+---
+title: "AnalysisWorkflow"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{AnalysisWorkflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+# With the root.dir option below,
+# this vignette runs the R code in a temporary directory
+# so new files are written to temporary storage
+# and not the user's file space.
+package_dir <- rprojroot::find_rstudio_root_file()
+dir <- file.path(package_dir)#fs::dir_create(tempfile())
+knitr::opts_knit$set(root.dir = dir,
+                     base.dir=getwd())
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  root.dir=dir,
+  base.dir=getwd())
+
+Sys.setenv(TAR_WARN = "false")
+
+here::i_am("vignettes/AnalysisWorkflow.Rmd")
+
+if (identical(Sys.getenv("NOT_CRAN", unset = "false"), "false")) {
+  knitr::opts_chunk$set(eval = FALSE)
+}
+```
+
+Target Markdown is a powerful R Markdown interface for reproducible analysis pipelines, and the chapter at https://books.ropensci.org/targets/markdown.html walks through it in detail. This R Markdown report the example from the chapter. Try it out in both interactive and non-interactive modes, either by running the code chunks in different ways or setting the `tar_interactive` chunk option.
+
+# Setup
+
+If you are using old versions of `targets` (<= 0.7.0) and/or `knitr` (<= 1.33), you will need to load the `targets` package in the R Markdown document in order for Target Markdown code chunks to work.
+
+```{r}
+library(targets)
+library(RJobTissueArea)
+```
+
+Near the top of the document, you may also wish to remove the `_targets_r` directory previously written by non-interactive runs of the report. Otherwise, your pipeline may contain superfluous targets.
+
+```{r}
+tar_unscript()
+```
+
+# Globals
+
+We first define some global options/functions common to all targets. The function below plots a histogram of ozone concentrations, and our histogram target will need it.
+
+```{r, echo = FALSE,message=FALSE}
+library(targets)
+library(magrittr)
+library(dplyr)
+library(ggplot2)
+tar_script({
+
+  options(crayon.enabled = FALSE)
+  tar_option_set(memory = "transient", garbage_collection = TRUE)
+  tar_option_set(packages = c("RJobTissueArea","tibble", "readr", "dplyr", "ggplot2"),
+                 imports = c("RJobTissueArea"))
+  
+  #load all package functions
+  Rfiles <- list.files("R")
+  purrr::walk(Rfiles,~source(file.path("R",.x)))
+  
+  create_plot <- function(data) {
+    ggplot(data) +
+      geom_histogram(aes(x = Ozone), bins = 12) +
+      theme_gray(24)
+  }
+  list(
+    tar_target(raw_data, airquality),
+    tar_target(data, 
+               raw_data %>% 
+                 filter(!is.na(Ozone))%>%
+                 dplyr::slice(1:20)),
+    tar_target(hist, 
+               data%>%
+                 create_plot()),
+    tar_target(fit, biglm::biglm(Ozone ~ Wind + Temp, data))
+  )
+  
+})
+```
+
+
+```{r}
+tar_target(fit2, biglm::biglm(Ozone ~ Wind + Temp, data))
+```
+
+
+# Targets
+
+Our first target borrows the `airquality` dataset built into base R.
+
+
+# Pipeline
+
+If you ran all the `{targets}` chunks in non-interactive mode, then your R scripts are set up to run the pipeline.
+
+```{r,output =FALSE}
+tar_make()
+```
+
+# Output
+
+You can retrieve results from the `_targets/` data store using `tar_read()` or `tar_load()`.
+
+```{r, message = FALSE}
+library(biglm)
+raw_data<-tar_read(raw_data)
+tar_read(fit)
+```
+
+```{r}
+tar_read(hist)
+```
+
+The `targets` dependency graph helps your readers understand the steps of your pipeline at a high level.
+
+```{r}
+tar_visnetwork()
+```
+
+At this point, you can go back and run `{targets}` chunks in interactive mode without interfering with the code or data of the non-interactive pipeline.
