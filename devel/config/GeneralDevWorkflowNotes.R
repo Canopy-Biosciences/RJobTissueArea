@@ -24,7 +24,7 @@ devtools::build_vignettes()
 devtools::build_readme()
 devtools::check()
 devtools::build()
-devtools::install(dependencies =TRUE, build_vignettes = TRUE)
+devtools::install(dependencies =TRUE, build_vignettes = FALSE)
 
 usethis::use_package()
 
