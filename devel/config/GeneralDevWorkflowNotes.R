@@ -40,7 +40,7 @@ ignore_package <- "RJobTissueArea"
 #0) get and check dependencies----
 dep <- get_package_dependencies(exact_version,ignore_folder,ignore_package)
 #1) add pkgs to description----
-add_pkg_to_DESCRIPTION(exact_version,ignore_folder,ignore_package)
+add_dependencies_to_DESCRIPTION(exact_version,ignore_folder,ignore_package)
 #2) download tar.gz----
 download_pkg_sources(dep$Package,dep$Version)
 

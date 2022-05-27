@@ -29,10 +29,6 @@ here::i_am("vignettes/AnalysisWorkflow.Rmd")
 if (identical(Sys.getenv("NOT_CRAN", unset = "false"), "false")) {
   knitr::opts_chunk$set(eval = FALSE)
 }
-
-if (identical(Sys.getenv("IN_PKGDOWN"), "true")) {
-  cmdstanr::install_cmdstan()
-}
 ```
 
 Target Markdown is a powerful R Markdown interface for reproducible analysis pipelines, and the chapter at https://books.ropensci.org/targets/markdown.html walks through it in detail. This R Markdown report the example from the chapter. Try it out in both interactive and non-interactive modes, either by running the code chunks in different ways or setting the `tar_interactive` chunk option.

@@ -566,7 +566,7 @@ readr::write_csv(result_df,
 #
 #  }
 
-}
+#}
 #image <-pixmapGrey(m_data_sum,cellres=c(1,1))
 #plot(image)
 
