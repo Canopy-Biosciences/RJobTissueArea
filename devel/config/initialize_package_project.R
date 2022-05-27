@@ -133,35 +133,43 @@ if (interactive()) {
 usethis::use_pipe()
 
 #____________
-#add packages
-usethis::use_package("rmarkdown")
-usethis::use_package("usethis")
-usethis::use_package("devtools")
-usethis::use_package("reprex")
-usethis::use_package("conflicted")
-usethis::use_package("logger")
-usethis::use_package("data.table")
-usethis::use_package("pkgnet")
+#add packages----
 
-usethis::use_package("R.utils")
-usethis::use_package("XML")
-usethis::use_package("assertive")
-usethis::use_package("dplyr")
-usethis::use_package("lubridate")
-usethis::use_package("mongolite",min_version=TRUE)
-usethis::use_package("openssl")
-usethis::use_package("params")
-usethis::use_package("purrr")
-usethis::use_package("qs")
-usethis::use_package("readxl")
-usethis::use_package("rlang")
-usethis::use_package("stringr")
-usethis::use_package("tictoc")
-usethis::use_package("tidyr")
-usethis::use_package("xml2")
-usethis::use_package("testthat")
-usethis::use_package("here")
-
+exact_version = c("mongolite","locfit","EBImage")
+ignore_folder <- c("devel")
+ignore_package <- "RJobTissueArea"
+#0) get and check dependencies----
+dep <- get_package_dependencies(exact_version,ignore_folder,ignore_package)
+#1) add pkgs to description----
+add_dependencies_to_DESCRIPTION(exact_version,ignore_folder,ignore_package)
+#usethis::use_package("rmarkdown")
+#usethis::use_package("usethis")
+#usethis::use_package("devtools")
+#usethis::use_package("reprex")
+#usethis::use_package("conflicted")
+#usethis::use_package("logger")
+#usethis::use_package("data.table")
+#usethis::use_package("pkgnet")
+#
+#usethis::use_package("R.utils")
+#usethis::use_package("XML")
+#usethis::use_package("assertive")
+#usethis::use_package("dplyr")
+#usethis::use_package("lubridate")
+#usethis::use_package("mongolite",min_version=TRUE)
+#usethis::use_package("openssl")
+#usethis::use_package("params")
+#usethis::use_package("purrr")
+#usethis::use_package("qs")
+#usethis::use_package("readxl")
+#usethis::use_package("rlang")
+#usethis::use_package("stringr")
+#usethis::use_package("tictoc")
+#usethis::use_package("tidyr")
+#usethis::use_package("xml2")
+#usethis::use_package("testthat")
+#usethis::use_package("here")
+#
 
 
 
