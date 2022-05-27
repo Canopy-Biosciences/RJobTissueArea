@@ -1,8 +1,8 @@
 ---
-title: "targets"
+title: "AnalysisWorkflow"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{targets}
+  %\VignetteIndexEntry{AnalysisWorkflow}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -24,15 +24,15 @@ knitr::opts_chunk$set(
 
 Sys.setenv(TAR_WARN = "false")
 
-here::i_am("vignettes/targets.Rmd")
+here::i_am("vignettes/AnalysisWorkflow.Rmd")
 
 if (identical(Sys.getenv("NOT_CRAN", unset = "false"), "false")) {
-  knitr::opts_chunk$set(eval = TRUE)
+  knitr::opts_chunk$set(eval = FALSE)
 }
 
-#if (identical(Sys.getenv("IN_PKGDOWN"), "true")) {
-#  cmdstanr::install_cmdstan()
-#}
+if (identical(Sys.getenv("IN_PKGDOWN"), "true")) {
+  cmdstanr::install_cmdstan()
+}
 ```
 
 Target Markdown is a powerful R Markdown interface for reproducible analysis pipelines, and the chapter at https://books.ropensci.org/targets/markdown.html walks through it in detail. This R Markdown report the example from the chapter. Try it out in both interactive and non-interactive modes, either by running the code chunks in different ways or setting the `tar_interactive` chunk option.
@@ -65,6 +65,12 @@ tar_script({
 
   options(crayon.enabled = FALSE)
   tar_option_set(memory = "transient", garbage_collection = TRUE)
+  tar_option_set(packages = c("RJobTissueArea","tibble", "readr", "dplyr", "ggplot2"),
+                 imports = c("RJobTissueArea"))
+  
+  #load all package functions
+  Rfiles <- list.files("R")
+  purrr::walk(Rfiles,~source(file.path("R",.x)))
   
   create_plot <- function(data) {
     ggplot(data) +
