@@ -317,7 +317,7 @@ create_long_node_df_from_XML <- function(XML){
 #' @keywords internal
 #' @family database related
 #' @examples
-#'
+#' {
 #' EDL <- "<?xml version=\"1.0\"?>\r\n<!-- Mit XMLSpy v2011 rel. 3 (http://www.altova.com) von Christian Hennig (Medizinische Hochschule Hannover Päd. Pneumologie Neonatologie) bearbeitet -->\r\n
 #' <Obj MadewithEDLVersion=\"0.1\" derivedfrom=\"Data Collection\" madewithEDLVersion=\"29012013141654\" Type=\"ChipGroup\">\r\n\t
 #' <Identity UID=\"P1761451\" Type=\"ChipGroup\" TakeoverFromInputObject=\"\" Name=\"Takeda - sample preparation\"/>\r\n\t
@@ -340,8 +340,9 @@ create_long_node_df_from_XML <- function(XML){
 #' <Owner UID=\"CU1746580\" Level=\"FullAccess\"/>
 #' </Owners></Obj>\r\n"
 #'
-#' EDL%>%extract_chipIDs_from_groupEDL()
-#'
+#' EDL%>%
+#' extract_chipIDs_from_groupEDL()
+#'}
 extract_chipIDs_from_groupEDL<- function(EDL){
 
   chip_IDs <- NULL
@@ -507,9 +508,9 @@ find_all_attributes_in_EDL<-function(EDL){
 #' @family database related
 #' @examples
 #' \donttest{
+#' data(chip_IDs)
+#' chip_path <- find_chip_path(chip_IDs[1])
 #'
-#' server <- find_server_path()
-#' chip_path <- find_chip_path("'M1153570", server$server_path)
 #' }
 find_chip_path <- function(ChannelID = "M583054",
                            server_path = NULL) {
@@ -768,7 +769,7 @@ find_server_path <- function() {
 #' @examples
 #' \dontrun{
 #' group_ID <- "P1761451"
-#' chip_IDs <- find_valid_group_chip_IDs(group_ID)#'
+#' chip_IDs <- find_valid_group_chip_IDs(group_ID)
 #' }
 find_valid_group_chip_IDs <- function(group_ID){
 
@@ -851,7 +852,6 @@ get_df_from_query_result<- function(query_result){
 #' @return a character vector containing EDL strings
 #' @export
 #' @keywords internal
-
 #' @family database related
 #' @examples
 #' query_result <- list(
@@ -887,9 +887,9 @@ get_EDL_from_query_result <- function(result){
     EDL <- purrr::map_chr(result$result,
                           ~ .x$EDL)
     return(EDL)
-
-
 }
+
+
 #' get_enabled_positions
 #'
 #' @param chip_ID
