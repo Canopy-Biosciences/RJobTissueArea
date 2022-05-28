@@ -999,7 +999,7 @@ query_filterset_of_scanIDs <- function(scan_IDs){
 #'
 #' @return
 #' @export
-#'
+#' @keywords internal
 #' @examples
 query_UID_limslager<- function(chip_IDs){
 
