@@ -7,13 +7,13 @@
 find_valid_group_chip_IDs(group_ID)
 }
 \arguments{
-\item{group_ID}{character of chipgroupID}
+\item{group_ID}{character of chip group_ID}
 }
 \value{
-character vector containing chipIDs for which data is available
+character vector containing chip_IDs for which data is available
 }
 \description{
-Get all chipIDs in a given chipgroup and return those IDs for which data exists.
+returns all chipIDs of a given chipgroup for which  a data folder could be found
 }
 \details{
 The mongoDB collection limslager is queried for the groupID. From the EDL return object the UID attributes are extracted for all ObjRef's in the EncapsulatedObjectsRef. The UIDs correspond to the chipIDs. Subsequently, all available ImageServers are searched for the chip folders. If no folder could be found for a chipID, this chip is excluded from the result. The IDs of the excluded chips are printed separately to the console and only the remaining chipIDs are returned.
@@ -21,7 +21,7 @@ The mongoDB collection limslager is queried for the groupID. From the EDL return
 \examples{
 \dontrun{
 group_ID <- "P1761451"
-chip_IDs <- find_valid_group_chip_IDs(group_ID)
+chip_IDs <- find_valid_group_chip_IDs(group_ID)#'
 }
 }
 \seealso{

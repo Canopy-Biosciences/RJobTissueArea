@@ -2,18 +2,25 @@
 % Please edit documentation in R/helpers_DBrelated.R
 \name{check_if_chip_data_exist}
 \alias{check_if_chip_data_exist}
-\title{Title}
+\title{checks if chipID data folder exist}
 \usage{
 check_if_chip_data_exist(chip_IDs)
 }
 \arguments{
-\item{chip_IDs}{}
+\item{chip_IDs}{character vector of chip_IDs}
 }
 \value{
-
+character vector of chip_IDs for which data folder exist
 }
 \description{
-Title
+Internally query for available Imageserver. Subsequent maps through all chip_IDs and check if a folder named by chip_IDs exist on the Server. Finally seperates the chip_IDs by folder existance and prints them seperatly. Returns only existing data chip_IDs.
+}
+\examples{
+\donttest{
+data(chip_IDs)
+check_if_chip_data_exist(chip_IDs)
+}
+
 }
 \seealso{
 Other database related: 

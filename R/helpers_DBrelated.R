@@ -61,6 +61,7 @@ check_if_chip_data_exist <- function(chip_IDs){
   #- checkmate input
 
   server_path <- chip_path <- pathExist <- pathError <- NULL
+
   checkmate::assert_character(chip_IDs,
                               any.missing = FALSE,
                               min.len =1)
@@ -697,8 +698,8 @@ find_scan_basepath <- function(scan_IDs){
 #' }
 find_server_path <- function() {
   # check which Servers are available at a site, on which images can be stored
-  error <- NULL
-  # V150621s
+
+    # V150621s
   # stored in the directory' C:\Users\Ortmann\Documents\Zellkraftwerk\R_reports\autogating\ValuesCsvsOfScanWithCutoffCD4/R
   # filename: function_find_server_path
   # were also stored within this project for further development
@@ -767,13 +768,19 @@ find_server_path <- function() {
 #' @examples
 #' \dontrun{
 #' group_ID <- "P1761451"
-#' chip_IDs <- find_valid_group_chip_IDs(group_ID)
+#' chip_IDs <- find_valid_group_chip_IDs(group_ID)#'
 #' }
 find_valid_group_chip_IDs <- function(group_ID){
 
-  #V270522 - UPDATE
+  Version <- 270522
+  #- UPDATE
   #- variableBinding added
   #- documentation added
+  #- logger and tictoc added
+
+  #logging----
+  logger::log_debug("Version {version}.")
+  tictoc::tic("find valid group chip_IDs")
 
   #check input----
   checkmate::assert_character(group_ID,
@@ -798,12 +805,24 @@ find_valid_group_chip_IDs <- function(group_ID){
     #check if data exist----
     valid_chipIDs <-chip_IDs%>%check_if_chip_data_exist()
 
+    #logger----
+    logger::log_success()
+
     return(valid_chipIDs)
 
   }else{
 
+    logger::log_error()
+    logger::log_debug(query_result$error_message)
+
     return(query_result$error_message)
   }
+
+  time <- tictoc::toc(quiet = TRUE)
+  elapsed_time <- paste0(round(time$toc - time$tic, digits = 1), " sec")
+  logger::log_debug("finished ?{time$msg}.")
+  logger::log_debug("Elapsed time: {elapsed_time}")
+  logger::log_debug("Executing version: {Version}")
 }
 
 
@@ -827,7 +846,7 @@ get_df_from_query_result<- function(query_result){
 
 #' extracts all EDL strings from a mongoDB query result
 #'
-#' @param result list containing the mongoDB query result
+#' @param result list containing the mongoDB result
 #'
 #' @return a character vector containing EDL strings
 #' @export
@@ -851,9 +870,11 @@ get_EDL_from_query_result <- function(result){
   V <- 080322
   V<- 280522
   #- added purrr::
-  #- docu and data
+  #- docu and data, inputcheck
   #- checkmate input
   #____________________________
+
+  EDL <- NULL
 
   stopifnot(checkmate::check_list(result,
                                   len=2,

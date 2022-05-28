@@ -40,6 +40,7 @@ EDL <- "<?xml version=\"1.0\"?>\r\n<!-- Mit XMLSpy v2011 rel. 3 (http://www.alto
 </Owners></Obj>\r\n"
 
 EDL\%>\%extract_chipIDs_from_groupEDL()
+
 }
 \seealso{
 Other database related: 

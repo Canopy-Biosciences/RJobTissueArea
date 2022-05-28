@@ -7,7 +7,7 @@
 get_EDL_from_query_result(result)
 }
 \arguments{
-\item{result}{list containing the mongoDB query result}
+\item{result}{list containing the mongoDB result}
 }
 \value{
 a character vector containing EDL strings

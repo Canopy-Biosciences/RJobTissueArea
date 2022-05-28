@@ -7,12 +7,15 @@
 find_chip_path(ChannelID = "M583054", server_path = NULL)
 }
 \arguments{
-\item{ChannelID}{chracter if the chip_ID}
+\item{ChannelID}{character containing a chip_ID}
 
 \item{server_path}{vector containing characters of server paths}
 }
+\value{
+a character containing a chip_ID string or error message
+}
 \description{
-finds the folder path to a related chip_ID in a list of server paths
+finds the folder path to a related chip_ID in a list of server paths. If no serverpaths are provided to the function, a internal function is called.
 }
 \examples{
 \donttest{
