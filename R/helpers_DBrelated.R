@@ -36,19 +36,34 @@ writeLines(
     "- query_UID_scans()"
     ))
 
-#' checks if a chipID data folder exist
+#' checks if chipID data folder exist
+#'
+#' Internally query for available Imageserver. Subsequent maps through all chip_IDs and check if a folder named by chip_IDs exist on the Server. Finally seperates the chip_IDs by folder existance and prints them seperatly. Returns only existing data chip_IDs.
 #'
 #' @param chip_IDs character vector of chip_IDs
 #'
-#' @return character vector containing valid chip_IDs
+#' @return character vector of chip_IDs for which data folder exist
 #' @export
 #' @keywords internal
 #' @family database related
 #' @examples
+#' \donttest{
+#' data(chip_IDs)
+#' check_if_chip_data_exist(chip_IDs)
+#' }
+#'
 check_if_chip_data_exist <- function(chip_IDs){
 
   V <- 080322
+  V <- 280522
   #- added purrr::, stringr::
+  #- variable binding
+  #- checkmate input
+
+  server_path <- chip_path <- pathExist <- pathError <- NULL
+  checkmate::assert_character(chip_IDs,
+                              any.missing = FALSE,
+                              min.len =1)
 
   server_path <- find_server_path()$server_path
 
@@ -92,6 +107,7 @@ check_if_chip_data_exist <- function(chip_IDs){
 #' @keywords internal
 #'
 #' @examples
+#'
 #' chip_path <- c("\\\\intern.chipcytometry.com\\imagedata\\leipzig_volume0\\M986054")
 #' collect_segments_metadata(chip_path)
 
@@ -324,7 +340,13 @@ create_long_node_df_from_XML <- function(XML){
 #' </Owners></Obj>\r\n"
 #'
 #' EDL%>%extract_chipIDs_from_groupEDL()
+#'
 extract_chipIDs_from_groupEDL<- function(EDL){
+
+  chip_IDs <- NULL
+  checkmate::check_character(EDL,
+                             any.missing = FALSE,
+                             len = 1)
   chip_IDs <- EDL%>%
     xml2::read_xml()%>%
     xml2::xml_find_all("/Obj/EncapsulatedObjectsRef/ObjRef")%>%
@@ -474,13 +496,13 @@ find_all_attributes_in_EDL<-function(EDL){
 
 #' searches for a chip_ID
 #'
-#' finds the folder path to a related chip_ID in a list of server paths
+#' finds the folder path to a related chip_ID in a list of server paths. If no serverpaths are provided to the function, a internal function is called.
 #'
-#' @param ChannelID chracter if the chip_ID
+#' @param ChannelID character containing a chip_ID
 #' @param server_path vector containing characters of server paths
 #' @keywords internal
 #' @export
-
+#' @return a character containing a chip_ID string or error message
 #' @family database related
 #' @examples
 #' \donttest{
@@ -666,6 +688,7 @@ find_scan_basepath <- function(scan_IDs){
 #' @export
 #' @family database related
 #' @keywords internal
+#' @return a df containing flag, EDLName and path to the server
 
 #' @family database related
 #' @examples
@@ -684,6 +707,7 @@ find_server_path <- function() {
   # updates:
   # a functions name used, changed to query_mongoDB
   # Version 080322
+  # Version 2805222
   # - removed @ importFrom
 
   # server_names<-query_mongoDB(search_value="ImageServerPath",
@@ -692,6 +716,9 @@ find_server_path <- function() {
   #                            return_columns = c("FlagEmpty","EDLName","EDL"))%>% #,"Do_Not_Check" gibts gar nicht
   #  dplyr::filter(FlagEmpty == 0)
   #- roxygenize package dependencie
+  #- variable binding
+
+  name_result <- error <- server_names <- error_text <- NULL
 
   names_result <- query_mongoDB(
     mongo_collection = "limslager",
@@ -729,11 +756,12 @@ find_server_path <- function() {
 
 #' finds valid chipIDs of a chipgroup
 #'
-#' Get all chipIDs in a given chipgroup and return those IDs for which data exists.
+#' returns all chipIDs of a given chipgroup for which  a data folder could be found
 #'
 #' The mongoDB collection limslager is queried for the groupID. From the EDL return object the UID attributes are extracted for all ObjRef's in the EncapsulatedObjectsRef. The UIDs correspond to the chipIDs. Subsequently, all available ImageServers are searched for the chip folders. If no folder could be found for a chipID, this chip is excluded from the result. The IDs of the excluded chips are printed separately to the console and only the remaining chipIDs are returned.
-#' @param group_ID character of chipgroupID
-#' @return character vector containing chipIDs for which data is available
+
+#' @param group_ID character of chip group_ID
+#' @return character vector containing chip_IDs for which data is available
 #' @export
 #' @family database related
 #' @examples
@@ -824,14 +852,23 @@ get_EDL_from_query_result <- function(result){
   V<- 280522
   #- added purrr::
   #- docu and data
+  #- checkmate input
   #____________________________
 
-  EDL <- purrr::map_chr(result$result,
-                           ~ .x$EDL)
+  stopifnot(checkmate::check_list(result,
+                                  len=2,
+                                  types = c("list","character"),
+                                  any.missing = TRUE),
+            checkmate::checkSubset(names(result),
+                                   choices = c("result", "error_message"),
+                                   empty.ok = TRUE))
 
-  return(EDL)
+    EDL <- purrr::map_chr(result$result,
+                          ~ .x$EDL)
+    return(EDL)
+
+
 }
-
 #' get_enabled_positions
 #'
 #' @param chip_ID
@@ -935,6 +972,14 @@ query_filterset_of_scanIDs <- function(scan_IDs){
 ### **query_UID_limslager()**
 
 #```{r}
+#' Title
+#'
+#' @param chip_IDs
+#'
+#' @return
+#' @export
+#'
+#' @examples
 query_UID_limslager<- function(chip_IDs){
 
   V <- 130222 # initial Version

@@ -37,6 +37,37 @@ query_groupID_limslager <- list(result = list(structure(list(serapp = "ZKW.Explo
 #EDL <- query_result%>%get_EDL_from_query_result()
 EDL_groupID_limslager <- "<?xml version=\"1.0\"?>\r\n<!-- Mit XMLSpy v2011 rel. 3 (http://www.altova.com) von Christian Hennig (Medizinische Hochschule Hannover Päd. Pneumologie Neonatologie) bearbeitet -->\r\n<Obj MadewithEDLVersion=\"0.1\" derivedfrom=\"Data Collection\" madewithEDLVersion=\"29012013141654\" Type=\"ChipGroup\">\r\n\t<Identity UID=\"P1761451\" Type=\"ChipGroup\" TakeoverFromInputObject=\"\" Name=\"Takeda - sample preparation\"/>\r\n\t<PrimaryContainer UID=\"\" Type=\"Earth\" TakeoverFromInputObject=\"\" IsInputObject=\"\"/>\r\n\t<SpecificParameters>\r\n\t\t<SpecificParameter Name=\"Definition\" Value=\"A ChipGroup is a collection of sample-analysis-data that shares the same function within a project (e.g. control-group, patient-group)\" Unit=\"Text\"/>\r\n\t\t<SpecificParameter Name=\"DefinitionURL\" Value=\"-\" Unit=\"URL or Database\"/>\r\n\t\t<SpecificParameter Name=\"Lifetime\" Value=\"-\" Unit=\"Duration\"/>\r\n\t\t<SpecificParameter Name=\"ChipGroup Description\" Value=\"\" Unit=\"Text\"/><SpecificParameter Name=\"ChipGroup URL\" Value=\"\" Unit=\"URL\"/><SpecificParameter Name=\"ChipGroup Name\" Value=\"Takeda - sample preparation\" Unit=\"Text\"/></SpecificParameters>\r\n\t<EncapsulatedObjects/><EncapsulatedObjectsRef><ObjRef UID=\"M1730408\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1730410\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1730412\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1730414\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1730416\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1730418\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1730420\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1730422\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1730424\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1730426\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1708179\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1708181\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1730444\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1730446\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1708167\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1708169\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1708175\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1708177\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1764682\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1730404\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1730406\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/><ObjRef UID=\"M1764730\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/></EncapsulatedObjectsRef><Owners><Owner UID=\"H858698\"/><Owner UID=\"CU1746580\" Level=\"FullAccess\"/></Owners></Obj>\r\n"
 
+
+
+
+#server_path <- find_server_path()
+server_path <- structure(list(FlagEmpty = c("0", "0", "0", "0", "0", "0", "0",
+                                            "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+                                            "0", "0", "0"),
+                              EDLName = c("imagedata_volume7", "imagedata_volume6",
+                                                                        "imagedata_volume2", "imagedata_volume1", "imagedata_volume0",
+                                                                        "imagedata_volume9", "imagedata_volume8", "imagedata_volume5",
+                                                                        "imagedata_volume3", "imagedata_volume4", "imagedata_volume22",
+                                                                        "imagedata_volume21", "imagedata_volume20", "imagedata_volume19",
+                                                                        "imagedata_volume18", "imagedata_volume17", "image_data_volume16",
+                                                                        "image_data_volume15", "imagedata_volume14", "imagedata_volume13",
+                                                                        "imagedata_volume12", "imagedata_volume11", "imagedata_volume10"),
+                              server_path = c("\\\\intern.chipcytometry.com\\imagedata\\volume7",
+                                                               "\\\\intern.chipcytometry.com\\imagedata\\volume6", "\\\\intern.chipcytometry.com\\imagedata\\volume2",
+                                                               "\\\\intern.chipcytometry.com\\imagedata\\volume1", "\\\\intern.chipcytometry.com\\imagedata\\volume0",
+                                                               "\\\\intern.chipcytometry.com\\imagedata\\volume9", "\\\\intern.chipcytometry.com\\imagedata\\volume8",
+                                                               "\\\\intern.chipcytometry.com\\imagedata\\volume5", "\\\\intern.chipcytometry.com\\imagedata\\volume3",
+                                                               "\\\\intern.chipcytometry.com\\imagedata\\volume4", "\\\\intern.chipcytometry.com\\imagedata\\volume22",
+                                                               "\\\\intern.chipcytometry.com\\imagedata\\volume21", "\\\\intern.chipcytometry.com\\imagedata\\volume20",
+                                                               "\\\\intern.chipcytometry.com\\imagedata\\volume19", "\\\\intern.chipcytometry.com\\imagedata\\volume18",
+                                                               "\\\\intern.chipcytometry.com\\imagedata\\volume17", "\\\\intern.chipcytometry.com\\imagedata\\volume16",
+                                                               "\\\\intern.chipcytometry.com\\imagedata\\volume15", "\\\\intern.chipcytometry.com\\imagedata\\volume14",
+                                                               "\\\\intern.chipcytometry.com\\imagedata\\volume13", "\\\\intern.chipcytometry.com\\imagedata\\volume12",
+                                                               "\\\\intern.chipcytometry.com\\imagedata\\volume11", "\\\\intern.chipcytometry.com\\imagedata\\volume10"
+                                            )),
+                         class = "data.frame", row.names = c(NA, -23L))
+
 usethis::use_data(group_ID,
                   query_groupID_limslager,
-                  EDL_groupID_limslager, internal = TRUE, overwrite = TRUE)
+                  EDL_groupID_limslager,
+                  server_path, internal = TRUE, overwrite = TRUE)
