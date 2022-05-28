@@ -36,14 +36,14 @@ writeLines(
     "- query_UID_scans()"
     ))
 
-#' Title
+#' checks if a chipID data folder exist
 #'
-#' @param chip_IDs
+#' @param chip_IDs character vector of chip_IDs
 #'
-#' @return
+#' @return character vector containing valid chip_IDs
 #' @export
 #' @keywords internal
-#'
+#' @family database related
 #' @examples
 check_if_chip_data_exist <- function(chip_IDs){
 
@@ -289,19 +289,48 @@ create_long_node_df_from_XML <- function(XML){
   return(df_longer)
 }
 
-#' Title
+#' extracts chipIDs from its chipgroup EDL
 #'
-#' @param EDL
+#' converts a given string to an XML object and path's over to all ObjRefs and extracts UID attributes.
 #'
-#' @return
+#' @param EDL string of an XML document
+#'
+#' @return character vector containing chipIDs
+#' @export
 #' @keywords internal
-#'
+#' @family database related
 #' @examples
+#'
+#' EDL <- "<?xml version=\"1.0\"?>\r\n<!-- Mit XMLSpy v2011 rel. 3 (http://www.altova.com) von Christian Hennig (Medizinische Hochschule Hannover Päd. Pneumologie Neonatologie) bearbeitet -->\r\n
+#' <Obj MadewithEDLVersion=\"0.1\" derivedfrom=\"Data Collection\" madewithEDLVersion=\"29012013141654\" Type=\"ChipGroup\">\r\n\t
+#' <Identity UID=\"P1761451\" Type=\"ChipGroup\" TakeoverFromInputObject=\"\" Name=\"Takeda - sample preparation\"/>\r\n\t
+#' <PrimaryContainer UID=\"\" Type=\"Earth\" TakeoverFromInputObject=\"\" IsInputObject=\"\"/>\r\n\t
+#' <SpecificParameters>\r\n\t\t
+#' <SpecificParameter Name=\"Definition\" Value=\"A ChipGroup is a collection of sample-analysis-data that shares the same function within a project (e.g. control-group, patient-group)\" Unit=\"Text\"/>\r\n\t\t
+#' <SpecificParameter Name=\"DefinitionURL\" Value=\"-\" Unit=\"URL or Database\"/>\r\n\t\t
+#' <SpecificParameter Name=\"Lifetime\" Value=\"-\" Unit=\"Duration\"/>\r\n\t\t
+#' <SpecificParameter Name=\"ChipGroup Description\" Value=\"\" Unit=\"Text\"/>
+#' <SpecificParameter Name=\"ChipGroup URL\" Value=\"\" Unit=\"URL\"/>
+#' <SpecificParameter Name=\"ChipGroup Name\" Value=\"Takeda - sample preparation\" Unit=\"Text\"/>
+#' </SpecificParameters>\r\n\t<EncapsulatedObjects/>
+#' <EncapsulatedObjectsRef>
+#' <ObjRef UID=\"M1730408\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/>
+#' <ObjRef UID=\"M1730410\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/>
+#' <ObjRef UID=\"M1730412\" Type=\"Microfluidic-Channel for Chipcytometry-Chip1 Histology-FFPE\"/>
+#' </EncapsulatedObjectsRef>
+#' <Owners>
+#' <Owner UID=\"H858698\"/>
+#' <Owner UID=\"CU1746580\" Level=\"FullAccess\"/>
+#' </Owners></Obj>\r\n"
+#'
+#' EDL%>%extract_chipIDs_from_groupEDL()
 extract_chipIDs_from_groupEDL<- function(EDL){
-  EDL%>%
+  chip_IDs <- EDL%>%
     xml2::read_xml()%>%
     xml2::xml_find_all("/Obj/EncapsulatedObjectsRef/ObjRef")%>%
     xml2::xml_attr("UID")
+
+  return(chip_IDs)
 }
 
 #' Title
@@ -451,7 +480,8 @@ find_all_attributes_in_EDL<-function(EDL){
 #' @param server_path vector containing characters of server paths
 #' @keywords internal
 #' @export
-#'
+
+#' @family database related
 #' @examples
 #' \donttest{
 #'
@@ -636,6 +666,8 @@ find_scan_basepath <- function(scan_IDs){
 #' @export
 #' @family database related
 #' @keywords internal
+
+#' @family database related
 #' @examples
 #' \donttest{
 #' find_server_path()
@@ -697,16 +729,13 @@ find_server_path <- function() {
 
 #' finds valid chipIDs of a chipgroup
 #'
-#' searches for chipIDs of a chip group and returns a character vector containing chipIDs for which data are available. chipIDs without data were printed into the console.
+#' Get all chipIDs in a given chipgroup and return those IDs for which data exists.
 #'
-#' In limslager the groupID is searched for and the UID attribute of all ObjRef's in EncapsulatedObjectsRef is extracted from the EDL object. These chipIDs are then searched for on all available ImageServers. The chipIDs for which a folder exists are returned as valid.
-#'
+#' The mongoDB collection limslager is queried for the groupID. From the EDL return object the UID attributes are extracted for all ObjRef's in the EncapsulatedObjectsRef. The UIDs correspond to the chipIDs. Subsequently, all available ImageServers are searched for the chip folders. If no folder could be found for a chipID, this chip is excluded from the result. The IDs of the excluded chips are printed separately to the console and only the remaining chipIDs are returned.
 #' @param group_ID character of chipgroupID
-#'
 #' @return character vector containing chipIDs for which data is available
 #' @export
 #' @family database related
-#'
 #' @examples
 #' \dontrun{
 #' group_ID <- "P1761451"
@@ -768,24 +797,39 @@ get_df_from_query_result<- function(query_result){
 
 }
 
-#' Title
+#' extracts all EDL strings from a mongoDB query result
 #'
-#' @param result
+#' @param result list containing the mongoDB query result
 #'
-#' @return
+#' @return a character vector containing EDL strings
 #' @export
 #' @keywords internal
-#'
+
+#' @family database related
 #' @examples
+#' query_result <- list(
+#' result = list(structure(list(
+#' EDL = "<?xml version=\"1.0\"?>\r\n<!-- ",
+#' EDLType = "ChipGroup"),
+#' query = "UID_P1761451_limslager")),
+#' error_message = character(0))
+#'
+#' EDL <- query_result%>%
+#' get_EDL_from_query_result()
+#'
 get_EDL_from_query_result <- function(result){
 
   V <- 130222 # initial Version
   V <- 080322
+  V<- 280522
   #- added purrr::
+  #- docu and data
   #____________________________
 
-  return <- purrr::map_chr(result$result,
+  EDL <- purrr::map_chr(result$result,
                            ~ .x$EDL)
+
+  return(EDL)
 }
 
 #' get_enabled_positions
@@ -957,7 +1001,6 @@ query_UID_limsproc<- function(chip_IDs){
 #' @return list of df: result and vector: error_message
 #' @family database related
 #' @export
-#'
 #' @examples
 #' \donttest{
 #'

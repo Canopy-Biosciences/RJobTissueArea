@@ -62,37 +62,48 @@ tar_script({
   options(crayon.enabled = FALSE)
   tar_option_set(memory = "transient", garbage_collection = TRUE)
   tar_option_set(packages = c("RJobTissueArea","tibble", "readr", "dplyr", "ggplot2"),
-                 imports = c("RJobTissueArea"))
+                 imports = "RJobTissueArea")
   
-  #load all package functions
-  Rfiles <- list.files("R")
-  purrr::walk(Rfiles,~source(file.path("R",.x)))
+  extract_chipIDs_from_groupEDL<- function(EDL){
+  chip_IDs <- EDL%>%
+    xml2::read_xml()%>%
+    xml2::xml_find_all("/Obj/EncapsulatedObjectsRef/ObjRef")%>%
+    xml2::xml_attr("UID")
+
+  return(chip_IDs)
+}
+ # #load all package functions
+ # Rfiles <- list.files("R")
+ # purrr::walk(Rfiles,~source(file.path("R",.x)))
   
-  create_plot <- function(data) {
-    ggplot(data) +
-      geom_histogram(aes(x = Ozone), bins = 12) +
-      theme_gray(24)
-  }
-  list(
-    tar_target(raw_data, airquality),
-    tar_target(data, 
-               raw_data %>% 
-                 filter(!is.na(Ozone))%>%
-                 dplyr::slice(1:20)),
-    tar_target(hist, 
-               data%>%
-                 create_plot()),
-    tar_target(fit, biglm::biglm(Ozone ~ Wind + Temp, data))
-  )
-  
+#  list(
+#    tar_target(group_ID, "P1761451"),
+#    tar_target(valid_chipIDs,
+#               group_ID%>%
+#                 find_valid_group_chip_IDs())
+#  )
+# # list(tar_target(group_ID, "P1761451"),
+ #      tar_target(valid_chipIDs,
+ #                 query_mongoDB("limslager","UID",group_ID)%>%
+ #                   get_EDL_from_query_result()%>%
+ #                   extract_chipIDs_from_groupEDL()%>%
+ #                   check_if_chip_data_exist())
+ # )
+list(
+  tar_target(group_ID, "P1761451"),
+  tar_target(query_result,
+             query_mongoDB("limslager","UID",group_ID)),
+  tar_target( EDL,
+              query_result%>%get_EDL_from_query_result()),
+  tar_target(chip_IDs,
+             EDL%>%extract_chipIDs_from_groupEDL()),
+  tar_target(valid_chipIDs,
+             chip_IDs%>%check_if_chip_data_exist())
+)
+ 
 })
+
 ```
-
-
-```{r}
-tar_target(fit2, biglm::biglm(Ozone ~ Wind + Temp, data))
-```
-
 
 # Targets
 
@@ -107,24 +118,85 @@ If you ran all the `{targets}` chunks in non-interactive mode, then your R scrip
 tar_make()
 ```
 
-# Output
 
-You can retrieve results from the `_targets/` data store using `tar_read()` or `tar_load()`.
 
-```{r, message = FALSE}
-library(biglm)
-raw_data<-tar_read(raw_data)
-tar_read(fit)
+```{r}
+?tar_visnetwork()
 ```
 
 ```{r}
-tar_read(hist)
+tar_glimpse()
 ```
 
-The `targets` dependency graph helps your readers understand the steps of your pipeline at a high level.
+
+
 
 ```{r}
-tar_visnetwork()
+tar_sitrep()
 ```
 
-At this point, you can go back and run `{targets}` chunks in interactive mode without interfering with the code or data of the non-interactive pipeline.
+
+
+```{r}
+tar_manifest()
+```
+
+
+```{r}
+targets::tar_watch()
+```
+
+
+```{r}
+if (identical(Sys.getenv("TAR_LONG_EXAMPLES"), "true")) {
+targets::tar_dir({ # tar_dir() runs code from a temporary directory.
+tar_script({
+
+  options(crayon.enabled = FALSE)
+  tar_option_set(memory = "transient", garbage_collection = TRUE)
+  tar_option_set(packages = c("RJobTissueArea","tibble", "readr", "dplyr", "ggplot2"),
+                 imports = "RJobTissueArea")
+  
+  extract_chipIDs_from_groupEDL<- function(EDL){
+  chip_IDs <- EDL%>%
+    xml2::read_xml()%>%
+    xml2::xml_find_all("/Obj/EncapsulatedObjectsRef/ObjRef")%>%
+    xml2::xml_attr("UID")
+
+  return(chip_IDs)
+}
+ # #load all package functions
+ # Rfiles <- list.files("R")
+ # purrr::walk(Rfiles,~source(file.path("R",.x)))
+  
+#  list(
+#    tar_target(group_ID, "P1761451"),
+#    tar_target(valid_chipIDs,
+#               group_ID%>%
+#                 find_valid_group_chip_IDs())
+#  )
+# # list(tar_target(group_ID, "P1761451"),
+ #      tar_target(valid_chipIDs,
+ #                 query_mongoDB("limslager","UID",group_ID)%>%
+ #                   get_EDL_from_query_result()%>%
+ #                   extract_chipIDs_from_groupEDL()%>%
+ #                   check_if_chip_data_exist())
+ # )
+list(
+  tar_target(group_ID, "P1761451"),
+  tar_target(query_result,
+             query_mongoDB("limslager","UID",group_ID)),
+  tar_target( EDL,
+              query_result%>%get_EDL_from_query_result()),
+  tar_target(chip_IDs,
+             EDL%>%extract_chipIDs_from_groupEDL()),
+  tar_target(valid_chipIDs,
+             chip_IDs%>%check_if_chip_data_exist())
+)
+ 
+})
+targets::tar_make()
+})
+}
+```
+

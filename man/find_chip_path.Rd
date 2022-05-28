@@ -21,4 +21,21 @@ server <- find_server_path()
 chip_path <- find_chip_path("'M1153570", server$server_path)
 }
 }
+\seealso{
+Other database related: 
+\code{\link{check_if_chip_data_exist}()},
+\code{\link{connect_mongoDB}()},
+\code{\link{extract_chipIDs_from_groupEDL}()},
+\code{\link{extract_chip_IDs}()},
+\code{\link{extract_files_to_process}()},
+\code{\link{extract_gate_names}()},
+\code{\link{extract_gates_to_process}()},
+\code{\link{extract_jobtype}()},
+\code{\link{find_all_attributes_in_EDL}()},
+\code{\link{find_server_path}()},
+\code{\link{find_valid_group_chip_IDs}()},
+\code{\link{get_EDL_from_query_result}()},
+\code{\link{query_mongoDB}()}
+}
+\concept{database related}
 \keyword{internal}

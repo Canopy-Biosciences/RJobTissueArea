@@ -13,10 +13,10 @@ find_valid_group_chip_IDs(group_ID)
 character vector containing chipIDs for which data is available
 }
 \description{
-searches for chipIDs of a chip group and returns a character vector containing chipIDs for which data are available. chipIDs without data were printed into the console.
+Get all chipIDs in a given chipgroup and return those IDs for which data exists.
 }
 \details{
-In limslager the groupID is searched for and the UID attribute of all ObjRef's in EncapsulatedObjectsRef is extracted from the EDL object. These chipIDs are then searched for on all available ImageServers. The chipIDs for which a folder exists are returned as valid.
+The mongoDB collection limslager is queried for the groupID. From the EDL return object the UID attributes are extracted for all ObjRef's in the EncapsulatedObjectsRef. The UIDs correspond to the chipIDs. Subsequently, all available ImageServers are searched for the chip folders. If no folder could be found for a chipID, this chip is excluded from the result. The IDs of the excluded chips are printed separately to the console and only the remaining chipIDs are returned.
 }
 \examples{
 \dontrun{
@@ -26,14 +26,18 @@ chip_IDs <- find_valid_group_chip_IDs(group_ID)
 }
 \seealso{
 Other database related: 
+\code{\link{check_if_chip_data_exist}()},
 \code{\link{connect_mongoDB}()},
+\code{\link{extract_chipIDs_from_groupEDL}()},
 \code{\link{extract_chip_IDs}()},
 \code{\link{extract_files_to_process}()},
 \code{\link{extract_gate_names}()},
 \code{\link{extract_gates_to_process}()},
 \code{\link{extract_jobtype}()},
 \code{\link{find_all_attributes_in_EDL}()},
+\code{\link{find_chip_path}()},
 \code{\link{find_server_path}()},
+\code{\link{get_EDL_from_query_result}()},
 \code{\link{query_mongoDB}()}
 }
 \concept{database related}
