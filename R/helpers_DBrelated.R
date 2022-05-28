@@ -164,7 +164,7 @@ collect_segments_metadata <- function(chip_path){
 #' @keywords internal
 #' @return mongo_connection: a client to mongo_collection, providing functions
 #' @family database related
-
+#' @export
 #' @examples
 #' \donttest{
 #' connect_mongoDB("limslager")
