@@ -718,21 +718,35 @@ find_valid_group_chip_IDs <- function(group_ID){
   #- variableBinding added
   #- documentation added
 
+  #check input----
+  checkmate::assert_character(group_ID,
+                              min.chars =5,
+                              any.missing = FALSE,
+                              len = 1)
+  #variable binding----
   query_result <- EDL <- chip_IDs <- valid_chipIDs <- NULL
 
+  #find group_ID in limslager----
   query_result <- query_mongoDB("limslager","UID",group_ID)
 
-  EDL <- query_result%>%
-    get_EDL_from_query_result()
+  #check query result----
+  if(checkmate::test_list(query_result$result, len = 1)){
 
-  chip_IDs <- EDL%>%
-    extract_chipIDs_from_groupEDL()
+    #extract EDL from result_df----
+    EDL <- query_result%>%get_EDL_from_query_result()
 
-  valid_chipIDs <-chip_IDs%>%
-    check_if_chip_data_exist()
+    #extract chip_IDs----
+    chip_IDs <- EDL%>%extract_chipIDs_from_groupEDL()
 
-  return(valid_chipIDs)
+    #check if data exist----
+    valid_chipIDs <-chip_IDs%>%check_if_chip_data_exist()
 
+    return(valid_chipIDs)
+
+  }else{
+
+    return(query_result$error_message)
+  }
 }
 
 

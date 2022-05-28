@@ -10,3 +10,4 @@
 ^renv$
 ^renv.lock$
 ^inst\data$
+^data-raw$
