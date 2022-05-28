@@ -1,15 +1,18 @@
 library(targets)
 options(crayon.enabled = FALSE)
 tar_option_set(memory = "transient", garbage_collection = TRUE)
-tar_option_set(packages = c("RJobTissueArea", "tibble", "readr", 
+tar_option_set(packages = c("RJobTissueArea", "tibble", "readr",
     "dplyr", "ggplot2"), imports = "RJobTissueArea")
-extract_chipIDs_from_groupEDL <- function(EDL) {
-    chip_IDs <- EDL %>% xml2::read_xml() %>% xml2::xml_find_all("/Obj/EncapsulatedObjectsRef/ObjRef") %>% 
-        xml2::xml_attr("UID")
-    return(chip_IDs)
+Sys.setenv(TAR_WARN = "false")
+tar_config_set(store= file.path("inst", "analysis_workflow"),script =  "target_compl.R")
+mapping_imagelist_calculate_data_sum <- function(image_groups) {
 }
-list(tar_target(group_ID, "P1761451"), tar_target(query_result, 
-    query_mongoDB("limslager", "UID", group_ID)), tar_target(EDL, 
-    query_result %>% get_EDL_from_query_result()), tar_target(chip_IDs, 
-    EDL %>% extract_chipIDs_from_groupEDL()), tar_target(valid_chipIDs, 
-    chip_IDs %>% check_if_chip_data_exist()))
+list(tar_target(group_ID, groupID), tar_target(output_dir, outputdir),
+    tar_target(grid, expand.grid(sigma = sigma, threshold = threshold)),
+    tar_target(chip_IDs, find_valid_group_chip_IDs(group_ID)),
+    tar_target(ScanHistory, create_ScanHistory_extended(chip_IDs,
+        output_dir, group_ID)), tar_target(filename, create_result_filepath(output_dir,
+        "extendedScanHistory", group_ID, "csv")), tar_target(ScanHistory2,
+        data.table::fread(filename)), tar_target(image_groups,
+        create_hdr_image_groups(ScanHistory)), tar_target(data_sum,
+        process_data_sum_for_image_groups(image_groups)))

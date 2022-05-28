@@ -15,10 +15,10 @@ internal_calls$to <- stringr::str_remove(internal_calls$to,paste0(pkg_name,"::")
 gtbl <- internal_calls%>%
   tidygraph::as_tbl_graph()%>%
   tidygraph::as.igraph()
-#_______________________________
-#define get_network_funktions----
-get_network_functions <- function(main_function,
-                                  gbtl){
+#___________________________
+#get_all_network_funktions()----
+get_all_network_functions <- function(main_function,
+                                      gbtl){
   #get_network_functions("find_valid_group_chip_IDs")
   n <- helper <- NULL
   n <- neighbors(gtbl,main_function)%>%names()
