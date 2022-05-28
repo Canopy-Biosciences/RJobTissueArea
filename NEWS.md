@@ -1,4 +1,11 @@
-# RJobTissueArea (development version)
+# RJobTissueArea 0.0.0.14
+
+* roxygen doc, package data
+* input checkmate
+* visible variable binding
+* taget workflow
+* tests
+--> for find_valid_group_chip_IDs
 
 # RJobTissueArea 0.0.0.13
 
