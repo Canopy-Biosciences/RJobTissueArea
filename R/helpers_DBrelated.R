@@ -1221,30 +1221,24 @@ query_UID_scans<- function(scan_IDs){
 
 
 
-### **collect_segments_metadata()**
-
-#- takes a chip_path (defined by server volume and chip_ID)
-#- creates the segment_path
-#- lists all segments folders in segment_path
-#- determines when each folder was last modified (on disk)
-#- calls query_segment_status(), which extracts the mongoDB Metho-Status and its last-change value
+## **collect_segments_metadata()**
+# takes a chip_path (defined by server volume and chip_ID)
+# creates the segment_path
+# lists all segments folders in segment_path
+# determines when each folder was last modified (on disk)
+# calls query_segment_status(), which extracts the mongoDB Metho-Status and its last-change value
+## Title
 #
-
-#' Title
-#'
-#' @param chip_path
-#'
-#' @return result
-#' @export
-#' @keywords internal
-#'
-#' @examples
-#' chip_path <- c("\\\\intern.chipcytometry.com\\imagedata\\leipzig_volume0\\M986054")
-#' collect_segments_metadata(chip_path)
-
+# @param chip_path
 #
-#```
-
+# @return result
+# @export
+# @keywords internal
+#
+# @examples
+# chip_path <- c("\\\\intern.chipcytometry.com\\imagedata\\leipzig_volume0\\M986054")
+# collect_segments_metadata(chip_path)
+##``
 ### **return_segments_metadata()**
 
 #- calls find_chip_path() and collect_segment_metadata() for several chipIDs
