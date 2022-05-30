@@ -374,6 +374,8 @@ extract_gate_metadata <- function(chip_IDs){
   #- bugfix
   v<- "080322"
   #- added purrr::, tidyr::
+  V<- 300522
+  #- adding Parent-gate_UID
 
   df <- data.frame(chip_ID = chip_IDs)
 
@@ -401,7 +403,12 @@ extract_gate_metadata <- function(chip_IDs){
                                                       ~.x$EDL%>%
                                                         xml2::read_xml()%>%
                                                         xml2::xml_find_all("//*/SpecificParameter[@Name='Parentsegmentation']")%>%
-                                                        xml2::xml_attr("Value")))
+                                                        xml2::xml_attr("Value")),
+                  ParentGate = purrr::map_chr(result2$result,
+                                              ~.x$EDL%>%
+                                                xml2::read_xml()%>%
+                                                xml2::xml_find_all("//*/SpecificParameter[@Name='Parentgate']")%>%
+                                                xml2::xml_attr("Value")))
   #
   #df <- data.frame(chip_ID = as.character(chip_IDs))%>%
   #  mutate(allObjRefs = purrr::map(result$result,
@@ -876,13 +883,8 @@ get_EDL_from_query_result <- function(result){
 
   EDL <- NULL
 
-  stopifnot(checkmate::check_list(result,
-                                  len=2,
-                                  types = c("list","character"),
-                                  any.missing = TRUE),
-            checkmate::checkSubset(names(result),
-                                   choices = c("result", "error_message"),
-                                   empty.ok = TRUE))
+
+
 
     EDL <- purrr::map_chr(result$result,
                           ~ .x$EDL)
