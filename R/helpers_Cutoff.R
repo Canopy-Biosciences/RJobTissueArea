@@ -12,6 +12,8 @@ writeLines(
     "functions: ",
     "-"
   ))
+
+
 #' searches Chip_IDs in limslager
 #'
 #' @param chip_IDs
@@ -228,17 +230,14 @@ search_CytometryDatavizParametersMarker_limslager <- function(VizMarker_ID){
 #' @examples
 extract_Marker_Cutoff <- function(VizMarker_limslager){
 
-  MarkerCutoff <- purrr::map_df(VizMarker_limslager$result,
+  xml_nodes <- create_query_result_nodes(VizMarker_limslager)
+
+  MarkerCutoff <- purrr::map2_df(VizMarker_limslager$result,
+                                 xml_nodes,
                              ~data.frame(
                                VizMarker_ID=.x$UID,
-                               GateHigh = .x$EDL%>%
-                                 xml2::read_xml()%>%
-                                 xml2::xml_find_all("*//SpecificParameter[@Name = 'GateHigh']")%>%
-                                 xml2::xml_attr("Value"),
-                               GateLow = .x$EDL%>%
-                                 xml2::read_xml()%>%
-                                 xml2::xml_find_all("*//SpecificParameter[@Name = 'GateLow']")%>%
-                                 xml2::xml_attr("Value")
+                               GateHigh = .y%>%extract_xml_value("*//SpecificParameter[@Name = 'GateHigh']"),
+                               GateLow = .y%>%extract_xml_value("*//SpecificParameter[@Name = 'GateLow']")
                              ))
   return(MarkerCutoff)
 }
@@ -303,7 +302,7 @@ extract_xml_value<- function(xml_node,find_string){
 #' @examples
 create_query_result_nodes <- function(query_result){
 
-  xml_nodes<-gate_limslager%>%
+  xml_nodes<-query_result%>%
     get_EDL_from_query_result()%>%
     create_xml_nodes()
 

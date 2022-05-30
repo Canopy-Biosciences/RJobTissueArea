@@ -15,7 +15,7 @@ library(targets)
 #window <- c(10,30)
 #RJobTissueArea::create_working_directory(output_dir)
 #
-
+tar_unscript()
 tar_script({
 
   options(crayon.enabled = FALSE)
@@ -25,8 +25,9 @@ tar_script({
   Sys.setenv(TAR_WARN = "false")
   tar_config_set(store = file.path("inst","analysis_workflow"),script = "target_compl.R")
   #load all package functions
-  #Rfiles <- list.files("R")
-  #purrr::walk(Rfiles,~source(file.path("R",.x)))
+  Rfiles <- list.files("R",pattern = ".R")
+  purrr::walk(Rfiles,~source(file.path("R",.x)))
+
 
 
   mapping_imagelist_calculate_data_sum <- function(image_groups){
@@ -40,13 +41,12 @@ tar_script({
     tar_target(group_ID, "P1761451"),
     tar_target(output_dir, "devel/data/data_output"),
     tar_target(grid, expand.grid(sigma=c(1,15),threshold=c(1,2,5))),
-   tar_target(chip_IDs, data(chip_IDs)),#find_valid_group_chip_IDs(group_ID))#,
+   tar_target(chip_IDs, data(chip_IDs)),
    tar_target(ScanHistory, create_ScanHistory_extended(chip_IDs,output_dir,group_ID)),
    tar_target(filename, create_result_filepath(output_dir,"extendedScanHistory",group_ID,"csv")),
    tar_target(ScanHistory2,data.table::fread(filename)),
    tar_target(image_groups, create_hdr_image_groups(ScanHistory)),
    tar_target(data_sum,mapping_imagelist_calculate_data_sum(image_groups))
-
   )
 
 
