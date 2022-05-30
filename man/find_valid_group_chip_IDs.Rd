@@ -21,7 +21,7 @@ The mongoDB collection limslager is queried for the groupID. From the EDL return
 \examples{
 \dontrun{
 group_ID <- "P1761451"
-chip_IDs <- find_valid_group_chip_IDs(group_ID)#'
+chip_IDs <- find_valid_group_chip_IDs(group_ID)
 }
 }
 \seealso{

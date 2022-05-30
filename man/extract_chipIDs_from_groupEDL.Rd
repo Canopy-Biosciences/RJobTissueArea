@@ -16,7 +16,7 @@ character vector containing chipIDs
 converts a given string to an XML object and path's over to all ObjRefs and extracts UID attributes.
 }
 \examples{
-
+{
 EDL <- "<?xml version=\"1.0\"?>\r\n<!-- Mit XMLSpy v2011 rel. 3 (http://www.altova.com) von Christian Hennig (Medizinische Hochschule Hannover PÃ¤d. Pneumologie Neonatologie) bearbeitet -->\r\n
 <Obj MadewithEDLVersion=\"0.1\" derivedfrom=\"Data Collection\" madewithEDLVersion=\"29012013141654\" Type=\"ChipGroup\">\r\n\t
 <Identity UID=\"P1761451\" Type=\"ChipGroup\" TakeoverFromInputObject=\"\" Name=\"Takeda - sample preparation\"/>\r\n\t
@@ -39,11 +39,12 @@ EDL <- "<?xml version=\"1.0\"?>\r\n<!-- Mit XMLSpy v2011 rel. 3 (http://www.alto
 <Owner UID=\"CU1746580\" Level=\"FullAccess\"/>
 </Owners></Obj>\r\n"
 
-EDL\%>\%extract_chipIDs_from_groupEDL()
-
+EDL\%>\%
+extract_chipIDs_from_groupEDL()
+}
 }
 \seealso{
-Other database related: 
+Other database related:
 \code{\link{check_if_chip_data_exist}()},
 \code{\link{connect_mongoDB}()},
 \code{\link{extract_chip_IDs}()},

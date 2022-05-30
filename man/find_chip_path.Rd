@@ -19,9 +19,9 @@ finds the folder path to a related chip_ID in a list of server paths. If no serv
 }
 \examples{
 \donttest{
+data(chip_IDs)
+chip_path <- find_chip_path(chip_IDs[1])
 
-server <- find_server_path()
-chip_path <- find_chip_path("'M1153570", server$server_path)
 }
 }
 \seealso{
