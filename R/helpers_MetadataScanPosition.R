@@ -136,8 +136,8 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
   ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)
 
   # add filterset (query limsproc)
-  ScanHistory <- ScanHistory%>%
-    dplyr::mutate(filterset = query_filterset_of_scanIDs(scan_ID))
+  ScanHistory1 <- ScanHistory%>%
+    dplyr::mutate(filterset = query_filterset_of_scanIDs(scan_IDs = ScanHistory$scan_ID))
 
   # query result chipID ins scans
   query_chip_scans <- query_mongoDB("scans",
@@ -158,13 +158,15 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
 
   # join ScanHistory and select valid entities
   ScanHistory2 <- dplyr::full_join(ScanHistory,
-                                   results_chip_scans, by = "scan_ID")%>%
+                                   results_chip_scans, by = "scan_ID")
+
+  ScanHistory0 <- ScanHistory2%>%
     select_valid_image_files()
 
   # subselect columns position
-  ScanHistory3 <- ScanHistory2%>%
+  ScanHistory3 <- ScanHistory0%>%
     dplyr::mutate(positions = purrr::map(
-      positions,
+      ScanHistory0$positions,
       ~.x%>%
         dplyr::select(
           dplyr::any_of(c("chip_ID",
@@ -222,6 +224,7 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
                                             "extendedScanHistory",
                                             result_ID,
                                             "csv")
+
   data.table::fwrite(ScanHistory7,result_filename)
 
   tictoc::toc()

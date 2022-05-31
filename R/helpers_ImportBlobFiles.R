@@ -766,6 +766,14 @@ read_XML_BLOB_parameter<- function(image_path, blob_filename) {
 #' @examples
 select_hdr_files <- function(result_files){
 
+  #________________________
+  #filter enabled positions
+  if(1 %in% result_files$enabled){
+    result_files <- result_files%>%
+      dplyr::filter(enabled == 1)
+  }
+
+
   hdr_files <- result_files%>%
     dplyr::filter(!is.na(hdr_filename))%>%
     #dplyr::filter(jobType == "FL")%>%
@@ -822,12 +830,12 @@ select_valid_image_files <- function(result_files, type=NULL){
       dplyr::filter(filetype == "png")
   }
 
-  #________________________
-  #filter enabled positions
-  if(1 %in% result_files$enabled){
-    result_files <- result_files%>%
-      dplyr::filter(enabled == 1)
-  }
+
+
+
+
+
+
 
   #_____________
   #return result----
