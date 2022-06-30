@@ -110,8 +110,8 @@ read_result_file <- function(result_df,
 #' Stop execution
 #'
 #' @param message Message to be shown when execution is stopped
-#' @keywords internal
 #' @export
+#' @keywords internal
 stop_if_fatal <- function(message = "Please see chunk output above.") {
   logger::log_fatal("{message}")
   stop(message, call. = FALSE)

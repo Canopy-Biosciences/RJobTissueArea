@@ -162,6 +162,7 @@ convert_image_vector_to_matrix <- function(data_sum){
 #' @export
 #'
 #' @examples
+#'
 create_hdr_image_groups <- function(ScanHistory){
 
   V <- 240522

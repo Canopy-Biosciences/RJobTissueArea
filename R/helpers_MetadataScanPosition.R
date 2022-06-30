@@ -83,8 +83,6 @@ create_MethodHistory_of_chipIDs <- function(chip_IDs){
 #' @export
 #'
 #' @examples
-
-
 create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
 
   Version <- "250522"
