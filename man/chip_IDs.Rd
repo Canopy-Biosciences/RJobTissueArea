@@ -16,9 +16,9 @@ data(chip_IDs)
 \description{
 A vector containing those chip_IDs for which data could be found.
 }
-\keyword{\describe{}
-\keyword{\item{chip_IDs}{IDs}
-\keyword{chips}}
-\keyword{datasets}
-\keyword{of}
-\keyword{}}
+\details{
+\describe{
+\item{chip_IDs}{IDs of chips}
+}
+}
+\keyword{data}

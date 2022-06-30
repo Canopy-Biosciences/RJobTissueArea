@@ -15,3 +15,6 @@ create_hdr_image_groups(ScanHistory)
 \description{
 create_hdr_image_groups
 }
+\examples{
+
+}

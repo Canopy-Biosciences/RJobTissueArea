@@ -16,7 +16,11 @@ character vector containing chip_IDs for which data is available
 returns all chipIDs of a given chipgroup for which  a data folder could be found
 }
 \details{
-The mongoDB collection limslager is queried for the groupID. From the EDL return object the UID attributes are extracted for all ObjRef's in the EncapsulatedObjectsRef. The UIDs correspond to the chipIDs. Subsequently, all available ImageServers are searched for the chip folders. If no folder could be found for a chipID, this chip is excluded from the result. The IDs of the excluded chips are printed separately to the console and only the remaining chipIDs are returned.
+The mongoDB collection limslager is queried for the groupID.
+From the EDL return object the UID attributes are extracted for all ObjRef's in the EncapsulatedObjectsRef.
+The UIDs correspond to the chipIDs. Subsequently, all available ImageServers are searched for the chip folders.
+If no folder could be found for a chipID, this chip is excluded from the result.
+The IDs of the excluded chips are printed separately to the console and only the remaining chipIDs are returned.
 }
 \examples{
 \dontrun{
@@ -29,12 +33,6 @@ Other database related:
 \code{\link{check_if_chip_data_exist}()},
 \code{\link{connect_mongoDB}()},
 \code{\link{extract_chipIDs_from_groupEDL}()},
-\code{\link{extract_chip_IDs}()},
-\code{\link{extract_files_to_process}()},
-\code{\link{extract_gate_names}()},
-\code{\link{extract_gates_to_process}()},
-\code{\link{extract_jobtype}()},
-\code{\link{find_all_attributes_in_EDL}()},
 \code{\link{find_chip_path}()},
 \code{\link{find_server_path}()},
 \code{\link{get_EDL_from_query_result}()},
