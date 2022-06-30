@@ -21,7 +21,7 @@ abstract: The aim of this build functions for import of scan HDR images, defined
 knit: (function(input, ...) {
     rmarkdown::render(
       input,
-      output_file = "inst/report/dev report - process hdr images - data_sum approach.html",
+      output_file = "inst/report/devReport_processHdrImages_data_sumApproach.html",
       envir = globalenv()
     )
   })

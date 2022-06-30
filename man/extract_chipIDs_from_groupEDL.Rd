@@ -44,7 +44,7 @@ extract_chipIDs_from_groupEDL()
 }
 }
 \seealso{
-Other database related:
+Other database related: 
 \code{\link{check_if_chip_data_exist}()},
 \code{\link{connect_mongoDB}()},
 \code{\link{extract_chip_IDs}()},

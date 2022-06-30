@@ -18,7 +18,7 @@ abstract: The aim of this
 knit: (function(input, ...) {
     rmarkdown::render(
       input,
-      output_file = "inst/report/dev report - importing chip group data.html",
+      output_file = "inst/report/devReport_ImportingChipGroupData.html",
       envir = globalenv()
     )
   })

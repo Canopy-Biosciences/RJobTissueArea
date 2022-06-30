@@ -160,7 +160,6 @@ extract_gate_metadata<-function(gate_limslager){
   return(gate_MetaData)
 }
 
-query_mongoDB("limsproc","LIMSID",gate_MetaData$gate_ID)->test
 
 #' searches CytometryDatavizParametersSample UID in limslager
 #'
@@ -277,7 +276,7 @@ create_xml_nodes <- function(EDL){
 #' find_string <- "//*/SpecificParameter[@Name='Parentgate']"
 #' find_string <- "//*/SpecificParameter[@Name='x_marker_UID']"
 #' find_string <- "//*/SpecificParameter[@Name='y_marker_UID']"
-#' xml_node <- xml_nodes[[1]]
+#'
 #'
 extract_xml_value<- function(xml_node,find_string){
   xml_value <- NULL

@@ -11,3 +11,5 @@ if (interactive()) {
 if (interactive()) {
   suppressMessages(require(conflicted))
 }
+
+options(stringsAsFactors = FALSE)
