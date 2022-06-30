@@ -1,4 +1,4 @@
-V <- "250522"
+V <- "300622"
 helpers <- "DBrelated"
 
 assign(paste0("version.helpers.", helpers), V)
@@ -11,29 +11,20 @@ writeLines(
     "---------------------",
     "functions: ",
     "- check_if_chip_data_exist()",
-    "- collect_segments_metadata()",
     "- connect_mongo_DB() - behelfsweise",
     "- create_long_node_df_from_XML()",
     "- extract_chipIDs_from_groupEDL()",
-    "- extract_gate_metadata()",
-    "- find_all_attributes_in_EDL()",
     "- find_chip_path()",
-    "- find_RService_XML_on_imageserver()",
-    "- find_scan_basepath()",
     "- find_server_path()",
     "- find_valid_group_chip_IDs",
-    "- get_df_from_query_result()",
     "- get_EDL_from_query_result()",
     "- get_enabled_positions()",
-    "- get_identityID_from_EDL()",
     "- get_positions_field_from_query_result()",
     "- query_chipID_channels()",
     "- query_filterset_of_scanID()",
     "- query_UID_limslager()",
     "- query_UID_limsproc()",
-    "- query_mongoDB()",
-    "- query_segment_ID()",
-    "- query_UID_scans()"
+    "- query_mongoDB()"
     ))
 
 #' checks if chipID data folder exist
@@ -88,59 +79,6 @@ check_if_chip_data_exist <- function(chip_IDs){
 }
 
 
-### **collect_segments_metadata()**
-
-#- takes a chip_path (defined by server volume and chip_ID)
-#- creates the segment_path
-#- lists all segments folders in segment_path
-#- determines when each folder was last modified (on disk)
-#- calls query_segment_status(), which extracts the mongoDB Metho-Status and its last-change value
-#
-#' Title
-#'
-#' description
-#'
-#' details
-#'
-#' @param chip_path path to chip folder on image server
-#' @return df
-#' @export
-#' @keywords internal
-#'
-#' @examples
-#'
-#' chip_path <- c("\\\\intern.chipcytometry.com\\imagedata\\leipzig_volume0\\M986054")
-#' collect_segments_metadata(chip_path)
-
-
-collect_segments_metadata <- function(chip_path){
-
-  V <- 120221 #initial version
-  #___________________________
-  segment_folder = file.path(chip_path,"Segments")
-
-  df <- data.frame(
-    segment_ID = list.files(segment_folder,pattern = "^E"))
-
-  df <- df%>%
-    dplyr::mutate(mtime = file.mtime(file.path(segment_folder,segment_ID))
-    )
-
-
-
-  status <- query_segment_ID(df$segment_ID)
-
-  df <- dplyr::left_join(df,status,by=c("segment_ID"="UID"))
-
-  # last_modiefied_segment_ID <- df%>%
-  #   dplyr::filter(status %in% c("Edited","Finished"))%>%
-  #   dplyr::arrange(desc(lastchange))%>%
-  #   dplyr::slice(1)%>%
-  #   dplyr::pull(segment_ID)%>%
-  #   as.character()
-
-  return(df)
-}
 
 ## chunk "function_connect_mongoDB"{
 #' @title connect_mongoDB()
@@ -357,149 +295,6 @@ extract_chipIDs_from_groupEDL<- function(EDL){
   return(chip_IDs)
 }
 
-#' Title
-#'
-#' @param chip_IDs
-#'
-#' @return
-#' @keywords internal
-#'
-#' @examples
-extract_gate_metadata <- function(chip_IDs){
-
-  #V120222 - initial version
-  #_____________________________
-  V <- "230222"
-  #- extraction of AllObjRefs out of result$result$EDL
-  #- bugfix
-  v<- "080322"
-  #- added purrr::, tidyr::
-  V<- 300522
-  #- adding Parent-gate_UID
-
-  df <- data.frame(chip_ID = chip_IDs)
-
-  result <- query_mongoDB("limslager",
-                          "UID",
-                          chip_IDs)
-
-  df <- df%>%
-    dplyr::mutate(ObjRef_Gate = purrr::map(result$result,
-                                           ~.x$EDL%>%
-                                             xml2::read_xml()%>%
-                                             xml2::xml_find_all("/Obj/EncapsulatedObjectsRef/ObjRef[@Type = 'Gate']")%>%
-                                             purrr::map(xml2::xml_attrs)%>%
-                                             purrr::map_df(~as.list(.))))%>%
-    tidyr::unnest(cols = c(ObjRef_Gate))
-
-  result2 <- query_mongoDB("limslager",
-                           "UID",
-                           df$UID)
-
-  df <- df%>%
-    dplyr::mutate(Ref_Name = purrr::map_chr(result2$result,
-                                            ~.x$EDLName),
-                  ParentSegmentation = purrr::map_chr(result2$result,
-                                                      ~.x$EDL%>%
-                                                        xml2::read_xml()%>%
-                                                        xml2::xml_find_all("//*/SpecificParameter[@Name='Parentsegmentation']")%>%
-                                                        xml2::xml_attr("Value")),
-                  ParentGate = purrr::map_chr(result2$result,
-                                              ~.x$EDL%>%
-                                                xml2::read_xml()%>%
-                                                xml2::xml_find_all("//*/SpecificParameter[@Name='Parentgate']")%>%
-                                                xml2::xml_attr("Value")))
-  #
-  #df <- data.frame(chip_ID = as.character(chip_IDs))%>%
-  #  mutate(allObjRefs = purrr::map(result$result,
-  #                                 ~.x$allObjectReferences%>%unlist()))%>%
-  #  unnest(cols = c(allObjRefs))
-  #
-  #result2 <- query_mongoDB("limslager",
-  #                         "UID",
-  #                         df$allObjRefs)
-
-  return(df)
-
-}
-
-
-#____________________________
-#find_all_attributes_in_EDL()
-#____________________________
-
-## chunk function_find_all_attributes_in_EDL{
-
-#' @title find_all_attributes_in_EDL()
-#'
-#' @description Reads a XML string, extracts all nodes, attributes and paths, reorganize the data and returns 3 different dataframes
-#'
-#' @details Die Funktion erzeugt zunächst aus dem EDL String ein XML formatiertes Objekt.
-#' Von diesem XML Objekt werden alle Knoten ermittelt und für jeden Knoten ein XML-Nodeset, einschließlich der Dokumentwurzel, erstellt und als Spalte xml_node in den dataframe df eingefügt.
-#' Ausgehend von den Nodesets wird für jeden Knoten der Name und der Pfad sowie alle Attribute ermittelt bzw. extrahiert und als Spalten node_name, node_path, node_attribute in df eingefügt.
-#' Dabei ist im dataframe df die Spalte node_attributes eine genestete Spalte, die je nach Knoten eine unterschiedliche Anzahl an Attributen enthalten kann.
-#' Die genestete Spalte node_attributes wird zwei reguläre Spalten node_attributes,node_attributes_id transformiert und mit den Spalten node_name,node_path,xml_node zum df-longer zusammengefasst.
-#' Der df_wider enthält die gleichen Daten wie df_longer, mit dem Unterschied das für jeden Attributnamen eine Spalte eingefügt wurde, und die Attributwerte somit horizontal verteilt werden,  sodass die Zeilenanzahl der vom df entspricht.
-#'
-#' @param EDL :character containing a XML string
-#'
-#' @return a list of 3 dataframes df, df_longer, df_wider
-#' @export
-#' @keywords internal
-#' @family database related
-#'
-#' @examples
-#' if(FALSE){
-#'
-#' result_list <- find_all_attributes_in_EDL(EDL)
-#' }
-#'
-find_all_attributes_in_EDL<-function(EDL){
-  # version: 061021
-
-  file <- try(EDL%>%
-                xml2::read_xml(),
-              silent=TRUE)
-
-  if(inherits(file,'try-error')==FALSE){
-
-    # create object containing all nodes in the EDL, including the root
-    all_nodes <-file %>%
-      xml2::xml_find_all(".//*")
-    all_nodes<-c(list(file),purrr::map(all_nodes,~.x))
-    print(paste0("EDL contains ",length(all_nodes)," nodes - including the EDL itself"))
-
-    # create df containing a column with all nodes of the EDL
-    df <-data.frame(xml_node=vector(length=length(all_nodes)))%>%
-      dplyr::mutate(xml_node=purrr::map(all_nodes,~.x))
-
-    #add name of node-object
-    names(df$xml_node)<-purrr::map_chr(df$xml_node,~xml2::xml_name(.x))
-
-    # extract node attributes and add them to df
-    df <- df%>%
-      dplyr::mutate(node_name=purrr::map_chr(xml_node,~.x%>%xml2::xml_name()),
-                    node_attributes=purrr::map(xml_node,~.x%>%xml2::xml_attrs()),
-                    node_path=purrr::map_chr(xml_node,~.x%>%xml2::xml_path()))
-
-    # remove object numeration from path
-    #df<-df%>%
-    #  mutate(node_path=node_path %>% stringr::str_remove_all("\\[[0-9]+\\]"))
-
-    # unnest the df, so that all attribute Values and Names are in a column
-    df_longer <- df %>%
-      tidyr::unnest_longer(node_attributes)%>%
-      dplyr::select(node_name,node_attributes,node_attributes_id,node_path,xml_node)
-
-    # unnest the df with attribute_id as columns
-    df_wider<-df%>%
-      tidyr::unnest_wider(node_attributes)
-
-    return(attribute_dfs=list(df=df,df_longer=df_longer,df_wider=df_wider))
-
-  }else(return("error_cant read input as XML"))
-}
-##}
 
 
 
@@ -588,108 +383,6 @@ find_chip_path <- function(ChannelID = "M583054",
 } # }#}
 
 
-
-#' finds the file path to RJob-xml
-#'
-#' querry mongoDB for the path to a given chipID in the list of available serverpaths and creates a final string to the folder where RJob XML can be found
-#' @param chipID a character of chipID
-#' @param segmentID  a charceter of segmentID
-#' @param RJobID a character of RJobID
-#' @keywords internal
-#' @family RJob mainscript
-#' @export
-#' @return lists list of server_path's, chip_path, XML_path
-#'
-#' @examples
-#' \donttest{
-#' #need access to mongoDB
-#' # chip in Leipzig
-#' chipID <- "M186808"
-#' segementID = "EZKL110986"
-#' RJobID <- "EZKL113783"
-#'
-#' find_RService_XML_on_imageserver(chipID,segementID,RJobID)
-#' }
-find_RService_XML_on_imageserver<- function(chipID,
-                                            segmentID,
-                                            RJobID){
-  functions <- "find_RService_XML_on_imageserver"
-  V<- "091121"
-  #- removed XML-file naming, return is onle XML_filepath (execute_mainscript will add RJob_parameter.xml to path)
-  #V091121
-  #- initial version, outsourced from execute_mainscript V260621
-
-  filling_rule("",pad="- ")
-  filling_rule(paste0("Start - ",functions,", Version ",V ),"...")
-  filling_rule(" ",pad=".")
-
-  tryCatch({
-
-    #______________________
-    #1) find_server_path
-    #______________________
-    task <- "find_server_path-"
-
-    server <- find_server_path()
-
-  }, error = function(err) {handle_trycache_error(err,paste0(task),enable.quit)})
-  write_lines_task(task,NULL,"E")
-
-  tryCatch({
-
-    #______________________
-    #2__find_chip_path
-    #______________________
-
-    task <- "find_chip_path-"
-
-    chip_path <- find_chip_path(ChannelID = chipID,
-                                server_path = server$server_path)
-
-  }, error = function(err) {handle_trycache_error(err,paste0(subtask),enable.quit)})
-  write_lines_task(task,NULL,"E")
-
-  #________________________________
-  #3) create_string_of_RJOB_XMLpath
-  #________________________________
-
-  tryCatch({
-
-    task <- "create_string_of_RJOB_XMLpath"
-
-    filepath_RJob_EDL <- file.path(chip_path,
-                                   "Segments",segmentID,
-                                   RJobID,
-                                   create_XML_filename(RJobID))
-  }, error = function(err) {handle_trycache_error(err,paste0(subtask),enable.quit)})
-  write_lines_task(task,NULL,"E")
-
-  return_list <- list(
-    server_path = server$server_path,
-    chip_path=chip_path,
-    filepath_RJob_EDL = filepath_RJob_EDL)
-
-
-  filling_rule(paste0("End execution - ",functions,", Version ",V ))
-  filling_rule("- ")
-
-  return(return_list)
-}
-#' find_scan_basepath
-#'
-#' @param scan_IDs
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-find_scan_basepath <- function(scan_IDs){
-  query_result <- query_UID_scans(scan_IDs)
-  df <- get_df_from_query_result(query_result)
-  return(df$basePath)
-
-}
 
 
 #' finds available server storing images generated by ZKWapp
@@ -835,22 +528,7 @@ find_valid_group_chip_IDs <- function(group_ID){
 
 
 
-#' get_df_from_query_result
-#'
-#' @param query_result
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-get_df_from_query_result<- function(query_result){
 
-  result <- purrr::map_df(query_result$result, ~.x)
-
-  return(result)
-
-}
 
 #' extracts all EDL strings from a mongoDB query result
 #'
@@ -910,22 +588,7 @@ get_enabled_positions <- function(chip_ID){
   return(enabled_positions)
 }
 
-#' Title
-#'
-#' @param EDL
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-get_identityID_from_EDL<-function(EDL){
-  chipUID <-EDL%>%
-    xml2::read_xml()%>%
-    xml2::xml_find_first("Identity")%>%
-    xml2::xml_attr("UID")
-  return(chipUID)
-}
+
 #
 #' get_positions_field_from_query_result
 #'
@@ -991,57 +654,6 @@ query_filterset_of_scanIDs <- function(scan_IDs){
   return(filterset)
 
 }
-
-### **query_UID_limslager()**
-
-#```{r}
-#' Title
-#'
-#' @param chip_IDs
-#'
-#' @return
-#' @export
-#' @keywords internal
-#' @examples
-query_UID_limslager<- function(chip_IDs){
-
-  V <- 130222 # initial Version
-  V <- 080322
-  #- added return(result)
-  #____________________________
-
-  result <- query_mongoDB("limslager",
-                          "UID",
-                          chip_IDs)
-
-  return(result)
-}
-
-
-#' query_UID_limsproc
-#'
-#' @param chip_IDs
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-query_UID_limsproc<- function(chip_IDs){
-
-  V <- 130222 # initial Version
-  V <- 080322
-  #- added return(result)
-  #____________________________
-
-  result <- query_mongoDB("limsproc",
-                          "UID",
-                          chip_IDs)
-
-  return(result)
-}
-
-
 
 ## chunk "function_query_mongoDB"{
 #' @title query_mongoDB()
@@ -1161,60 +773,52 @@ query_mongoDB <- function(mongo_collection,
 }
 ## }
 
+
+### **query_UID_limslager()**
+
+#```{r}
 #' Title
 #'
-#' @param segment_IDs
+#' @param chip_IDs
 #'
-#' @return data.frame
+#' @return
 #' @export
 #' @keywords internal
-#'
 #' @examples
-#' segment_IDs <- c("EZKL122811","EZKL207112","EZKL289562")
+query_UID_limslager<- function(chip_IDs){
 
-query_segment_ID <- function(segment_IDs){
+  V <- 130222 # initial Version
+  V <- 080322
+  #- added return(result)
+  #____________________________
 
-  V <- "120222" #initial version
-  #_____________________________
-
-  result <- query_mongoDB("limsproc",
+  result <- query_mongoDB("limslager",
                           "UID",
-                          segment_IDs)
+                          chip_IDs)
 
-  status <- purrr::map_chr(result$result,
-                           ~.x$Status)
-
-  UID <- purrr::map_chr(result$result,
-                        ~.x$UID)
-
-  lastchange = purrr::map_chr(result$result,
-                              ~.x$lastchange%>%
-                                as.character()) %>%
-    lubridate::ymd_hms()
-
-  if(length(result$error_message)>0){
-    writeLines(c("- query error records: ",
-                 paste0("  ",result$error)))
-  }
-
-  return(data.frame(UID=UID,
-                    status=status,
-                    lastchange = as.POSIXct(lastchange)))
+  return(result)
 }
 
-#' query_UID_scans
+
+#' query_UID_limsproc
 #'
-#' @param scan_IDs
+#' @param chip_IDs
 #'
 #' @return
 #' @export
 #' @keywords internal
 #'
 #' @examples
-query_UID_scans<- function(scan_IDs){
-  result <- query_mongoDB("scans",
+query_UID_limsproc<- function(chip_IDs){
+
+  V <- 130222 # initial Version
+  V <- 080322
+  #- added return(result)
+  #____________________________
+
+  result <- query_mongoDB("limsproc",
                           "UID",
-                          scan_IDs)
+                          chip_IDs)
 
   return(result)
 }
@@ -1222,197 +826,3 @@ query_UID_scans<- function(scan_IDs){
 
 
 
-
-## **collect_segments_metadata()**
-# takes a chip_path (defined by server volume and chip_ID)
-# creates the segment_path
-# lists all segments folders in segment_path
-# determines when each folder was last modified (on disk)
-# calls query_segment_status(), which extracts the mongoDB Metho-Status and its last-change value
-## Title
-#
-# @param chip_path
-#
-# @return result
-# @export
-# @keywords internal
-#
-# @examples
-# chip_path <- c("\\\\intern.chipcytometry.com\\imagedata\\leipzig_volume0\\M986054")
-# collect_segments_metadata(chip_path)
-##``
-### **return_segments_metadata()**
-
-#- calls find_chip_path() and collect_segment_metadata() for several chipIDs
-
-#```{r}
-
-
-#
-#```
-#
-#```{r}
-##test hannover
-#chip_IDs<- "M912067"
-##test leipziog
-##chip_IDs<- c("M407766","M583196","M986054")
-#return_segment_metadata(chip_IDs)
-#```
-#### **select_segment_ID()**
-#
-#- takes df containing segment metadata
-#- filteres for those segmentations with status c("Edited","Finished")
-#- returns the folder which was recently modiefied using the DBentry
-#
-#```{r}
-
-#```
-#
-#### **extract_gate_UIDs()**
-#
-#```{r}
-##chip_IDs<- c("M407766","M583196","M986054")
-#segment_IDs <- chip_IDs%>%
-#  as.character()%>%
-#  return_segment_metadata()%>%
-#  select_segment_ID()
-#
-#IDs <- data.frame(chip_ID = chip_IDs,
-#                  segment_ID = segment_IDs)
-#
-#IDs
-#```
-#
-#```{r}
-
-#```
-#
-#```{r}
-#extract_gate_metadata(IDs$chip_ID)
-#```
-#```{r}
-#IDs <-left_join(IDs,
-#                extract_gate_metadata(IDs$chip_ID),
-#                by=c("segment_ID"="ParentSegmentation","chip_ID"))
-#
-#IDs
-#```
-#
-
-
-
-
-#```
-#
-#```{r}
-#chip_ll <- query_UID_limslager(chip_IDs = IDs$chip_ID)
-#```
-#
-#### **get_EDL_from_query_result()**
-#
-#```{r}
-
-
-#```
-#
-#```{r}
-#
-#EDL <- query_UID_limslager(
-#  chip_IDs = IDs$chip_ID)%>%
-#  get_EDL_from_query_result()%>%
-#  modify_if(is.factor, as.character)
-#```
-#
-#### **create_chip_MethodHistory()**
-#
-#```{r}
-#```
-#
-#```{r}
-#MethodHistory <- map(EDL,~create_MethodHistory_from_EDL(.x))
-#```
-#
-#### **get_sampleType_from_MethodHistory()**
-#
-#```{r}
-
-#```
-#
-#
-#```{r}
-#get_sampleType_from_MethodHistory(MethodHistory = MethodHistory[[1]])
-#```
-#### **get_channelID_from_EDL()**
-#
-#
-#```{r}
-
-#get_channelID_from_EDL(EDL = EDL[1])
-#```
-#### **determine_scan_position()**
-#
-#```{r}
-
-
-#```
-#
-#```{r}
-#determine_scan_position(MethodHistory = MethodHistory[[1]])
-#```
-#
-#### **get_segment_ID_of_chipID()**
-#
-#```{r}
-
-#```
-#
-#### **get_gate_ID_of_AllGate()**
-#
-#```{r}
-
-#```
-#
-#### **create_cellsCSV_filepath()**
-#
-#```{r}
-
-#```
-
-### **create_valuesCSV_filepath()**
-
-#```{r}
-
-#```
-
-### **create_gatesCSV_filepath()**
-
-#```{r}
-
-#```
-
-### **create_flvalues_allGate_filename()**
-
-#```{r}
-
-
-#```
-
-## Rohdatenimport
-
-#```{r,eval=FALSE}
-#chip_ID <- "M407766"
-#get_segment_ID_of_chipID(chip_ID)
-#get_gate_ID_of_AllGate(chip_ID,segment_ID)
-#find_server_path()
-#find_chip_path(chip_ID)
-#create_cellsCSV_filepath(chip_path,segment_ID)
-#create_valuesCSV_filepath(chip_path,segment_ID)
-#create_gatecsv_filepath(chip_path,segment_ID,gate_ID)
-#create_flvalues_allGate_filename(output.dir,chip_ID,segment_ID)
-#```
-#
-#### **import_ZKW_rawdata_to_flvalues()**
-#
-#```{r}
-#### **import_cellsCSV()**
-#

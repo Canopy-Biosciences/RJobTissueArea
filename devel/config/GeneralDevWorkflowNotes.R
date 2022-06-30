@@ -25,6 +25,8 @@ devtools::build_readme()
 devtools::check()
 devtools::build()
 devtools::install(dependencies =TRUE, build_vignettes = TRUE)
+devtools::install(dependencies =FALSE, build_vignettes = FALSE)
+
 
 usethis::use_package()
 
@@ -38,7 +40,7 @@ exact_version = c("mongolite","locfit","EBImage")
 ignore_folder <- c("devel")
 ignore_package <- "RJobTissueArea"
 #0) get and check dependencies----
-dep <- get_package_dependencies(exact_version,ignore_folder,ignore_package)
+dep <-get_package_dependencies(exact_version,ignore_folder,ignore_package)
 #1) add pkgs to description----
 add_dependencies_to_DESCRIPTION(exact_version,ignore_folder,ignore_package)
 #2) download tar.gz----

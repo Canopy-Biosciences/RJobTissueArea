@@ -10,25 +10,20 @@ writeLines(
   c(
     "---------------------",
     "functions: ",
+    "- convert_binsize_from_encoding()",
     "- create_hdr_filepath()",
     "- create_pos_foldername()",
-    "- create_Pos_image_filepath()",
-    "- convert_binsize_from_encoding()",
-    "- export_blob_parameter_of_image_filelist()",
     "- export_list_all_image_files()",
     "- extract_enabled_positions()",
     "- extract_encoding_from_blob_parameter()",
     "- extract_h_pixels_from_blob_parameter()",
-    "- extract_image_path_from_blob_parameter()",
     "- extract_image_heigth_from_blob_parameter()",
+    "- extract_image_path_from_blob_parameter()",
     "- extract_image_resolution_from_blob_parameter()",
     "- extract_image_width_from_blob_parameter()",
     "- extract_n_pixels_from_blob_parameter()",
     "- extract_v_pixel_from_blob_parameter()",
-    "- extract_parameter_from_BLOB()",
-    "- extract_statistics_from_blob_parameter()",
     "- get_enabled_positions_from_positions_list()",
-    "- list_posFolders_in_ScanBasePath()",
     "- read_binary_image_as_matrix()",
     "- read_binary_image_as_vector()",
     "- read_image_binary_file()",
@@ -36,6 +31,27 @@ writeLines(
     "- select_hdr_files()",
     "- select_valid_image_files()"
   ))
+
+
+#' convert_binsize_from_encoding
+#'
+#' @param encoding
+#'
+#' @return
+#' @export
+#' @keywords internal
+#'
+#' @examples
+convert_binsize_from_encoding <- function(encoding){
+
+  Version <- "270422"
+
+  bin_size <- dplyr::case_when(encoding == "32bit little-endian" ~ 4,
+                               encoding == "16bit little-endian" ~ 2)
+
+  return(bin_size)
+}
+
 
 #' create_hdr_filepath
 #'
@@ -62,7 +78,6 @@ create_hdr_filepath <- function(chip_path,scan_ID,pos_ID){
   )
 }
 
-
 #' create_pos_foldername
 #'
 #' @param imageServer_path
@@ -85,84 +100,8 @@ create_pos_foldername <- function(imageServer_path,basePath,pos_ID){
 
 
 
-#' create_Pos_image_filepath
-#'
-#' @param ScanBasePath
-#' @param PositionFolder
-#' @param Type
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-create_Pos_image_filepath <- function(ScanBasePath,
-                                      PositionFolder,
-                                      Type){
-  Type <- match.arg(Type,choices = c("posRef",
-                                     "flimages",
-                                     "deltaTL",
-                                     "focus",
-                                     "hdr"))
-  image_filepath <- file.path(ScanBasePath,
-                              PositionFolder,
-                              Type)
-  return(image_filepath)
 
 
-}
-
-#' convert_binsize_from_encoding
-#'
-#' @param encoding
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-convert_binsize_from_encoding <- function(encoding){
-
-  Version <- "270422"
-
-  bin_size <- dplyr::case_when(encoding == "32bit little-endian" ~ 4,
-                               encoding == "16bit little-endian" ~ 2)
-
-  return(bin_size)
-}
-
-#' export_blob_parameter_of_image_filelist
-#'
-#' @param image_files
-#' @param output_dir
-#' @param result_ID
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-export_blob_parameter_of_image_filelist<-function(image_files,
-                                                  output_dir,
-                                                  result_ID){
-
-  V <- "270422"
-
-  parameter_list <- purrr::map2_df(
-    image_files$image_path,
-    image_files$blob_filename,
-    ~extract_parameter_from_BLOB(.x,.y))
-
-  result_filename <- create_result_filepath(output_dir,
-                                            "Blob_parameters",
-                                            result_ID,
-                                            "csv")
-  data.table::fwrite(parameter_list,
-                     result_filename)
-
-  return(parameter_list)
-
-}
 #' export_list_all_image_files
 #'
 #' @param chip_IDs
@@ -314,6 +253,7 @@ export_list_all_image_files <- function(chip_IDs,
   return(result_files)
 }
 
+
 #' extract_enabled_positions
 #'
 #' @param single_pos_entity
@@ -374,25 +314,6 @@ extract_h_pixels_from_blob_parameter <- function(blob_parameter){
   return(h_pixel)
 }
 
-#' extract_image_path_from_blob_parameter
-#'
-#' @param blob_parameter
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-extract_image_path_from_blob_parameter<- function(blob_parameter){
-
-  Version <- "270422"
-
-  path <- file.path(attr(blob_parameter, "image_path"),
-                    attr(blob_parameter, "blob_filename"))
-
-  return(path)
-}
-
 #' extract_image_heigth_from_blob_parameter
 #'
 #' @param blob_paramter
@@ -414,6 +335,31 @@ extract_image_heigth_from_blob_parameter <- function(blob_parameter){
 
   return(heigth)
 }
+
+
+
+
+
+#' extract_image_path_from_blob_parameter
+#'
+#' @param blob_parameter
+#'
+#' @return
+#' @export
+#' @keywords internal
+#'
+#' @examples
+extract_image_path_from_blob_parameter<- function(blob_parameter){
+
+  Version <- "270422"
+
+  path <- file.path(attr(blob_parameter, "image_path"),
+                    attr(blob_parameter, "blob_filename"))
+
+  return(path)
+}
+
+
 
 #' extract_image_resolution_from_blob_parameter
 #'
@@ -508,64 +454,6 @@ extract_v_pixels_from_blob_parameter <- function(blob_parameter){
   return(v_pixel)
 }
 
-#' extract_parameter_from_BLOB
-#'
-#' @param image_path
-#' @param blob_filename
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-extract_parameter_from_BLOB <- function(image_path,
-                                        blob_filename){
-
-  Version <- "270422"
-
-  blob_parameter <- read_XML_BLOB_parameter(image_path,
-                                            blob_filename)
-  df <- data.frame(
-    image_path = image_path,
-    blob_filename = blob_filename,
-    h_pixel = extract_h_pixels_from_blob_parameter(blob_parameter),
-    v_pixel = extract_v_pixels_from_blob_parameter(blob_parameter),
-    n_pixel = extract_n_pixels_from_blob_parameter(blob_parameter),
-    image_width = extract_image_width_from_blob_parameter(blob_parameter),
-    image_heigth = extract_image_heigth_from_blob_parameter(blob_parameter))%>%
-    dplyr::mutate(
-      h_res = image_width/h_pixel,
-      v_res = image_heigth/v_pixel)
-
-  df <- cbind(df,
-              extract_statistics_from_blob_parameter((blob_parameter)))
-
-  return(df)
-}
-
-#' extract_statistics_from_blob_parameter
-#'
-#' @param blob_parameter
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-extract_statistics_from_blob_parameter <- function(blob_parameter){
-
-  Version <- "270422"
-
-  statistics <-   blob_parameter%>%
-    dplyr::filter(node_name == "statistics")%>%
-    dplyr::mutate(node_attributes = as.numeric(node_attributes))%>%
-    tidyr::spread(node_attributes_id,node_attributes)%>%
-    dplyr::select(-node_name, -node_path)
-
-  return(statistics)
-}
-
-
 
 
 
@@ -587,24 +475,6 @@ get_enabled_positions_from_positions_list <- function(positions_list){
                                    ~.x%>%extract_enabled_positions()))%>%
     tidyr::unnest(cols=c("enabled_positions"))
 }
-
-
-
-#' list_posFolders_in_ScanBasePath
-#'
-#' @param ScanBasePath
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-list_posFolders_in_ScanBasePath <- function(ScanBasePath){
-  positions<-list.files(path=ScanBasePath)
-  positions=positions[stringr::str_detect(positions,"pos")]
-  return(positions)
-}
-
 
 
 
