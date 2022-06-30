@@ -150,14 +150,5 @@ process_TissueDetection(image_groups[1,],
                         result_ID = group_ID)
 ```
 
-# supplement
-
--   read ScanHistory file from output_dir
-
-``` r
-ScanHistory <- read_ScanHistory(group_ID,
-                                output_dir)
-```
-
-This example code is also content of the Rmd template “examplereport”,
-provided within the package installation.
+This example code is also content of the Rmd template
+“estimateTissueArea”, provided within the package installation.
