@@ -58,24 +58,27 @@ here::i_am("vignettes/HowToInstall.Rmd")
     >         remotes::install_version("locfit",version="1.5.9.4") 
     >         BiocManager::install("EBImage",force=TRUE)
 
-3.  get and install the actual version of the *ZKW TissueArea calculation R package*:
+3.  get and install the actual version of the *RJobTissueArea package*:
 
     > -   go to Github webpage:
     >
-    >     <https://github.com/juleZWK/RJobTissueArea/>
+    >     <https://github.com/Canopy-Biosciences/RJobTissueArea/>
     >
     > -   klick on newest release and download it
     >
     > -   choose the tar.gz file and save it on your local disk
     >
-    > -   in RStudio set the path and the name of the tar.gz file
+    > -   in RStudio set the path and the name and version of the tar.gz file on your local disk by editing the following code
     >
     >         package_dir <- choose.dir()
-    >         package_name <- "RJobTissueArea_0.0.0.13.tar.gz"
+    >         package_name <- "RJobTissueArea"
+    >         package_version <- "x.x.x.x."tar.gz"
     >
-    > -   install the ZKW distance calculation package by executing the following code in RStudio:
+    > -   install the ZKW distance calculation package:
     >
-    >         devtools::install(file.path(package_dir, package_name), dependencies = TRUE)
+    >         pkg <- paste0(package_name,"_",package_version,"tar.gz")
+    >         pkg_path <- file.path(package_dir, pkg)
+    >         devtools::install(pkg_path, dependencies = TRUE)
 
 4.  start your analysis in RStudio:
 
@@ -83,7 +86,7 @@ here::i_am("vignettes/HowToInstall.Rmd")
     >
     > -   create a "New File" and choose the "RMarkdown" file type
     >
-    > -   select "From Template" and choose the "ExampleReport" template
+    > -   select "From Template" and choose a template (e.g. "estimateTissueArea")
     >
     > -   save a copy into your project directory and follow instructions in the template
 
@@ -93,7 +96,7 @@ here::i_am("vignettes/HowToInstall.Rmd")
 
 -   The **developmental package** version can be installed from github repository directly. To do so, execute the following code in RStudio.:
 
-        devtools::install_github("juleZWK/RJobTissueArea")
+        devtools::install_github("Canopy-Biosciences/RJobTissueArea")
 
 -   If you need to have the flowCore package installed:
 
