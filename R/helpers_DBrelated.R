@@ -150,12 +150,12 @@ connect_mongoDB <- function(mongo_collection, # "limslager" oder "limsproc"
       path = "//DATABASE",
       XML::xmlValue
     )
-    #server <- XML::xpathSApply(
-    #  doc = parsed_url,
-    #  path = "//SERVER",
-    #  XML::xmlValue
-    #)
-    server <- "mongosrv2.intern.chipcytometry.com:27017"
+    server <- XML::xpathSApply(
+      doc = parsed_url,
+      path = "//SERVER",
+      XML::xmlValue
+    )
+    #server <- "mongosrv2.intern.chipcytometry.com:27017"
 
     sitekey <- XML::xpathSApply(
       doc = parsed_url,
