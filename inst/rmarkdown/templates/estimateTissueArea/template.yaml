@@ -1,4 +1,4 @@
-name: ExampleReport
+name: estimateTissueArea
 description: >
    A description of the template
 create_dir: FALSE
