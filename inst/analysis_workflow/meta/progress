@@ -1,8 +1,0 @@
-name|type|parent|branches|progress
-group_ID|stem|group_ID|0|skipped
-output_dir|stem|output_dir|0|skipped
-chip_IDs|stem|chip_IDs|0|skipped
-grid|stem|grid|0|skipped
-filename|stem|filename|0|skipped
-ScanHistory|stem|ScanHistory|0|started
-ScanHistory|stem|ScanHistory|0|errored
