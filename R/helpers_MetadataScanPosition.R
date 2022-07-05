@@ -83,11 +83,15 @@ create_MethodHistory_of_chipIDs <- function(chip_IDs){
 #' @export
 #'
 #' @examples
+#' data("chip_IDs")
+#'
+#'
 create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
 
-  Version <- "250522"
+  Version <- "050722"
   # UPDATE
   #- select_valid_image_files call included
+  #- add sampleType
 
   tictoc::tic("create extended ScanHistory")
 

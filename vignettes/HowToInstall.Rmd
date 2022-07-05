@@ -51,7 +51,7 @@ here::i_am("vignettes/HowToInstall.Rmd")
     >         remotes::install_version("cli",version = ">= 3.0.0")
     >         remotes::install_version("rlang",version=">= 1.0.0")
     >         remotes::install_version("xfun",">= 0.29", upgrade ="never")
-    >         install.packages("devtools") 
+    >         install.packages("devtools")
     >         remotes::install_version("htmltools",">= 0.5.2", upgrade ="never")
     >         remotes::install_cran(c("knitr","tinytex","rmarkdown"))
     >
@@ -61,7 +61,7 @@ here::i_am("vignettes/HowToInstall.Rmd")
     >
     > -   install packages needed for image processing
     >
-    >         remotes::install_version("locfit",version="1.5.9.4") 
+    >         remotes::install_version("locfit",version="1.5.9.4")
     >         BiocManager::install("EBImage",force=TRUE)
 
 3.  get and install the actual version of the *RJobTissueArea package*:
@@ -119,7 +119,7 @@ here::i_am("vignettes/HowToInstall.Rmd")
 
 -   Edit R profil
 
-    > -   open the project R profil 
+    > -   open the project R profil
     >
     >         usethis::edit_r_profile("project")
     >
@@ -170,4 +170,3 @@ install.from.path <- function(lib.path = lib.path)
 
 install.from.path(lib.path)
 ```
-
