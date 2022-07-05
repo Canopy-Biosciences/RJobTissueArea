@@ -1,6 +1,6 @@
 Package: RJobTissueArea
 Title: RJobTissueArea
-Version: 0.0.0.16
+Version: 0.0.0.17
 Authors@R: 
     person("Julia", "Ortmann", , "julia.ortmann@bruker.com", role = c("aut", "cre"))
 Description: Determination of chip area covered by tissue in selected
