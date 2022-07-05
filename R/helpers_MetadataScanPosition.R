@@ -22,35 +22,75 @@ writeLines(
 #'
 #' @return
 #' @export
+#'
+#' @examples
+create_MethodHistory_from_EDL <- function(EDL){
+function (EDL)
+  V <- 210921
+  if ((stringr::str_detect(EDL, "error_")) == TRUE) {
+    return(EDL)
+  }
+  else {
+    output <- try(EDL %>% xml2::read_xml() %>% xml2::xml_child("MethodHistory") %>%
+                    xml2::xml_children() %>% purrr::map(xml2::xml_attrs) %>%
+                    purrr::map_df(~as.list(.)), silent = TRUE)
+    if (inherits(output, "try-error") == TRUE) {
+      return(Error = ("error_no_MethodHistory in EDLchannel"))
+    }
+    else {
+      return(output)
+    }
+  }
+}
+
+#' Title
+#'
+#' @param EDLs character vector containing EDL strings
+#'
+#' @return
+#' @export
 #' @keywords internal
 #'
 #' @examples
-create_MethodHistory_from_EDL<-function(EDL){
+#' data("EDL_chipIDs_limslager")
+#'
+#' MH <- create_MethodHistory_from_EDL(EDL_chipIDs_limslager)
+#'
+#' MHtest <- create_MethodHistory_from_EDL(c("test",EDL_chipIDs_limslager))
+#'
+#'
+create_MethodHistory_from_EDLs<-function(EDLs){
 
   # Version taken from Rmd report:
   # "!_final_Markdown_collect_FLvalues_allStains_180920_withCode_COMPLEMENT.Rmd"
-  V <- 210921
+  V <- 050722
+  #updates
+  #-  variable initiation
+  #- map- vectorisation
+  #- adding listNames
 
-  if((stringr::str_detect(EDL,"error_"))==TRUE){
-    return(EDL)
-  }else{
+  output <- isTryError <- listNames<- NULL
 
-    output<-try(EDL%>%
-                  xml2::read_xml()%>%
-                  xml2::xml_child("MethodHistory")%>%
-                  xml2::xml_children()%>%
-                  purrr::map(xml2::xml_attrs)%>%
-                  purrr::map_df(~as.list(.)),
-                silent = TRUE)
+  listNames <- names(EDLs)
 
-    if(inherits(output,'try-error')==TRUE){
-      return(Error=("error_no_MethodHistory in EDLchannel"))
-    }
-    else
-    {
-      return(output)
-    }
-  }}
+  output<-purrr::map(EDLs,
+                     ~try(.x%>%
+                            xml2::read_xml()%>%
+                            xml2::xml_child("MethodHistory")%>%
+                            xml2::xml_children()%>%
+                            purrr::map(xml2::xml_attrs)%>%
+                            purrr::map_df(~as.list(.)),
+                          silent = TRUE))
+
+  isTryError <- purrr::map_lgl(output,
+                               ~inherits(.x,'try-error'))
+
+  if(any(isTryError)){
+    output[isTryError] <- paste0("error_cant create a MethodHistory from EDL_",listNames[isTryError])
+  }
+
+  return(output)
+}
 
 
 
@@ -67,7 +107,7 @@ create_MethodHistory_of_chipIDs <- function(chip_IDs){
 
   query_results <- query_UID_limslager(chip_IDs = chip_IDs)
   EDLs <- get_EDL_from_query_result(query_results)
-  MethodHistory <- purrr::map(EDLs,~create_MethodHistory_from_EDL(.x))
+  MethodHistory <- create_MethodHistory_from_EDLs(EDLs)
 
   return(MethodHistory)
 }
@@ -95,8 +135,16 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
 
   tictoc::tic("create extended ScanHistory")
 
+  query_results <- query_UID_limslager(chip_IDs = chip_IDs)
+  EDLs <- get_EDL_from_query_result(query_results)
+  MethodHistorys <- create_MethodHistory_from_EDLs(EDLs)
+
   # create scanHistory (query limslager)
-  ScanHistory = create_ScanHistory_of_chipIDs(chip_IDs)
+  ScanHistory = create_ScanHistory_of_MethodHistory(MethodHistorys)
+
+  #get_sampleType----
+  sampleType <- purrr::map_chr(MethodHistorys,
+                              ~get_sampleType_from_MethodHistory(.x))
 
   # add filterset (query limsproc)
   ScanHistory1 <- ScanHistory%>%
@@ -223,3 +271,60 @@ create_ScanHistory_of_chipIDs<-function(chip_IDs){
 }
 
 
+#' create_ScanHistory_of_chipIDs
+#'
+#' @param MethodHistory
+#'
+#' @return
+#' @export
+#' @keywords internal
+#'
+#' @examples
+create_ScanHistory_of_MethodHistory<-function(MethodHistory){
+
+  Version <- "290422"
+  #update:
+  #- purrr::map_df
+
+  ScanHistorys <- purrr::map_df(MethodHistory,
+                                ~.x%>%
+                                  dplyr::rename("scan_ID" = "UID")%>%
+                                  dplyr::rename("cycle_ID" = "CycleUID")%>%
+                                  tidyr::fill(cycle_ID,  .direction = "up")%>%
+                                  dplyr::filter(Type == "Chipcytometry-Scan")%>%
+                                  dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
+  return(ScanHistorys)
+}
+
+#' Title
+#'
+#' @param MethodHistory
+#'
+#' @return
+#' @export
+#' @keywords internal
+#'
+#' @examples
+get_sampleType_from_MethodHistory<-function(MethodHistory){
+
+  V <- 080322
+  #- added stats::
+
+  if(any(MethodHistory%>%
+         purrr::simplify()%>%
+         stats::na.exclude()%>%
+         stringr::str_detect("error_")==TRUE)){
+    if((is.character(MethodHistory) & length(MethodHistory)==1)){
+      return(MethodHistory)
+    }else{return("error_no MethodHistory")}
+
+  }else{
+
+    Type=MethodHistory$Type
+
+    sampleType<-dplyr::case_when(any(stringr::str_detect(Type%>%na.exclude(), "tissue"))~"tissue",
+                                 any(stringr::str_detect(Type%>%na.exclude(),"cellsolution")) ~ "cellsolution",
+                                 TRUE ~ "error_sampleType not found")
+    return(sampleType)
+  }
+}
