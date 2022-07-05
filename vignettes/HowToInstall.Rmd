@@ -41,13 +41,18 @@ here::i_am("vignettes/HowToInstall.Rmd")
     >
     > -   install RTools 35 by executing the following code in RStudio:
     >
-    >         installr::install_rtools()
+    >         installr::install.rtools()
 
 2.  setup R for using this package:
 
     > -   install internal R tools:
     >
     >         install.packages(c("remotes","biocmanager"))
+    >         remotes::install_version("cli",version = ">= 3.0.0")
+    >         install.packages("devtools") #mit compilation
+    >         remotes::install_version("htmltools",">= 0.5.2", upgrade ="never")
+    >         remotes::install_version("xfun",">= 0.29", upgrade ="never")
+    >         remotes::install_cran(c("knitr","tinytex","rmarkdown"))
     >
     > -   install a package needed for accessing the mongoDB
     >
@@ -71,18 +76,20 @@ here::i_am("vignettes/HowToInstall.Rmd")
     > -   in RStudio set the path and the name and version of the tar.gz file on your local disk by editing the following code
     >
     >         package_dir <- choose.dir()
-    >         package_name <- "RJobTissueArea"
-    >         package_version <- "x.x.x.x."tar.gz"
+    >         package_name <- "RJobZKWappDataExport"
+    >         package_version <- "0.0.0.6."
     >
     > -   install the ZKW distance calculation package:
     >
     >         pkg <- paste0(package_name,"_",package_version,"tar.gz")
     >         pkg_path <- file.path(package_dir, pkg)
-    >         devtools::install(pkg_path, dependencies = TRUE)
+    >         remotes::install_local(file.path(pkg_path),dependencies = NA, upgrade = "never")
 
 4.  start your analysis in RStudio:
 
     > -   in RStudio create a "New Project" and name it approbiately or select a existing project, where you want to add the distance calculation
+    >
+    > -   check global settings if chunk evaluation location is from project
     >
     > -   create a "New File" and choose the "RMarkdown" file type
     >
@@ -106,3 +113,15 @@ here::i_am("vignettes/HowToInstall.Rmd")
 
     BiocManager::install("flowCore")
     ```
+
+-   Edit R profil
+
+    > -   open the project R profil 
+    >
+    >         usethis::edit_r_profile("project")
+    >
+    > -   paste the following commands into the file and save it
+    >
+    >         usethis::proj_set()
+    >         options(stringsAsFactors = FALSE)
+    >         options(rmarkdown.html_vignette.check_title = FALSE)
