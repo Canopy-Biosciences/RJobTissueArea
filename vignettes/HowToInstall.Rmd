@@ -47,9 +47,10 @@ here::i_am("vignettes/HowToInstall.Rmd")
 
     > -   install internal R tools:
     >
-    >         install.packages(c("remotes","biocmanager"))
+    >         install.packages(c("remotes","BiocManager"))
     >         remotes::install_version("cli",version = ">= 3.0.0")
     >         install.packages("devtools") #mit compilation
+    >         remotes::install_version("rlang",">=1.0.3", upgrade ="never")
     >         remotes::install_version("htmltools",">= 0.5.2", upgrade ="never")
     >         remotes::install_version("xfun",">= 0.29", upgrade ="never")
     >         remotes::install_cran(c("knitr","tinytex","rmarkdown"))
