@@ -47,12 +47,12 @@ here::i_am("vignettes/HowToInstall.Rmd")
 
     > -   install internal R tools:
     >
-    >         install.packages(c("remotes","BiocManager"))
+    >         install.packages(c("remotes","BioCmanager"))
     >         remotes::install_version("cli",version = ">= 3.0.0")
-    >         install.packages("devtools") #mit compilation
-    >         remotes::install_version("rlang",">=1.0.3", upgrade ="never")
-    >         remotes::install_version("htmltools",">= 0.5.2", upgrade ="never")
+    >         remotes::install_version("rlang",version=">= 1.0.0")
     >         remotes::install_version("xfun",">= 0.29", upgrade ="never")
+    >         install.packages("devtools")
+    >         remotes::install_version("htmltools",">= 0.5.2", upgrade ="never")
     >         remotes::install_cran(c("knitr","tinytex","rmarkdown"))
     >
     > -   install a package needed for accessing the mongoDB
@@ -61,7 +61,7 @@ here::i_am("vignettes/HowToInstall.Rmd")
     >
     > -   install packages needed for image processing
     >
-    >         remotes::install_version("locfit",version="1.5.9.4") 
+    >         remotes::install_version("locfit",version="1.5.9.4")
     >         BiocManager::install("EBImage",force=TRUE)
 
 3.  get and install the actual version of the *RJobTissueArea package*:
@@ -74,11 +74,13 @@ here::i_am("vignettes/HowToInstall.Rmd")
     >
     > -   choose the tar.gz file and save it on your local disk
     >
+    >-    close all RStudio sessions and open a new one
+    >
     > -   in RStudio set the path and the name and version of the tar.gz file on your local disk by editing the following code
     >
     >         package_dir <- choose.dir()
-    >         package_name <- "RJobZKWappDataExport"
-    >         package_version <- "0.0.0.6."
+    >         package_name <- "RJobTissueArea"
+    >         package_version <- "0.0.0.16."
     >
     > -   install the ZKW distance calculation package:
     >
@@ -117,7 +119,7 @@ here::i_am("vignettes/HowToInstall.Rmd")
 
 -   Edit R profil
 
-    > -   open the project R profil 
+    > -   open the project R profil
     >
     >         usethis::edit_r_profile("project")
     >
@@ -126,3 +128,45 @@ here::i_am("vignettes/HowToInstall.Rmd")
     >         usethis::proj_set()
     >         options(stringsAsFactors = FALSE)
     >         options(rmarkdown.html_vignette.check_title = FALSE)
+
+-   If you need to install packages from local tar.gz-files run the following in RStudio
+
+```{r}
+lib.path <- choose.dir()
+
+install.from.path <- function(lib.path = lib.path)
+{
+
+  if (length(lib.path) != 1) {
+    stop("Please specify exactly one source directory for the R packages!")
+  }
+
+  if (!file.exists(lib.path)){
+    stop("This directory doesn't exist!")
+  }
+
+  pkg_installed <- installed.packages()%>%
+    as.data.frame()
+
+  packages <- list.files(path = lib.path, pattern = ".*\\.tar.gz$", full.names = TRUE)
+
+  pkg_names <- packages%>%
+    basename()%>%
+    stringr::str_split("_",simplify=TRUE)
+
+  if (length(packages) == 0){
+    stop("No R packages found in the specified directory!")
+  }
+
+   for (p in 1:length(packages)){
+     if (pkg_names[p,1] %in% pkg_installed$Package == FALSE){
+
+       remotes::install_local(packages[p],
+                              dependencies= NA,
+                              upgrade = "never")
+     }
+   }
+}
+
+install.from.path(lib.path)
+```
