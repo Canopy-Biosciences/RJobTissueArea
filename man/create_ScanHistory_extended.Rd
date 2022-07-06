@@ -7,11 +7,23 @@
 create_ScanHistory_extended(chip_IDs, output_dir, result_ID)
 }
 \arguments{
-\item{result_ID}{}
+\item{chip_IDs}{character of chip_IDs}
+
+\item{output_dir}{character of output directory}
+
+\item{result_ID}{character of added to filename containing the result df}
 }
 \value{
-
+a dataframe and a csv file exported into output_dir
 }
 \description{
 create_ScanHistory_extended
+}
+\examples{
+\donttest{
+data("chip_IDs")
+output_dir <- tempdir()
+result_ID <- "test"
+create_ScanHistory_extended(chip_IDs,output_dir,result_ID)
+}
 }

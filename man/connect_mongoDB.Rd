@@ -44,8 +44,7 @@ Other database related:
 \code{\link{find_chip_path}()},
 \code{\link{find_server_path}()},
 \code{\link{find_valid_group_chip_IDs}()},
-\code{\link{get_EDL_from_query_result}()},
-\code{\link{query_mongoDB}()}
+\code{\link{get_EDL_from_query_result}()}
 }
 \concept{database related}
 \keyword{internal}

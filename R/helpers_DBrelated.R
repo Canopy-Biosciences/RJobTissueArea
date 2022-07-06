@@ -572,6 +572,79 @@ get_EDL_from_query_result <- function(result){
     return(EDL)
 }
 
+#_________________________
+#get_EDLs_of_queryResult()
+#_________________________
+
+#' extracts all EDL strings from a mongoDB query result
+#'
+#' internally checks if EDL exist and can be read and if not returns a error-message.string
+#'
+#' @param query_result list containing the result of a mongoDB-query
+#' @param IDs chracter if IDs
+#'
+#' @return a character vector containing EDL strings
+#' @export
+#'
+#' @keywords internal
+#' @family mongoDB
+#'
+#' @examples
+#' query_result <- list(
+#' result = list(structure(list(
+#' EDL = "<?xml version=\"1.0\"?>\r\n<!-- ",
+#' EDLType = "ChipGroup",
+#' query = "UID_P1761451_limslager"), class = "data.frame", row.names = 1L)),
+#' error_message = character(0))
+#'
+#' EDL <- query_result%>%
+#' get_EDLs_of_queryResult()
+#'
+#' query_result <- list(
+#' result = list(structure(list(
+#' EDL = "EDL blabla",
+#' EDLType = "ChipGroup",
+#' query = "UID_P1761451_limslager"), class = "data.frame", row.names = 1L)),
+#' error_message = character(0))
+#'
+#' query_result%>%
+#' get_EDLs_of_queryResult()
+#'
+#' "test"%>%
+#' get_EDLs_of_queryResult()
+
+get_EDLs_of_queryResult <- function(query_result){
+
+  EDLs <- listNames <- ResultInList <- missing <- NULL
+  #EDLnames <- NULL
+
+  listNames <- names(query_result)
+  ResultInList <- "result" %in% listNames
+
+  if(ResultInList == FALSE){
+    EDLs <- paste0("error_queryResult do not contain a resultList")
+  }else{
+
+
+    EDLs <- purrr::map_chr(query_result$result,
+                           ~ try(.x$EDL,silent = TRUE))
+
+    EDLnames <- names(query_result$result)
+
+    missing <-purrr::map_lgl(EDLs,
+                             ~inherits(.x,'try-error'))
+
+    if(any(missing)){
+      EDLs[which(missing)] <- paste0("error_no EDL in queryResult_",EDLnames[which(missing)])
+      #attr(EDLs[which(missing)],"noEDL") <- EDLnames[which(missing)]
+    }
+
+
+  }
+  #attr(EDLs[xmlChecked],"ID") <- EDLnames[xmlChecked]
+
+  return(EDLs)
+}
 
 #' get_enabled_positions
 #'
@@ -658,6 +731,10 @@ query_filterset_of_scanIDs <- function(scan_IDs){
 
 }
 
+#_______________
+#query_mongoDB()
+#_______________
+
 ## chunk "function_query_mongoDB"{
 #' @title query_mongoDB()
 #'
@@ -680,10 +757,13 @@ query_filterset_of_scanIDs <- function(scan_IDs){
 #' @param mongo_collection character, name of the ZKW mongoDB collection, "limslager" or "limsproc"
 #' @param attribute_name character, name of the EDL attribute
 #' @param attribute_value character, value of the EDL attribute
-#' @return list of df: result and vector: error_message
-#' @family database related
+#'
+#' @return a list consisting of an error vector and a result dataframe containing the returned EDL object
 #' @export
+#'
 #' @keywords internal
+#' @family mongoDB
+#'
 #' @examples
 #' \donttest{
 #'
@@ -708,8 +788,10 @@ query_mongoDB <- function(mongo_collection,
   # - roxygenize package dependency
   # Version 080322
   # - removed @ importFrom
+  #Version 120622
+  # - added result list names acc. to attribute_value
 
-  # define output and working variables
+  # define output and working variables----
   error <- NULL
   mongo_connection <- NULL
   query_string <- NULL
@@ -719,7 +801,7 @@ query_mongoDB <- function(mongo_collection,
   message <- NULL
   error_message <- NULL
 
-  # check input
+  # check input----
   error_check <- try(
     params::check_args(select = c(
       mongo_collection,
@@ -727,38 +809,38 @@ query_mongoDB <- function(mongo_collection,
       attribute_value
     )),
     silent = TRUE
-  )
+  )%>%suppressWarnings()
 
   if (inherits(error_check, "try-error")) {
     cat(paste0("error_missing input: ", "\n", error_check[1], " - process interupted !!!"))
   } else {
 
-    # connect to mongoDB-collection
+    # connect to mongoDB-collection----
     mongo_connection <- connect_mongoDB(mongo_collection)
 
     if (!inherits(mongo_connection, "try-error")) {
 
-      # vector of query strings
+      # vector of query strings----
       query_string <- paste0('\'{\"', attribute_name, '\":\"', attribute_value, '\"}\'')
 
-      # map trough query vector
+      # map trough query vector----
       query_result <- purrr::map(
         query_string,
         ~ mongo_connection$find(query = eval(parse(text = .x)))
       )
 
-      # seperate query results from query without a result
+      # seperate query results from query without a result----
       no_result <- purrr::map_lgl(
         query_result,
         ~ rlang::is_empty(.x)
       )
 
-      # prepare string for query with result
+      # prepare string for query with result----
 
       result <- query_result[which(no_result == FALSE)]
       message <- paste0(attribute_name, "_", attribute_value, "_", mongo_collection)[which(no_result == FALSE)]
 
-      # append result with the message
+      # append result with the message----
       result <- purrr::map2(
         result,
         message,
@@ -766,16 +848,16 @@ query_mongoDB <- function(mongo_collection,
           dplyr::mutate(query = .y)
       )
 
-      # prepare a vector with error messages to return
+      # prepare a vector with error messages to return----
       error_message <- paste0("error_no EDL found in ", mongo_collection, " for ", attribute_name, "_", attribute_value)
       error_message <- error_message[which(no_result)]
+
+      names(result) <- attribute_value[which(no_result == FALSE)]
 
       return(list(result = result, error_message = error_message))
     }
   }
 }
-## }
-
 
 #' Title
 #'

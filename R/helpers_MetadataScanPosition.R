@@ -115,17 +115,20 @@ create_MethodHistory_of_chipIDs <- function(chip_IDs){
 
 #' create_ScanHistory_extended
 #'
-#' @param chip_IDs
-#' @param output_dir
-#' @param result_ID
+#' @param chip_IDs character of chip_IDs
+#' @param output_dir character of output directory
+#' @param result_ID character of added to filename containing the result df
 #'
-#' @return
+#' @return a dataframe and a csv file exported into output_dir
 #' @export
 #'
 #' @examples
+#' \donttest{
 #' data("chip_IDs")
-#'
-#'
+#' output_dir <- tempdir()
+#' result_ID <- "test"
+#' create_ScanHistory_extended(chip_IDs,output_dir,result_ID)
+#' }
 create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
 
   Version <- "050722"
@@ -135,15 +138,19 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
 
   tictoc::tic("create extended ScanHistory")
 
+  # query chip_IDs limslager----
   query_results <- query_UID_limslager(chip_IDs = chip_IDs)
-  EDLs <- get_EDL_from_query_result(query_results)
+
+  # get EDL_chip_limslager----
+  EDLs <- get_EDLs_of_queryResult(query_results)
+
   MethodHistorys <- create_MethodHistory_from_EDLs(EDLs)
 
-  # create scanHistory (query limslager)
-  ScanHistory = create_ScanHistory_of_MethodHistory(MethodHistorys)
+  # create scanHistory-----
+  ScanHistorys = create_ScanHistory_of_MethodHistory(MethodHistorys)
 
   #get_sampleType----
-  sampleType <- purrr::map_chr(MethodHistorys,
+  sampleTypes <- purrr::map_chr(MethodHistorys,
                               ~get_sampleType_from_MethodHistory(.x))
 
   # add filterset (query limsproc)
@@ -230,6 +237,12 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
   ScanHistory7 <- ScanHistory6%>%
     dplyr::left_join(chip_paths,by="chip_ID")
 
+
+  # add sampleType----
+  ScanHistory8 <- dplyr::left_join(ScanHistory7,
+                                  data.frame(sampleType = sampleTypes,
+                                             chip_ID = names(sampleTypes)),
+                                  by = "chip_ID")
   # export ScanHistory
   result_filename <- create_result_filepath(output_dir,
                                             "extendedScanHistory",
@@ -239,7 +252,7 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
   data.table::fwrite(ScanHistory7,result_filename)
 
   tictoc::toc()
-  return(ScanHistory7)
+  return(ScanHistory8)
 
 }
 

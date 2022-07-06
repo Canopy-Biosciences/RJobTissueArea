@@ -14,7 +14,7 @@ query_mongoDB(mongo_collection, attribute_name, attribute_value)
 \item{attribute_value}{character, value of the EDL attribute}
 }
 \value{
-list of df: result and vector: error_message
+a list consisting of an error vector and a result dataframe containing the returned EDL object
 }
 \description{
 This Function performs for you a query in a ZKW-mongoDB-collection and tries to find those EDL objects for which a certain attribute matches a value.
@@ -51,14 +51,8 @@ query_result <- query_mongoDB(
 }
 }
 \seealso{
-Other database related: 
-\code{\link{check_if_chip_data_exist}()},
-\code{\link{connect_mongoDB}()},
-\code{\link{extract_chipIDs_from_groupEDL}()},
-\code{\link{find_chip_path}()},
-\code{\link{find_server_path}()},
-\code{\link{find_valid_group_chip_IDs}()},
-\code{\link{get_EDL_from_query_result}()}
+Other mongoDB: 
+\code{\link{get_EDLs_of_queryResult}()}
 }
-\concept{database related}
+\concept{mongoDB}
 \keyword{internal}

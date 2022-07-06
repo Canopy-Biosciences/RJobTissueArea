@@ -24,8 +24,7 @@ Other database related:
 \code{\link{extract_chipIDs_from_groupEDL}()},
 \code{\link{find_chip_path}()},
 \code{\link{find_valid_group_chip_IDs}()},
-\code{\link{get_EDL_from_query_result}()},
-\code{\link{query_mongoDB}()}
+\code{\link{get_EDL_from_query_result}()}
 
 Other database related: 
 \code{\link{check_if_chip_data_exist}()},
@@ -33,8 +32,7 @@ Other database related:
 \code{\link{extract_chipIDs_from_groupEDL}()},
 \code{\link{find_chip_path}()},
 \code{\link{find_valid_group_chip_IDs}()},
-\code{\link{get_EDL_from_query_result}()},
-\code{\link{query_mongoDB}()}
+\code{\link{get_EDL_from_query_result}()}
 }
 \concept{database related}
 \keyword{internal}
