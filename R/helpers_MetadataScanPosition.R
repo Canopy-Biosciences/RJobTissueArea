@@ -24,6 +24,9 @@ writeLines(
 #' @export
 #'
 #' @examples
+#' data(EDL_chipIDs_limslager)
+#' EDL <- EDL_chipIDs_limslager[1]
+#' MH <- create_MethodHistory_from_EDL(EDL)
 create_MethodHistory_from_EDL <- function(EDL){
 function (EDL)
   V <- 210921
@@ -53,12 +56,8 @@ function (EDL)
 #'
 #' @examples
 #' data("EDL_chipIDs_limslager")
-#'
-#' MH <- create_MethodHistory_from_EDL(EDL_chipIDs_limslager)
-#'
-#' MHtest <- create_MethodHistory_from_EDL(c("test",EDL_chipIDs_limslager))
-#'
-#'
+#' EDLs <- EDL_chipIDs_limslager
+#' MHs <- create_MethodHistory_from_EDLs(EDLs)
 create_MethodHistory_from_EDLs<-function(EDLs){
 
   # Version taken from Rmd report:
@@ -89,6 +88,8 @@ create_MethodHistory_from_EDLs<-function(EDLs){
     output[isTryError] <- paste0("error_cant create a MethodHistory from EDL_",listNames[isTryError])
   }
 
+  names(output) <- listNames
+
   return(output)
 }
 
@@ -103,6 +104,10 @@ create_MethodHistory_from_EDLs<-function(EDLs){
 #' @keywords internal
 #'
 #' @examples
+#' \donttest{
+#' data(chip_IDs)
+#' MHs <- create_MethodHistory_of_chipIDs(chip_IDs)
+#' }
 create_MethodHistory_of_chipIDs <- function(chip_IDs){
 
   query_results <- query_UID_limslager(chip_IDs = chip_IDs)
@@ -127,7 +132,7 @@ create_MethodHistory_of_chipIDs <- function(chip_IDs){
 #' data("chip_IDs")
 #' output_dir <- tempdir()
 #' result_ID <- "test"
-#' create_ScanHistory_extended(chip_IDs,output_dir,result_ID)
+#' SH_ext <- create_ScanHistory_extended(chip_IDs,output_dir,result_ID)
 #' }
 create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
 
@@ -154,8 +159,8 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
                               ~get_sampleType_from_MethodHistory(.x))
 
   # add filterset (query limsproc)
-  ScanHistory1 <- ScanHistory%>%
-    dplyr::mutate(filterset = query_filterset_of_scanIDs(scan_IDs = ScanHistory$scan_ID))
+  ScanHistory1 <- ScanHistorys%>%
+    dplyr::mutate(filterset = query_filterset_of_scanIDs(scan_IDs = ScanHistorys$scan_ID))
 
   # query result chipID ins scans
   query_chip_scans <- query_mongoDB("scans",
@@ -175,7 +180,7 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
                                                       `enabled-count`))
 
   # join ScanHistory and select valid entities
-  ScanHistory2 <- dplyr::full_join(ScanHistory,
+  ScanHistory2 <- dplyr::full_join(ScanHistorys,
                                    results_chip_scans, by = "scan_ID")
 
   ScanHistory0 <- ScanHistory2%>%
@@ -249,7 +254,7 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
                                             result_ID,
                                             "csv")
 
-  data.table::fwrite(ScanHistory7,result_filename)
+  data.table::fwrite(ScanHistory8,result_filename)
 
   tictoc::toc()
   return(ScanHistory8)
@@ -266,6 +271,10 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
 #' @keywords internal
 #'
 #' @examples
+#' \donttest{
+#' data(chip_IDs)
+#' SHs <- create_ScanHistory_of_chipIDs(chip_IDs)
+#' }
 create_ScanHistory_of_chipIDs<-function(chip_IDs){
 
   Version <- "290422"
@@ -273,18 +282,19 @@ create_ScanHistory_of_chipIDs<-function(chip_IDs){
   #- purrr::map_df
   MethodHistory <- create_MethodHistory_of_chipIDs(chip_IDs)
 
-  ScanHistorys <- purrr::map_df(MethodHistory,
-                                ~.x%>%
-                                  dplyr::rename("scan_ID" = "UID")%>%
-                                  dplyr::rename("cycle_ID" = "CycleUID")%>%
-                                  tidyr::fill(cycle_ID,  .direction = "up")%>%
-                                  dplyr::filter(Type == "Chipcytometry-Scan")%>%
-                                  dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
+  ScanHistorys <- create_ScanHistory_of_MethodHistory(MethodHistory)
+  #purrr::map_df(MethodHistory,
+  #                              ~.x%>%
+  #                                dplyr::rename("scan_ID" = "UID")%>%
+  #                                dplyr::rename("cycle_ID" = "CycleUID")%>%
+  #                                tidyr::fill(cycle_ID,  .direction = "up")%>%
+  #                                dplyr::filter(Type == "Chipcytometry-Scan")%>%
+  #                                dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
   return(ScanHistorys)
 }
 
 
-#' create_ScanHistory_of_chipIDs
+#' create_ScanHistory_of_MethodHistory
 #'
 #' @param MethodHistory
 #'
@@ -293,6 +303,10 @@ create_ScanHistory_of_chipIDs<-function(chip_IDs){
 #' @keywords internal
 #'
 #' @examples
+#' data("EDL_chipIDs_limslager")
+#' EDLs <- EDL_chipIDs_limslager
+#' MHs <- create_MethodHistory_from_EDLs(EDLs)
+#' SHs <- create_ScanHistory_of_MethodHistory(MHs)
 create_ScanHistory_of_MethodHistory<-function(MethodHistory){
 
   Version <- "290422"
@@ -318,6 +332,10 @@ create_ScanHistory_of_MethodHistory<-function(MethodHistory){
 #' @keywords internal
 #'
 #' @examples
+#' data("EDL_chipIDs_limslager")
+#' EDL <- EDL_chipIDs_limslager[1]
+#' MH <- create_MethodHistory_from_EDL(EDL)
+#' sampleType <- get_sampleType_from_MethodHistory(MH)
 get_sampleType_from_MethodHistory<-function(MethodHistory){
 
   V <- 080322

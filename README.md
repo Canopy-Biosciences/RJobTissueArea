@@ -31,13 +31,19 @@ its size.
     >
     > -   install RTools 35 by executing the following code in RStudio:
     >
-    >         installr::install_rtools()
+    >         installr::install.rtools()
 
 2.  setup R for using this package:
 
     > -   install internal R tools:
     >
-    >         install.packages(c("remotes","biocmanager"))
+    >         install.packages(c("remotes","BioCmanager"))
+    >         remotes::install_version("cli",version = ">= 3.0.0")
+    >         remotes::install_version("rlang",version=">= 1.0.0")
+    >         remotes::install_version("xfun",">= 0.29", upgrade ="never")
+    >         install.packages("devtools")
+    >         remotes::install_version("htmltools",">= 0.5.2", upgrade ="never")
+    >         remotes::install_cran(c("knitr","tinytex","rmarkdown"))
     >
     > -   install a package needed for accessing the mongoDB
     >
@@ -45,29 +51,33 @@ its size.
     >
     > -   install packages needed for image processing
     >
-    >         remotes::install_version("locfit",version="1.5.9.4") 
+    >         remotes::install_version("locfit",version="1.5.9.4")
     >         BiocManager::install("EBImage",force=TRUE)
 
-3.  get and install the actual version of the *ZKW TissueArea
-    calculation R package*:
+3.  get and install the actual version of the *RJobTissueArea package*:
 
     > -   go to Github webpage:
     >
-    >     <https://github.com/juleZWK/RJobTissueArea/>
+    >     <https://github.com/Canopy-Biosciences/RJobTissueArea/>
     >
     > -   klick on newest release and download it
     >
     > -   choose the tar.gz file and save it on your local disk
     >
-    > -   in RStudio set the path and the name of the tar.gz file
+    > -   close all RStudio sessions and open a new one
+    >
+    > -   in RStudio set the path and the name and version of the tar.gz
+    >     file on your local disk by editing the following code
     >
     >         package_dir <- choose.dir()
-    >         package_name <- "RJobTissueArea_0.0.0.13.tar.gz"
+    >         package_name <- "RJobTissueArea"
+    >         package_version <- "0.0.0.16."
     >
-    > -   install the ZKW distance calculation package by executing the
-    >     following code in RStudio:
+    > -   install the ZKW distance calculation package:
     >
-    >         devtools::install(file.path(package_dir, package_name), dependencies = TRUE)
+    >         pkg <- paste0(package_name,"_",package_version,"tar.gz")
+    >         pkg_path <- file.path(package_dir, pkg)
+    >         remotes::install_local(file.path(pkg_path),dependencies = NA, upgrade = "never")
 
 4.  start your analysis in RStudio:
 
@@ -75,9 +85,13 @@ its size.
     >     select a existing project, where you want to add the distance
     >     calculation
     >
+    > -   check global settings if chunk evaluation location is from
+    >     project
+    >
     > -   create a “New File” and choose the “RMarkdown” file type
     >
-    > -   select “From Template” and choose the “ExampleReport” template
+    > -   select “From Template” and choose a template
+    >     (e.g. “estimateTissueArea”)
     >
     > -   save a copy into your project directory and follow
     >     instructions in the template
@@ -90,7 +104,7 @@ its size.
     repository directly. To do so, execute the following code in
     RStudio.:
 
-        devtools::install_github("juleZWK/RJobTissueArea")
+        devtools::install_github("Canopy-Biosciences/RJobTissueArea")
 
 -   If you need to have the flowCore package installed:
 
@@ -100,6 +114,61 @@ its size.
 
     BiocManager::install("flowCore")
     ```
+
+-   Edit R profil
+
+    > -   open the project R profil
+    >
+    >         usethis::edit_r_profile("project")
+    >
+    > -   paste the following commands into the file and save it
+    >
+    >         usethis::proj_set()
+    >         options(stringsAsFactors = FALSE)
+    >         options(rmarkdown.html_vignette.check_title = FALSE)
+
+-   If you need to install packages from local tar.gz-files run the
+    following in RStudio
+
+``` r
+lib.path <- choose.dir()
+
+install.from.path <- function(lib.path = lib.path)
+{
+
+  if (length(lib.path) != 1) {
+    stop("Please specify exactly one source directory for the R packages!")
+  }
+
+  if (!file.exists(lib.path)){
+    stop("This directory doesn't exist!")
+  }
+
+  pkg_installed <- installed.packages()%>%
+    as.data.frame()
+
+  packages <- list.files(path = lib.path, pattern = ".*\\.tar.gz$", full.names = TRUE)
+
+  pkg_names <- packages%>%
+    basename()%>%
+    stringr::str_split("_",simplify=TRUE)
+
+  if (length(packages) == 0){
+    stop("No R packages found in the specified directory!")
+  }
+
+   for (p in 1:length(packages)){
+     if (pkg_names[p,1] %in% pkg_installed$Package == FALSE){
+
+       remotes::install_local(packages[p],
+                              dependencies= NA,
+                              upgrade = "never")
+     }
+   }
+}
+
+install.from.path(lib.path)
+```
 
 ## HowToUse
 

@@ -17,11 +17,7 @@ Title
 }
 \examples{
 data("EDL_chipIDs_limslager")
-
-MH <- create_MethodHistory_from_EDL(EDL_chipIDs_limslager)
-
-MHtest <- create_MethodHistory_from_EDL(c("test",EDL_chipIDs_limslager))
-
-
+EDLs <- EDL_chipIDs_limslager
+MHs <- create_MethodHistory_from_EDLs(EDLs)
 }
 \keyword{internal}

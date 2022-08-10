@@ -15,4 +15,10 @@ create_ScanHistory_of_chipIDs(chip_IDs)
 \description{
 create_ScanHistory_of_chipIDs
 }
+\examples{
+\donttest{
+data(chip_IDs)
+SHs <- create_ScanHistory_of_chipIDs(chip_IDs)
+}
+}
 \keyword{internal}

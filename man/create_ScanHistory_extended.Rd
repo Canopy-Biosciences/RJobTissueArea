@@ -24,6 +24,6 @@ create_ScanHistory_extended
 data("chip_IDs")
 output_dir <- tempdir()
 result_ID <- "test"
-create_ScanHistory_extended(chip_IDs,output_dir,result_ID)
+SH_ext <- create_ScanHistory_extended(chip_IDs,output_dir,result_ID)
 }
 }

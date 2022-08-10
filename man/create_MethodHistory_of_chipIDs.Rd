@@ -15,4 +15,10 @@ create_MethodHistory_of_chipIDs(chip_IDs)
 \description{
 create_MethodHistory_of_chipIDs
 }
+\examples{
+\donttest{
+data(chip_IDs)
+MHs <- create_MethodHistory_of_chipIDs(chip_IDs)
+}
+}
 \keyword{internal}

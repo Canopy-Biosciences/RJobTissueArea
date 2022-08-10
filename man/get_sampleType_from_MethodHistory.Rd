@@ -15,4 +15,10 @@ get_sampleType_from_MethodHistory(MethodHistory)
 \description{
 Title
 }
+\examples{
+data("EDL_chipIDs_limslager")
+EDL <- EDL_chipIDs_limslager[1]
+MH <- create_MethodHistory_from_EDL(EDL)
+sampleType <- get_sampleType_from_MethodHistory(MH)
+}
 \keyword{internal}

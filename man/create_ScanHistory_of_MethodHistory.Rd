@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers_MetadataScanPosition.R
 \name{create_ScanHistory_of_MethodHistory}
 \alias{create_ScanHistory_of_MethodHistory}
-\title{create_ScanHistory_of_chipIDs}
+\title{create_ScanHistory_of_MethodHistory}
 \usage{
 create_ScanHistory_of_MethodHistory(MethodHistory)
 }
@@ -13,6 +13,12 @@ create_ScanHistory_of_MethodHistory(MethodHistory)
 
 }
 \description{
-create_ScanHistory_of_chipIDs
+create_ScanHistory_of_MethodHistory
+}
+\examples{
+data("EDL_chipIDs_limslager")
+EDLs <- EDL_chipIDs_limslager
+MHs <- create_MethodHistory_from_EDLs(EDLs)
+SHs <- create_ScanHistory_of_MethodHistory(MHs)
 }
 \keyword{internal}

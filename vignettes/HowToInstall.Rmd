@@ -131,7 +131,7 @@ here::i_am("vignettes/HowToInstall.Rmd")
 
 -   If you need to install packages from local tar.gz-files run the following in RStudio
 
-```{r}
+```{r, eval = FALSE}
 lib.path <- choose.dir()
 
 install.from.path <- function(lib.path = lib.path)
