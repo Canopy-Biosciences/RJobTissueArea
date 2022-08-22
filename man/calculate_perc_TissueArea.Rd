@@ -9,9 +9,6 @@ calculate_perc_TissueArea(pixelset)
 \arguments{
 \item{pixelset}{}
 }
-\value{
-
-}
 \description{
 calculate_perc_TissueArea
 }

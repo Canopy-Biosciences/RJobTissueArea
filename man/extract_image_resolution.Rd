@@ -9,9 +9,6 @@ extract_image_resolution(image_data)
 \arguments{
 \item{filepath}{}
 }
-\value{
-
-}
 \description{
 reads the resolution attribute of an image object
 }

@@ -17,7 +17,7 @@ converts a given string to an XML object and path's over to all ObjRefs and extr
 }
 \examples{
 {
-EDL <- "<?xml version=\"1.0\"?>\r\n<!-- Mit XMLSpy v2011 rel. 3 (http://www.altova.com) von Christian Hennig (Medizinische Hochschule Hannover PÃ¤d. Pneumologie Neonatologie) bearbeitet -->\r\n
+EDL <- "<?xml version=\"1.0\"?>\r\n<!-- Mit XMLSpy v2011 rel. 3 (http://www.altova.com) von Christian Hennig (Medizinische Hochschule Hannover Päd. Pneumologie Neonatologie) bearbeitet -->\r\n
 <Obj MadewithEDLVersion=\"0.1\" derivedfrom=\"Data Collection\" madewithEDLVersion=\"29012013141654\" Type=\"ChipGroup\">\r\n\t
 <Identity UID=\"P1761451\" Type=\"ChipGroup\" TakeoverFromInputObject=\"\" Name=\"Takeda - sample preparation\"/>\r\n\t
 <PrimaryContainer UID=\"\" Type=\"Earth\" TakeoverFromInputObject=\"\" IsInputObject=\"\"/>\r\n\t

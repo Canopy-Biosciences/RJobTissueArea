@@ -9,9 +9,6 @@ read_result_file(result_df, result_filename)
 \arguments{
 \item{result_filename}{}
 }
-\value{
-
-}
 \description{
 load a result file and check columns
 }

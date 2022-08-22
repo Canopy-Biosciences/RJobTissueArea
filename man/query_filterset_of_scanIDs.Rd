@@ -9,9 +9,6 @@ query_filterset_of_scanIDs(scan_IDs)
 \arguments{
 \item{scan_IDs}{}
 }
-\value{
-
-}
 \description{
 query_filterset_of_scanIDs
 }

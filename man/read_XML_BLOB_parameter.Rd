@@ -9,9 +9,6 @@ read_XML_BLOB_parameter(image_path, blob_filename)
 \arguments{
 \item{blob_filetype}{}
 }
-\value{
-
-}
 \description{
 read_XML_BLOB_parameter
 }

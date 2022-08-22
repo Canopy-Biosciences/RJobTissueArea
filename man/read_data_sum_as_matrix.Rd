@@ -9,9 +9,6 @@ read_data_sum_as_matrix(filepath)
 \arguments{
 \item{filepath}{}
 }
-\value{
-
-}
 \description{
 read_data_sum_as_matrix
 }

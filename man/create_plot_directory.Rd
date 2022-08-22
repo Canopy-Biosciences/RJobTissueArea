@@ -9,6 +9,7 @@ create_plot_directory(
   sigma,
   threshold,
   window,
+  attenuation,
   chip_ID,
   pos_ID,
   suffix_resultfile
@@ -16,9 +17,6 @@ create_plot_directory(
 }
 \arguments{
 \item{pos_ID}{}
-}
-\value{
-
 }
 \description{
 create_plot_directory

@@ -9,9 +9,6 @@ create_pixmap_greyvalues(m.data, cellres)
 \arguments{
 \item{cellres}{}
 }
-\value{
-
-}
 \description{
 create_pixmap_greyvalues
 }

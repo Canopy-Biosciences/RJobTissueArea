@@ -9,9 +9,6 @@ create_MethodHistory_from_EDLs(EDLs)
 \arguments{
 \item{EDLs}{character vector containing EDL strings}
 }
-\value{
-
-}
 \description{
 Title
 }

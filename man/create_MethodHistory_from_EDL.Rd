@@ -9,9 +9,6 @@ create_MethodHistory_from_EDL(EDL)
 \arguments{
 \item{EDL}{}
 }
-\value{
-
-}
 \description{
 Title
 }

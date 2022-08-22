@@ -9,9 +9,6 @@ read_image_binary_file(blob_parameter)
 \arguments{
 \item{blob_parameter}{}
 }
-\value{
-
-}
 \description{
 read_image_binary_file
 }

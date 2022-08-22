@@ -9,9 +9,6 @@ get_enabled_positions_from_positions_list(positions_list)
 \arguments{
 \item{positions_list}{}
 }
-\value{
-
-}
 \description{
 get_enabled_positions_from_positions_list
 }

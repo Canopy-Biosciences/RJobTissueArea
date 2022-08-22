@@ -9,9 +9,6 @@ export_list_all_image_files(chip_IDs, result_ID, output_dir)
 \arguments{
 \item{type}{}
 }
-\value{
-
-}
 \description{
 export_list_all_image_files
 }

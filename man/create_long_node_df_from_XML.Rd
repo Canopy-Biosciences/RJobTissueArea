@@ -9,9 +9,6 @@ create_long_node_df_from_XML(XML)
 \arguments{
 \item{XML}{}
 }
-\value{
-
-}
 \description{
 create_long_node_df_from_XML
 }

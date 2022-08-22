@@ -9,9 +9,6 @@ query_UID_limslager(chip_IDs)
 \arguments{
 \item{chip_IDs}{}
 }
-\value{
-
-}
 \description{
 Title
 }

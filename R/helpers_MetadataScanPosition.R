@@ -118,6 +118,144 @@ create_MethodHistory_of_chipIDs <- function(chip_IDs){
 }
 
 
+
+
+#' create_ScanHistory_of_MethodHistorys
+#'
+#' @param MethodHistory
+#'
+#' @return
+#' @export
+#' @keywords internal
+#'
+#' @examples
+#' data("EDL_chipIDs_limslager")
+#' EDLs <- EDL_chipIDs_limslager
+#' MHs <- create_MethodHistory_from_EDLs(EDLs)
+#' SHs <- create_ScanHistory_of_MethodHistorys(MHs)
+create_ScanHistory_of_MethodHistorys<-function(MethodHistory){
+
+  Version <- "290422"
+  #update:
+  #- purrr::map_df
+
+  ScanHistorys <- purrr::map_df(MethodHistory,
+                                ~.x%>%
+                                  dplyr::rename("scan_ID" = "UID")%>%
+                                  dplyr::rename("cycle_ID" = "CycleUID")%>%
+                                  tidyr::fill(cycle_ID,  .direction = "up")%>%
+                                  dplyr::filter(Type == "Chipcytometry-Scan")%>%
+                                  dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
+  return(ScanHistorys)
+}
+
+
+
+
+#' create_ScanHistory_of_chipIDs
+#'
+#' @param chip_IDs
+#'
+#' @return
+#' @export
+#' @keywords internal
+#'
+#' @examples
+#' \donttest{
+#' data(chip_IDs)
+#' SHs <- create_ScanHistory_of_chipIDs(chip_IDs)
+#' }
+create_ScanHistory_of_chipIDs<-function(chip_IDs){
+
+  Version <- "290422"
+  #update:
+  #- purrr::map_df
+  MethodHistory <- create_MethodHistory_of_chipIDs(chip_IDs)
+
+  ScanHistorys <- create_ScanHistory_of_MethodHistorys(MethodHistory)
+  #purrr::map_df(MethodHistory,
+  #                              ~.x%>%
+  #                                dplyr::rename("scan_ID" = "UID")%>%
+  #                                dplyr::rename("cycle_ID" = "CycleUID")%>%
+  #                                tidyr::fill(cycle_ID,  .direction = "up")%>%
+  #                                dplyr::filter(Type == "Chipcytometry-Scan")%>%
+  #                                dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
+  return(ScanHistorys)
+}
+
+
+#' Title
+#'
+#' @param MethodHistory
+#'
+#' @return
+#' @export
+#' @keywords internal
+#'
+#' @examples
+#' data("EDL_chipIDs_limslager")
+#' EDL <- EDL_chipIDs_limslager[1]
+#' MH <- create_MethodHistory_from_EDL(EDL)
+#' sampleType <- get_sampleType_from_MethodHistory(MH)
+get_sampleType_from_MethodHistory<-function(MethodHistory){
+
+  V <- 080322
+  #- added stats::
+
+  if(any(MethodHistory%>%
+         purrr::simplify()%>%
+         stats::na.exclude()%>%
+         stringr::str_detect("error_")==TRUE)){
+    if((is.character(MethodHistory) & length(MethodHistory)==1)){
+      return(MethodHistory)
+    }else{return("error_no MethodHistory")}
+
+  }else{
+
+    Type=MethodHistory$Type
+
+    sampleType<-dplyr::case_when(any(stringr::str_detect(Type%>%na.exclude(), "tissue"))~"tissue",
+                                 any(stringr::str_detect(Type%>%na.exclude(),"cellsolution")) ~ "cellsolution",
+                                 TRUE ~ "error_sampleType not found")
+    return(sampleType)
+  }
+}
+
+
+
+#' returns the sampleType of chip_IDs
+#'
+#' @param chip_IDs character vector of chip_IDs
+#'
+#' @return list of sampleTypes named by chipIDs
+#' @export
+#' @keywords internal
+#' @family MetadataScanPosition
+#'
+#' @examples
+#' \donttest{
+#' data("chip_IDs")
+#' sampleType <- get_sampleType_of_chip_IDs(chip_IDs)
+#' test <- get_sampleType_of_chipIDs("test")
+#' }
+get_sampleType_of_chipIDs <- function(chip_IDs){
+
+  V <- 190822
+
+  query_results <- EDLs <- MHs <- sampleTypes <- NULL
+
+  query_results <- query_UID_limslager(chip_IDs)
+  EDLs <- get_EDLs_of_queryResult(query_results)
+  MHs <- create_MethodHistory_from_EDLs(EDLs)
+  sampleTypes <- purrr::map(MHs,
+                            ~get_sampleType_from_MethodHistory(.x))
+  return(sampleTypes)
+}
+
+# get Scans Metadata (IDs)
+# export Scans MetaData (IDs, dir, string)
+# import Scans MetData (dir, string)
+
 #' create_ScanHistory_extended
 #'
 #' @param chip_IDs character of chip_IDs
@@ -152,11 +290,11 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
   MethodHistorys <- create_MethodHistory_from_EDLs(EDLs)
 
   # create scanHistory-----
-  ScanHistorys = create_ScanHistory_of_MethodHistory(MethodHistorys)
+  ScanHistorys = create_ScanHistory_of_MethodHistorys(MethodHistorys)
 
   #get_sampleType----
   sampleTypes <- purrr::map_chr(MethodHistorys,
-                              ~get_sampleType_from_MethodHistory(.x))
+                                ~get_sampleType_from_MethodHistory(.x))
 
   # add filterset (query limsproc)
   ScanHistory1 <- ScanHistorys%>%
@@ -245,9 +383,9 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
 
   # add sampleType----
   ScanHistory8 <- dplyr::left_join(ScanHistory7,
-                                  data.frame(sampleType = sampleTypes,
-                                             chip_ID = names(sampleTypes)),
-                                  by = "chip_ID")
+                                   data.frame(sampleType = sampleTypes,
+                                              chip_ID = names(sampleTypes)),
+                                   by = "chip_ID")
   # export ScanHistory
   result_filename <- create_result_filepath(output_dir,
                                             "extendedScanHistory",
@@ -259,103 +397,4 @@ create_ScanHistory_extended <- function(chip_IDs,output_dir,result_ID){
   tictoc::toc()
   return(ScanHistory8)
 
-}
-
-
-#' create_ScanHistory_of_chipIDs
-#'
-#' @param chip_IDs
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-#' \donttest{
-#' data(chip_IDs)
-#' SHs <- create_ScanHistory_of_chipIDs(chip_IDs)
-#' }
-create_ScanHistory_of_chipIDs<-function(chip_IDs){
-
-  Version <- "290422"
-  #update:
-  #- purrr::map_df
-  MethodHistory <- create_MethodHistory_of_chipIDs(chip_IDs)
-
-  ScanHistorys <- create_ScanHistory_of_MethodHistory(MethodHistory)
-  #purrr::map_df(MethodHistory,
-  #                              ~.x%>%
-  #                                dplyr::rename("scan_ID" = "UID")%>%
-  #                                dplyr::rename("cycle_ID" = "CycleUID")%>%
-  #                                tidyr::fill(cycle_ID,  .direction = "up")%>%
-  #                                dplyr::filter(Type == "Chipcytometry-Scan")%>%
-  #                                dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
-  return(ScanHistorys)
-}
-
-
-#' create_ScanHistory_of_MethodHistory
-#'
-#' @param MethodHistory
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-#' data("EDL_chipIDs_limslager")
-#' EDLs <- EDL_chipIDs_limslager
-#' MHs <- create_MethodHistory_from_EDLs(EDLs)
-#' SHs <- create_ScanHistory_of_MethodHistory(MHs)
-create_ScanHistory_of_MethodHistory<-function(MethodHistory){
-
-  Version <- "290422"
-  #update:
-  #- purrr::map_df
-
-  ScanHistorys <- purrr::map_df(MethodHistory,
-                                ~.x%>%
-                                  dplyr::rename("scan_ID" = "UID")%>%
-                                  dplyr::rename("cycle_ID" = "CycleUID")%>%
-                                  tidyr::fill(cycle_ID,  .direction = "up")%>%
-                                  dplyr::filter(Type == "Chipcytometry-Scan")%>%
-                                  dplyr::select(scan_ID,cycle_ID,Status,Tag,Excluded,PreparedForDataviz))
-  return(ScanHistorys)
-}
-
-#' Title
-#'
-#' @param MethodHistory
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
-#' data("EDL_chipIDs_limslager")
-#' EDL <- EDL_chipIDs_limslager[1]
-#' MH <- create_MethodHistory_from_EDL(EDL)
-#' sampleType <- get_sampleType_from_MethodHistory(MH)
-get_sampleType_from_MethodHistory<-function(MethodHistory){
-
-  V <- 080322
-  #- added stats::
-
-  if(any(MethodHistory%>%
-         purrr::simplify()%>%
-         stats::na.exclude()%>%
-         stringr::str_detect("error_")==TRUE)){
-    if((is.character(MethodHistory) & length(MethodHistory)==1)){
-      return(MethodHistory)
-    }else{return("error_no MethodHistory")}
-
-  }else{
-
-    Type=MethodHistory$Type
-
-    sampleType<-dplyr::case_when(any(stringr::str_detect(Type%>%na.exclude(), "tissue"))~"tissue",
-                                 any(stringr::str_detect(Type%>%na.exclude(),"cellsolution")) ~ "cellsolution",
-                                 TRUE ~ "error_sampleType not found")
-    return(sampleType)
-  }
 }

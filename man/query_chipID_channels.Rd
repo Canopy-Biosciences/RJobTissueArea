@@ -9,9 +9,6 @@ query_chipID_channels(chip_IDs)
 \arguments{
 \item{chip_IDs}{}
 }
-\value{
-
-}
 \description{
 Title
 }

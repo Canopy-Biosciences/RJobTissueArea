@@ -9,9 +9,6 @@ create_pos_foldername(imageServer_path, basePath, pos_ID)
 \arguments{
 \item{pos_ID}{}
 }
-\value{
-
-}
 \description{
 create_pos_foldername
 }

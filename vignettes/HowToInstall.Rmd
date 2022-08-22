@@ -48,7 +48,7 @@ here::i_am("vignettes/HowToInstall.Rmd")
     > -   install internal R tools:
     >
     >         install.packages(c("remotes","BioCmanager"))
-    >         remotes::install_version("cli",version = ">= 3.0.0")
+    >         remotes::install_version("cli",version = ">= 3.3.0")
     >         remotes::install_version("rlang",version=">= 1.0.0")
     >         remotes::install_version("xfun",">= 0.29", upgrade ="never")
     >         install.packages("devtools")

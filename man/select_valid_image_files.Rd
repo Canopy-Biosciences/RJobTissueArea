@@ -9,9 +9,6 @@ select_valid_image_files(result_files, type = NULL)
 \arguments{
 \item{type}{}
 }
-\value{
-
-}
 \description{
 select_valid_image_files
 }

@@ -9,9 +9,6 @@ extract_n_pixels_from_blob_parameter(blob_parameter)
 \arguments{
 \item{blob_paramter}{}
 }
-\value{
-
-}
 \description{
 extract_n_pixels_from_blob_parameter
 }

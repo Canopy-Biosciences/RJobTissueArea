@@ -9,9 +9,6 @@ calculate_n_TissuePixel(pixelset)
 \arguments{
 \item{pixelset}{}
 }
-\value{
-
-}
 \description{
 calculate_n_TissuePixel
 }

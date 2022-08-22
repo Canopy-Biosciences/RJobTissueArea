@@ -9,9 +9,6 @@ calculate_TissueArea(n_pixel, cellres)
 \arguments{
 \item{cellres}{}
 }
-\value{
-
-}
 \description{
 calculate_TissueArea
 }

@@ -9,9 +9,6 @@ process_tissue_detection_workflow(m.data, cellres, sigma, threshold, window)
 \arguments{
 \item{window}{}
 }
-\value{
-
-}
 \description{
 process_tissue_detection_workflow
 }

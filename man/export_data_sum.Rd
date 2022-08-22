@@ -9,9 +9,6 @@ export_data_sum(image_groups, datasum_dir)
 \arguments{
 \item{image_groups}{}
 }
-\value{
-
-}
 \description{
 export_data_sum
 }

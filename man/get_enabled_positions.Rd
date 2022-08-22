@@ -9,9 +9,6 @@ get_enabled_positions(chip_ID)
 \arguments{
 \item{chip_ID}{}
 }
-\value{
-
-}
 \description{
 get_enabled_positions
 }

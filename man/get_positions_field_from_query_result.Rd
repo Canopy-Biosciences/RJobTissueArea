@@ -9,9 +9,6 @@ get_positions_field_from_query_result(query_result)
 \arguments{
 \item{query_result}{}
 }
-\value{
-
-}
 \description{
 get_positions_field_from_query_result
 }

@@ -9,9 +9,6 @@ read_binary_image_as_vector(image_path, blob_filename)
 \arguments{
 \item{blob_filename}{}
 }
-\value{
-
-}
 \description{
 read_binary_image_as_vector
 }

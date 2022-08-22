@@ -9,9 +9,6 @@ select_hdr_files(result_files)
 \arguments{
 \item{results_files}{}
 }
-\value{
-
-}
 \description{
 select_hdr_files
 }

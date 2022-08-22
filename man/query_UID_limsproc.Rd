@@ -9,9 +9,6 @@ query_UID_limsproc(chip_IDs)
 \arguments{
 \item{chip_IDs}{}
 }
-\value{
-
-}
 \description{
 query_UID_limsproc
 }

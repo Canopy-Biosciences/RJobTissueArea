@@ -9,9 +9,6 @@ extract_enabled_positions(single_pos_entity)
 \arguments{
 \item{single_pos_entity}{}
 }
-\value{
-
-}
 \description{
 extract_enabled_positions
 }

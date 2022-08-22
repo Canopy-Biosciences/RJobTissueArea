@@ -7,10 +7,7 @@
 calculate_data_sum(image_list)
 }
 \arguments{
-\item{filepath}{}
-}
-\value{
-
+\item{image_group_list}{}
 }
 \description{
 calculate_data_sum

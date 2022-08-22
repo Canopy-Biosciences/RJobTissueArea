@@ -9,9 +9,6 @@ create_MethodHistory_of_chipIDs(chip_IDs)
 \arguments{
 \item{chip_IDs}{}
 }
-\value{
-
-}
 \description{
 create_MethodHistory_of_chipIDs
 }

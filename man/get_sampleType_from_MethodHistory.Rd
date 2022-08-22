@@ -9,9 +9,6 @@ get_sampleType_from_MethodHistory(MethodHistory)
 \arguments{
 \item{MethodHistory}{}
 }
-\value{
-
-}
 \description{
 Title
 }

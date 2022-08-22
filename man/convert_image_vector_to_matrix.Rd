@@ -9,9 +9,6 @@ convert_image_vector_to_matrix(data_sum)
 \arguments{
 \item{data_sum}{}
 }
-\value{
-
-}
 \description{
 Title
 }

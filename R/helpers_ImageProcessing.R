@@ -1,4 +1,4 @@
-V <- "250522"
+V <- "210822"
 helpers <- "ImageProcessing"
 
 assign(paste0("version.helpers.", helpers), V)
@@ -26,10 +26,53 @@ writeLines(
     "- read_data_sum_as_matrix()"
   ))
 
+#' sets high FL values to a certain quantile FL value of a given attenuation quantile
+#'
+#' attentuation defines the percentage of high FL values to be set to a lower cutoff value
+#'
+#' @param data_sum
+#' @param attenuation
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' \donttest{
+#'
+#' group_ID <- "P1761451"
+#' output_dir <- "data_output"
+#' RJobTissueArea:::create_working_directory(output_dir)
+#' chip_IDs <- find_valid_group_chip_IDs(group_ID)
+#' ScanHistory <- create_ScanHistory_extended(chip_IDs,
+#' output_dir,
+#' result_ID = group_ID)
+#' image_groups <- create_hdr_image_groups(ScanHistory)
+#' image_group_list<-image_groups$data[[1]]
+#' data_sum <- calculate_data_sum(image_group_list)
+#' data_att <- attenuate_FLpeakValues(data_sum,0.1)
+#' m.data <- convert_image_vector_to_matrix(data_att)
+#' grey_values <- create_pixmap_greyvalues(m.data,c(1,1))
+#' grey_values%>%
+#' imager::as.cimg()%>%
+#' plot(main = "original dataSum")
+#' }
+attenuate_FLpeakValues <- function(data_sum,attenuation=0.01){
+
+  att <- att_threshold <- pos <- data_att <- NULL
+
+  att <- 1-attenuation
+  att_threshold <- quantile(data_sum,att)
+  pos <- which(data_sum >= att_threshold)
+  data_att <- data_sum
+  data_att[pos] <- att_threshold
+
+  return(data_att)
+
+}
+
 #' calculate_data_sum
 #'
 #' @param image_group_list
-#' @param filepath
 #'
 #' @return
 #' @export
@@ -227,6 +270,7 @@ create_pixmap_greyvalues <- function(m.data,
 #' @param sigma
 #' @param threshold
 #' @param window
+#' @param attenuation
 #' @param chip_ID
 #' @param pos_ID
 #'
@@ -239,6 +283,7 @@ create_plot_directory <- function(output_dir,
                                   sigma,
                                   threshold,
                                   window,
+                                  attenuation,
                                   chip_ID,
                                   pos_ID,
                                   suffix_resultfile){
@@ -247,7 +292,7 @@ create_plot_directory <- function(output_dir,
     output_dir,
     "image_processing",
     "result_plots",
-    paste0(sigma,"_",threshold,"_",window)
+    paste0(sigma,"_",threshold,"_",window,"_",attenuation)
   )
   create_working_directory(plot_filepath)
 
@@ -394,6 +439,7 @@ plot_tissue_detection <- function(m.data,
 #' @param sigma
 #' @param threshold
 #' @param window
+#' @param attenuation
 #'
 #' @return
 #' @export
@@ -406,9 +452,10 @@ process_TissueDetection <- function(image_groups,
                                     sigma = 15,
                                     threshold = 2,
                                     window = 10,
+                                    attenuation = 0.01,
                                     plot_image = TRUE,
                                     result_ID = ""){
-  V <- 260622
+  V <- 220822
   # UPDATE
   # internal data_sum calculation
   # optional plot generation
@@ -417,6 +464,8 @@ process_TissueDetection <- function(image_groups,
   # export and return result_df and summary_df
   # result_ID as label in result filenames
   # include check if result file exist and load it or create new result_df
+  # include attenuation of FL peak values
+  # include noise reduction
 
   #_______________________
   #create result_dirname----
@@ -434,6 +483,7 @@ process_TissueDetection <- function(image_groups,
     group_ID = character(0), # group_ID
     chip_ID = character(0), #chip_ID
     pos_ID = numeric(0), #pos_ID
+    attenuation = numeric(0),
     sigma = numeric(0),
     threshold = numeric(0),
     GS_window = numeric(0),
@@ -460,9 +510,18 @@ process_TissueDetection <- function(image_groups,
     #calculate data_sum----
     data_sum <- calculate_data_sum(image_group_list)
 
+    #________________________
+    #attenuate FL peak values----
+    data_attenuate <- attenuate_FLpeakValues(data_sum,
+                                             attenuation)
+
+    #____________
+    #reduce noise----
+    data_noi <- reduce_noise(data_attenuate)
+
     #_________________
     #convert to matrix----
-    m.data <- convert_image_vector_to_matrix(data_sum)
+    m.data <- convert_image_vector_to_matrix(data_noi)
 
     #__________________
     #extract resolution----
@@ -492,6 +551,7 @@ process_TissueDetection <- function(image_groups,
       tibble::add_row(group_ID = group_ID,
                       chip_ID = chip_ID,
                       pos_ID = pos_ID,
+                      attenuation = attenuation,
                       sigma = sigma,
                       threshold = threshold,
                       GS_window = window,
@@ -506,6 +566,7 @@ process_TissueDetection <- function(image_groups,
                                         sigma,
                                         threshold,
                                         window,
+                                        attenuation,
                                         chip_ID,
                                         pos_ID,
                                         result_ID)
@@ -656,3 +717,65 @@ read_data_sum_as_matrix <- function(filepath){
   return(m_data_sum)
 }
 
+
+#' determines noise and sets FLvalues to zero
+#'
+#' - calculates density of FLvalues and determines all peaks
+#' - defines the first density peak as noise
+#' - noise threshold equals the last FLvalue of the first peak in the density curve
+#' - sets all FLvalues below noise threshold to zero
+#'
+#' @param data vector or metrix of values
+#'
+#' @return vector of metric of values with noise values set to zero
+#' @export
+#' @keywords internal
+#' @family
+#'
+#' @examples
+#' \donttest{
+#' group_ID <- "P1761451"
+#' output_dir <- "data_output"
+#' RJobTissueArea:::create_working_directory(output_dir)
+#' chip_IDs <- find_valid_group_chip_IDs(group_ID)
+#' ScanHistory <- create_ScanHistory_extended(chip_IDs,output_dir,group_ID)
+#' image_groups <- create_hdr_image_groups(ScanHistory)
+#' image_group_list<-image_groups$data[[51]]
+#' data_sum <- calculate_data_sum(image_group_list)
+#' data_attenuate <- attenuate_FLpeakValues(data_sum,0.01)
+#' data_noi <- reduce_noise(data_attenuate)
+#' m.data <- convert_image_vector_to_matrix(data_noi)
+#' cellres <- extract_image_resolution(data_sum)
+#' grey_values <- create_pixmap_greyvalues(m.data,cellres)
+#' grey_values%>%
+#' imager::as.cimg()%>%
+#' plot(main = "original dataSum")
+#' }
+reduce_noise <- function(data){
+
+  V <- 220822
+
+  data_dens <- peaks <- pos_peak <- pos_noise <- noise <- data_noi <- NULL
+
+  # estimate FLvalue density
+  data_dens <- density(data)
+
+  # detect peaks of density curve
+  peaks <- pracma::findpeaks(data_dens$y)
+
+  # get index of end value of the first density peak
+  pos_peak <- min(peaks[,4])
+
+  # get corresponding FLvalue
+  noise <- data_dens$x[pos_peak]
+
+  # determine all FLvalues less than noise
+  pos_noise <- which(data <= noise)
+
+  # set noise values to zero
+  data_noi <- data
+  data_noi[pos_noise] <- 0
+
+  return(data_noi)
+
+}

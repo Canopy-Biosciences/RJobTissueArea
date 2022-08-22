@@ -9,9 +9,6 @@ extract_encoding_from_blob_parameter(blob_parameter)
 \arguments{
 \item{blob_parameter}{}
 }
-\value{
-
-}
 \description{
 extract_encoding_from_blob_parameter
 }

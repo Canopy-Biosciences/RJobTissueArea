@@ -9,9 +9,6 @@ create_hdr_filepath(chip_path, scan_ID, pos_ID)
 \arguments{
 \item{pos_ID}{}
 }
-\value{
-
-}
 \description{
 create_hdr_filepath
 }

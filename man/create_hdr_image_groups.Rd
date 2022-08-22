@@ -9,12 +9,6 @@ create_hdr_image_groups(ScanHistory)
 \arguments{
 \item{ScanHistory}{}
 }
-\value{
-
-}
 \description{
 create_hdr_image_groups
-}
-\examples{
-
 }

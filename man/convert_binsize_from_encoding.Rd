@@ -9,9 +9,6 @@ convert_binsize_from_encoding(encoding)
 \arguments{
 \item{encoding}{}
 }
-\value{
-
-}
 \description{
 convert_binsize_from_encoding
 }

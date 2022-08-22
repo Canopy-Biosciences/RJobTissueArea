@@ -9,9 +9,6 @@ plot_tissue_detection(m.data, cellres, pixelset, filename)
 \arguments{
 \item{filename}{}
 }
-\value{
-
-}
 \description{
 Title
 }

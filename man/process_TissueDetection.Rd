@@ -10,15 +10,13 @@ process_TissueDetection(
   sigma = 15,
   threshold = 2,
   window = 10,
+  attenuation = 0.01,
   plot_image = TRUE,
   result_ID = ""
 )
 }
 \arguments{
-\item{window}{}
-}
-\value{
-
+\item{attenuation}{}
 }
 \description{
 process_TissueDetection
