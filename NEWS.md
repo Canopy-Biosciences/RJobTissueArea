@@ -1,5 +1,9 @@
 # RJobTissueArea (development version)
 
+# RJobTissueArea 0.0.0.19
+
+* adding noise reduction, by setting FL values forming the first FL-denstity-Peak to zero
+
 # RJobTissueArea 0.0.0.18
 
 * FL peak value attenuation included into Tissue Detection Workflow
