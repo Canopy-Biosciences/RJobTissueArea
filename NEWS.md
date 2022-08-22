@@ -1,5 +1,9 @@
 # RJobTissueArea (development version)
 
+# RJobTissueArea 0.0.0.18
+
+* FL peak value attenuation included into Tissue Detection Workflow
+
 # RJobTissueArea 0.0.0.17
 
 * added sampleType to ScanHistory_extended
