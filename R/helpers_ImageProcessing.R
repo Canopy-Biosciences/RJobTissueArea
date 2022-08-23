@@ -582,7 +582,7 @@ process_TissueDetection <- function(image_groups,
   #________________
   #chipwise summary----
   result_df_summary <- result_df%>%
-    dplyr::group_by(chip_ID, sigma, threshold, GS_window)%>%
+    dplyr::group_by(chip_ID, attenuation,sigma, threshold, GS_window)%>%
     dplyr::summarize(n_positions = dplyr::n(),
                      perc_TissueArea = sum(perc_TissueArea)/dplyr::n(),
                      TissueArea_mm2 = sum(TissueArea_mm2),
@@ -590,7 +590,7 @@ process_TissueDetection <- function(image_groups,
 
   #________________
   #export result_df----
-  readr::write_csv(result_df,
+  readr::write_excel_csv(result_df,
                    result_filename)
 
   #_____________________
@@ -599,7 +599,7 @@ process_TissueDetection <- function(image_groups,
                                paste0("SummaryResultTissueArea_",
                                       result_ID,".csv"))
 
-  readr::write_csv(result_df_summary,
+  readr::write_excel_csv(result_df_summary,
                    summary_filename)
 
 
