@@ -1,4 +1,11 @@
-# RJobTissueArea (development version)
+# RJobTissueArea 0.0.0.21
+
+* add noise reduction as parameter
+
+# RJobTissueArea 0.0.0.20
+
+* bugfix data export
+* bugfix check data import
 
 # RJobTissueArea 0.0.0.19
 
