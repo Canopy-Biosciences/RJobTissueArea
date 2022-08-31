@@ -1,5 +1,5 @@
-V <- "210822"
-helpers <- "ImageProcessing"
+V <- "240822"
+helpers <- "PlotScanResults"
 
 assign(paste0("version.helpers.", helpers), V)
 writeLines("_____________________________________________________________")
@@ -10,21 +10,103 @@ writeLines(
   c(
     "---------------------",
     "functions: ",
-    "- calculate_data_sum()",
-    "- calculate_n_TissuePixel()",
-    "- calculate_perc_TissueArea()",
-    "- calculate_TissueArea()",
-    "- convert_image_vector_to_matrix()",
-    "- create_hdr_image_groups()",
-    "- create_pixmap_greyvalues()",
-    "- create_plot_directory()",
-    "- create_result_filepath()",
-    "- export_data_sum()",
-    "- extract_image_resolution()",
-    "- plot_tissue_detection()",
-    "- process_TissueDetection()",
-    "- read_data_sum_as_matrix()"
+    "- ()"
   ))
+
+
+
+library(RJobTissueArea)
+group_ID <- "stichings"
+output_dir <- file.path("data_output",group_ID)
+RJobTissueArea:::create_working_directory(output_dir)
+
+#chip_IDs <- c("M1708167","M1708169","M1708181","M1730404","M1730406","M1730412","M1730424","M1730446","M1764730","M1730408","M1579140","M1579152","M1562406","M1562329","M1562341","M1562444","M1578587","M1708241")
+chip_IDs <- c("M1579152","M1562406","M1730408","M1708169","M1562329","M1562341","M1562444","M1578587","M1730412")
+
+#chip_ID <- c("M1562406")
+
+ScanHistory <- create_ScanHistory_extended(chip_IDs,
+                                           output_dir,
+                                           result_ID = group_ID)
+
+image_groups <- ScanHistory%>%
+  dplyr::filter(Excluded %in% c("FALSE")) %>%
+  dplyr::filter(Status == "Finished")%>%
+  dplyr::filter(enabled == 1)%>%
+  dplyr::filter(!is.na(hdr_filename)) %>%
+  #dplyr::filter(!Tag %in% c("BG", "*")) %>%
+  dplyr::mutate(hdr_filepath = create_hdr_filepath(chip_path, scan_ID, pos_ID))%>%
+  dplyr::rename(image_path = "hdr_filepath",
+                blob_filename = "hdr_filename") %>%
+  dplyr::mutate(group_ID = paste0(chip_ID,"_", pos_ID))%>%
+  dplyr::group_by(chip_ID, pos_ID) %>%
+  tidyr::nest() %>%
+  dplyr::mutate(group_ID = paste0(chip_ID,"_", pos_ID))
+
+#_______
+#dataSum----
+dataSum <- purrr::map(image_groups$data[1:18],~calculate_data_sum(.x))
+
+#________________________
+#attenuate FL peak values----
+data_attenuate <- purrr::map(dataSum,
+                             ~attenuate_FLpeakValues(.x,
+                                                     attenuation=0.01))
+
+#____________
+#reduce noise----
+data_noi <- purrr::map(data_attenuate,
+                       ~reduce_noise(.x))
+
+#_________________
+#convert to matrix----
+m.data <- purrr::map(data_noi,
+                     ~convert_image_vector_to_matrix(.x))
+
+#__________________
+#extract resolution----
+cellres <- purrr::map(dataSum,
+                      ~extract_image_resolution(.x))
+
+#________________________________
+#apply tissue detection procedure----
+pixelsets <- purrr::map2(m.data,
+                        cellres,
+                         ~process_tissue_detection_workflow(.x,
+                                                           .y,
+                                                           sigma=15,
+                                                           threshold=35,
+                                                           window=50))
+
+names(pixelsets)<-image_groups$pos_ID[1:18]
+
+
+
+
+
+#___________________
+#load positions file----
+chip_paths <- purrr::map_chr(chip_IDs,
+                             ~find_chip_path(.x))
+positions_paths <- file.path(chip_paths,"positions.csv")
+check_posFiles <- file.exists(positions_paths)
+pos_files <- purrr::map(positions_paths[check_posFiles],
+                        ~readr::read_delim(.x,delim="\t"))
+names(pos_files)<- chip_IDs[check_posFiles]
+
+
+
+
+#_____________________
+#scale chipx and chipy----
+chip_ID <- unique(image_groups$chip_ID[1:18]%>%unique())
+positions <- pos_files[[chip_ID]]
+sel <- which(positions$position %in% as.numeric(names(pixelsets)))
+positions<-positions[sel,]
+
+pixelset <- pixelsets[[1]]
+i<- pixmap::pixmapGrey(pixelset)
+
 
 #' sets high FL values to a certain quantile FL value of a given attenuation quantile
 #'
@@ -457,9 +539,6 @@ plot_tissue_detection <- function(m.data,
 #' @param threshold
 #' @param window
 #' @param attenuation
-#' @param noiseReduction
-#' @param plot_image
-#' @param result_ID
 #'
 #' @return
 #' @export
@@ -473,10 +552,9 @@ process_TissueDetection <- function(image_groups,
                                     threshold = 2,
                                     window = 10,
                                     attenuation = 0.01,
-                                    noiseReduction = TRUE,
                                     plot_image = TRUE,
                                     result_ID = ""){
-  V <- 310822
+  V <- 220822
   # UPDATE
   # internal data_sum calculation
   # optional plot generation
@@ -487,7 +565,6 @@ process_TissueDetection <- function(image_groups,
   # include check if result file exist and load it or create new result_df
   # include attenuation of FL peak values
   # include noise reduction
-  # add noiseReduction logical parameter
 
   #_______________________
   #create result_dirname----
@@ -539,11 +616,7 @@ process_TissueDetection <- function(image_groups,
 
     #____________
     #reduce noise----
-    if(noiseReduction){
-      data_noi <- reduce_noise(data_attenuate)
-    }else{
-      data_noi <- data_sum
-    }
+    data_noi <- reduce_noise(data_attenuate)
 
     #_________________
     #convert to matrix----

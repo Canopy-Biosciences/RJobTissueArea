@@ -11,12 +11,13 @@ process_TissueDetection(
   threshold = 2,
   window = 10,
   attenuation = 0.01,
+  noiseReduction = TRUE,
   plot_image = TRUE,
   result_ID = ""
 )
 }
 \arguments{
-\item{attenuation}{}
+\item{result_ID}{}
 }
 \description{
 process_TissueDetection
