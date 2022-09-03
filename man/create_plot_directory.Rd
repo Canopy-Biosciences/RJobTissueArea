@@ -10,6 +10,7 @@ create_plot_directory(
   threshold,
   window,
   attenuation,
+  noiseReduction,
   chip_ID,
   pos_ID,
   suffix_resultfile

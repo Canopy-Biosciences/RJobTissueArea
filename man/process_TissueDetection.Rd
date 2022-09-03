@@ -23,6 +23,21 @@ process_TissueDetection(
 process_TissueDetection
 }
 \examples{
+\donttest{
 output_dir <- "devel/data/data_output"
 result_ID <- "P1761451"
+group_ID <- "P1761451"
+RJobTissueArea:::create_working_directory(output_dir)
+chip_IDs <- find_valid_group_chip_IDs(group_ID)
+ScanHistory <- create_ScanHistory_extended(chip_IDs,
+output_dir,
+result_ID = group_ID)
+image_groups <- create_hdr_image_groups(ScanHistory)
+sigma = 15
+threshold = 2
+window = 10
+attenuation = 0.01
+noiseReduction = FALSE
+plot_image = TRUE
+}
 }

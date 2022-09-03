@@ -301,6 +301,7 @@ create_plot_directory <- function(output_dir,
                                   threshold,
                                   window,
                                   attenuation,
+                                  noiseReduction,
                                   chip_ID,
                                   pos_ID,
                                   suffix_resultfile){
@@ -309,7 +310,7 @@ create_plot_directory <- function(output_dir,
     output_dir,
     "image_processing",
     "result_plots",
-    paste0(sigma,"_",threshold,"_",window,"_",attenuation)
+    paste0(sigma,"_",threshold,"_",window,"_",attenuation,"_",noiseReduction)
   )
   create_working_directory(plot_filepath)
 
@@ -465,8 +466,24 @@ plot_tissue_detection <- function(m.data,
 #' @export
 #'
 #' @examples
+#' \donttest{
 #' output_dir <- "devel/data/data_output"
 #' result_ID <- "P1761451"
+#' group_ID <- "P1761451"
+#' RJobTissueArea:::create_working_directory(output_dir)
+#' chip_IDs <- find_valid_group_chip_IDs(group_ID)
+#' ScanHistory <- create_ScanHistory_extended(chip_IDs,
+#' output_dir,
+#' result_ID = group_ID)
+#' image_groups <- create_hdr_image_groups(ScanHistory)
+#' sigma = 15
+#' threshold = 2
+#' window = 10
+#' attenuation = 0.01
+#' noiseReduction = FALSE
+#' plot_image = TRUE
+#' }
+
 process_TissueDetection <- function(image_groups,
                                     output_dir,
                                     sigma = 15,
@@ -505,16 +522,18 @@ process_TissueDetection <- function(image_groups,
     group_ID = character(0), # group_ID
     chip_ID = character(0), #chip_ID
     pos_ID = numeric(0), #pos_ID
-    attenuation = numeric(0),
     sigma = numeric(0),
     threshold = numeric(0),
     GS_window = numeric(0),
+    attenuation = numeric(0),
+    noiseReduction = logical(0),
     perc_TissueArea = double(0),
     TissueArea_mm2 = double(0)
   )
   #_________________
   #add existing data----
-  result_df<-read_result_file(result_df,result_filename)
+  try(result_df <- read_result_file(result_df,result_filename),
+                 silent = TRUE)
 
   #________________________
   #map through image groups----
@@ -542,7 +561,7 @@ process_TissueDetection <- function(image_groups,
     if(noiseReduction){
       data_noi <- reduce_noise(data_attenuate)
     }else{
-      data_noi <- data_sum
+      data_noi <- data_attenuate
     }
 
     #_________________
@@ -578,6 +597,7 @@ process_TissueDetection <- function(image_groups,
                       chip_ID = chip_ID,
                       pos_ID = pos_ID,
                       attenuation = attenuation,
+                      noiseReduction = noiseReduction,
                       sigma = sigma,
                       threshold = threshold,
                       GS_window = window,
@@ -593,6 +613,7 @@ process_TissueDetection <- function(image_groups,
                                         threshold,
                                         window,
                                         attenuation,
+                                        noiseReduction,
                                         chip_ID,
                                         pos_ID,
                                         result_ID)
@@ -608,7 +629,7 @@ process_TissueDetection <- function(image_groups,
   #________________
   #chipwise summary----
   result_df_summary <- result_df%>%
-    dplyr::group_by(chip_ID, attenuation,sigma, threshold, GS_window)%>%
+    dplyr::group_by(chip_ID, attenuation,noiseReduction,sigma, threshold, GS_window)%>%
     dplyr::summarize(n_positions = dplyr::n(),
                      perc_TissueArea = sum(perc_TissueArea)/dplyr::n(),
                      TissueArea_mm2 = sum(TissueArea_mm2),
@@ -616,8 +637,9 @@ process_TissueDetection <- function(image_groups,
 
   #________________
   #export result_df----
-  readr::write_excel_csv(result_df,
-                   result_filename)
+  try(readr::write_excel_csv(result_df,
+                   result_filename),
+      silent = TRUE)
 
   #_____________________
   #export summary_result----
@@ -625,8 +647,9 @@ process_TissueDetection <- function(image_groups,
                                paste0("SummaryResultTissueArea_",
                                       result_ID,".csv"))
 
-  readr::write_excel_csv(result_df_summary,
-                   summary_filename)
+  try(readr::write_excel_csv(result_df_summary,
+                   summary_filename),
+      silent = TRUE)
 
 
   #_______________________________
