@@ -22,7 +22,7 @@ writeLines(
     "- export_data_sum()",
     "- extract_image_resolution()",
     "- plot_tissue_detection()",
-    "- process_TissueDetection()",
+    "- process_TissueDetectionWorkflow()",
     "- read_data_sum_as_matrix()"
   ))
 
@@ -450,7 +450,7 @@ plot_tissue_detection <- function(m.data,
 }
 
 
-#' process_TissueDetection
+#' process_TissueDetectionWorkflow
 #'
 #' @param image_groups
 #' @param output_dir
@@ -484,16 +484,17 @@ plot_tissue_detection <- function(m.data,
 #' plot_image = TRUE
 #' }
 
-process_TissueDetection <- function(image_groups,
-                                    output_dir,
-                                    sigma = 15,
-                                    threshold = 2,
-                                    window = 10,
-                                    attenuation = 0.01,
-                                    noiseReduction = TRUE,
-                                    plot_image = TRUE,
-                                    result_ID = ""){
-  V <- 310822
+process_TissueDetectionWorkflow <- function(image_groups,
+                                            output_dir,
+                                            sigma = 15,
+                                            threshold = 35,
+                                            window = 10,
+                                            attenuation = 0.01,
+                                            noiseReduction = TRUE,
+                                            plot_image = TRUE,
+                                            export_result = TRUE,
+                                            result_ID = ""){
+  V <- 050922
   # UPDATE
   # internal data_sum calculation
   # optional plot generation
@@ -505,17 +506,9 @@ process_TissueDetection <- function(image_groups,
   # include attenuation of FL peak values
   # include noise reduction
   # add noiseReduction logical parameter
+  # add export parameter
+  # change function names
 
-  #_______________________
-  #create result_dirname----
-  result_dir <- file.path(output_dir,
-                          "image_processing")
-
-  #______________________
-  #create result_filename----
-  result_filename <- file.path(result_dir,
-                               paste0("ResultTissueArea_",
-                                      result_ID,".csv"))
   #________________
   #create result_df----
   result_df <- tibble::tibble(
@@ -530,10 +523,6 @@ process_TissueDetection <- function(image_groups,
     perc_TissueArea = double(0),
     TissueArea_mm2 = double(0)
   )
-  #_________________
-  #add existing data----
-  try(result_df <- read_result_file(result_df,result_filename),
-                 silent = TRUE)
 
   #________________________
   #map through image groups----
@@ -574,7 +563,7 @@ process_TissueDetection <- function(image_groups,
 
     #________________________________
     #apply tissue detection procedure----
-    pixelset <- process_tissue_detection_workflow(m.data,
+    pixelset <- detect_tissueArea(m.data,
                                                   cellres,
                                                   sigma,
                                                   threshold,
@@ -636,30 +625,113 @@ process_TissueDetection <- function(image_groups,
                      .groups = "keep")
 
   #________________
+  #final resultList----
+  result <- list(result_df=result_df,
+                 summary_df = result_df_summary)
+
+  #________________
   #export result_df----
-  try(readr::write_excel_csv(result_df,
-                   result_filename),
-      silent = TRUE)
-
-  #_____________________
-  #export summary_result----
-  summary_filename <- file.path(result_dir,
-                               paste0("SummaryResultTissueArea_",
-                                      result_ID,".csv"))
-
-  try(readr::write_excel_csv(result_df_summary,
-                   summary_filename),
-      silent = TRUE)
-
+  if(export_result){
+      export_tissueAreaResults(result,
+                               output_dir,
+                               result_ID)
+    }
 
   #_______________________________
   #return result_df and summary_df----
-  return(list(result_df=result_df,
-              summary_df = result_df_summary))
+  return(result)
 
 }
 
-#' process_tissue_detection_workflow
+#' Title
+#'
+#' @param resultList
+#' @param output_dir
+#' @param result_ID
+#'
+#' @return
+#' @export
+#' @keywords internal
+#'
+#' @examples
+export_tissueAreaResults <- function(resultList,
+                                     output_dir,
+                                     result_ID){
+
+  Version <- "050922"
+  # UPDATE
+  #-
+  tictoc::tic("export tissue area results")
+
+  #__________________
+  #extract result_dfs----
+  result_df <- resultList$result_df
+  result_df_summary <- resultList$summary_df
+
+  #_______________________
+  #create result_dirname----
+  result_dir <- file.path(output_dir,
+                          "image_processing")
+
+  #______________________
+  #create result_filename----
+  result_filename <- file.path(result_dir,
+                               paste0("ResultTissueArea_",
+                                      result_ID,".csv"))
+
+  #______________________________
+  #create summary result_filename----
+  summary_filename <- file.path(result_dir,
+                                paste0("SummaryResultTissueArea_",
+                                       result_ID,".csv"))
+
+  #_______________________________________
+  #read and add result_df to existing data----
+  result_df <- read_result_file(result_df,
+                                result_filename)
+
+  #_______________________________________________
+  #read and add summary_result_df to existing data----
+  result_df_summary <- read_result_file(result_df_summary,
+                                        summary_filename)
+
+
+  #________________
+  #export result df----
+  readr::write_excel_csv(result_df,
+                         result_filename)
+
+  #_____________________
+  #export summary_result----
+  readr::write_excel_csv(result_df_summary,
+                         summary_filename)
+
+  tictoc::toc()
+}
+
+#' Title
+#'
+#' @return
+#' @export
+#' @keywords internal
+#'
+#' @examples
+prepare_tissueImage <- function(){
+
+}
+
+#' Title
+#'
+#' @return
+#' @export
+#' @keywords internal
+#'
+#' @examples
+process_parameterGrid <- function(){
+
+}
+
+#' detect_tissueArea
 #'
 #' @param m.data
 #' @param cellres
@@ -669,14 +741,18 @@ process_TissueDetection <- function(image_groups,
 #'
 #' @return
 #' @export
+#' @keywords internal
 #'
 #' @examples
-process_tissue_detection_workflow <- function(m.data,
-                                              cellres,
-                                              sigma,
-                                              threshold,
-                                              window){
+detect_tissueArea <- function(m.data,
+                                cellres,
+                                sigma,
+                                threshold,
+                                window){
 
+  #Version: 050922
+  #UPDATE:
+  #- change function name
 
   #create pixmap----
   # cellres: pixel resolution in horizontal and vertical direction

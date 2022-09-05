@@ -47,7 +47,7 @@ here::i_am("vignettes/HowToInstall.Rmd")
 
     > -   install internal R tools:
     >
-    >         install.packages(c("remotes","BioCmanager"))
+    >         install.packages(c("remotes","BiocManager"))
     >         remotes::install_version("cli",version = ">= 3.3.0")
     >         remotes::install_version("rlang",version=">= 1.0.0")
     >         remotes::install_version("xfun",">= 0.29", upgrade ="never")
@@ -80,7 +80,7 @@ here::i_am("vignettes/HowToInstall.Rmd")
     >
     >         package_dir <- choose.dir()
     >         package_name <- "RJobTissueArea"
-    >         package_version <- "0.0.0.16."
+    >         package_version <- "0.0.0.21."
     >
     > -   install the ZKW distance calculation package:
     >

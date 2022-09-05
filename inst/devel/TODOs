@@ -1,0 +1,10 @@
+To Dos:
+
+- outsourcing of code in process_TissueDetectionWorkflow into prepare_TissueImage()
+- parralel processing of imgae groupList
+- adding function process_parameterGrid()
+- package documentation
+- bugfix: rendering vignettes
+- fixing devtools::check() warnings and notes
+- adding vignettes for gridScreening
+- adding package datasets

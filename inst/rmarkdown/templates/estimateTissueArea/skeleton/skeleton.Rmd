@@ -61,11 +61,14 @@ image_groups <- create_hdr_image_groups(ScanHistory)
 **apply tissue detection workflow**
 
 ```{r}
-process_TissueDetection(image_groups[1,],
-                        output_dir,
-                        sigma = 15,
-                        threshold = 4,
-                        window = 50,
-                        plot_image = TRUE,
-                        result_ID = group_ID)
+process_TissueDetectionWorkflow(image_groups,
+                                output_dir,
+                                sigma = 15,
+                                threshold = 35,
+                                window = 50,
+                                attenuation = 0.01,
+                                noiseReduction = TRUE,
+                                plot_image = TRUE,
+                                export_result = TRUE,
+                                result_ID = group_ID)
 ```

@@ -1,6 +1,7 @@
 # RJobTissueArea 0.0.0.21
 
 * add noise reduction as parameter
+* adding export_result function
 
 # RJobTissueArea 0.0.0.20
 
