@@ -18,7 +18,7 @@ abstract: "The aim of this "
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
-                      eval = FALSE)
+                      eval = TRUE)
 
 library(RJobTissueArea)
 ```
@@ -64,11 +64,11 @@ image_groups <- create_hdr_image_groups(ScanHistory)
 process_TissueDetectionWorkflow(image_groups,
                                 output_dir,
                                 sigma = 15,
-                                threshold = 35,
+                                threshold = 35, #1,
                                 window = 50,
-                                attenuation = 0.01,
+                                attenuation = 0.01, #0,
                                 noiseReduction = TRUE,
-                                plot_image = TRUE,
+                                plot_image = TRUE, #FALSE,
                                 export_result = TRUE,
                                 result_ID = group_ID)
 ```

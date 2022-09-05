@@ -622,11 +622,12 @@ process_TissueDetectionWorkflow <- function(image_groups,
     dplyr::summarize(n_positions = dplyr::n(),
                      perc_TissueArea = sum(perc_TissueArea)/dplyr::n(),
                      TissueArea_mm2 = sum(TissueArea_mm2),
-                     .groups = "keep")
+                     .groups = "keep")%>%
+    dplyr::ungroup()
 
   #________________
   #final resultList----
-  result <- list(result_df=result_df,
+  result <- list(result_df = result_df,
                  summary_df = result_df_summary)
 
   #________________

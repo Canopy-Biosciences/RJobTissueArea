@@ -72,10 +72,6 @@ create_working_directory <- function(output_dir) {
 #' )
 read_result_file <- function(result_df,
                              result_filename){
-
-  #______________________
-  #get obligatory columns
-  cols <- colnames(result_df)
   #____________
   #get dir_name
   result_dir <- dirname(result_filename)
@@ -84,17 +80,12 @@ read_result_file <- function(result_df,
   if(file.exists(result_filename)){
     #__________________
     #read and overwrite
-    result_df <- readr::read_csv(result_filename)
-    #_______________________
-    #check obligatory column
-    to_add <- cols[which(!cols %in% colnames(result_df))]
-    #_________________________
-    #check if cols are missing
-    if(length(to_add)>=1){
-      #______________________________________
-      #add missing columns and set content NA
-      result_df[,to_add] <- NA
-    }
+    OLD_result_df <- readr::read_csv(result_filename)
+
+    #_________________
+    #combined both dfs
+    result_df <- dplyr::bind_rows(result_df,
+                                  OLD_result_df)
   }else{
     #_________________
     #create result_dir
@@ -104,7 +95,6 @@ read_result_file <- function(result_df,
   #return result_df
   return(result_df)
 }
-
 
 
 #' Stop execution
