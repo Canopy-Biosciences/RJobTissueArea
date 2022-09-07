@@ -70,13 +70,18 @@ attenuate_FLpeakValues <- function(data_sum,attenuation=0.01){
 
 }
 
-#' calculate_data_sum
+#' calculates data_sum
 #'
-#' @param image_group_list
+#' - loops over several images of a  blob32-file-format and sums up all values pixel-wise
+#' - prints a message if a image cant be found
+#' - returns a vector containing the result values
 #'
-#' @return
+#' @param image_group_list dataframe containing columns \code{image_path}, \code{blob_filename}, \code{Tag}
+#'
+#' @return a vector containing values
 #' @export
 #' @keywords internal
+#' @family ImageProcessing
 #'
 #' @examples
 calculate_data_sum <- function(image_list){
@@ -508,7 +513,9 @@ process_TissueDetectionWorkflow <- function(image_groups,
   # add noiseReduction logical parameter
   # add export parameter
   # change function names
+  # summarize_result_df() outsourced
 
+  result_df <- summary_result_df <- NULL
   #________________
   #create result_df----
   result_df <- tibble::tibble(
@@ -564,10 +571,10 @@ process_TissueDetectionWorkflow <- function(image_groups,
     #________________________________
     #apply tissue detection procedure----
     pixelset <- detect_tissueArea(m.data,
-                                                  cellres,
-                                                  sigma,
-                                                  threshold,
-                                                  window)
+                                  cellres,
+                                  sigma,
+                                  threshold,
+                                  window)
 
     #_______________________________
     #calculate percentage TissueArea----
