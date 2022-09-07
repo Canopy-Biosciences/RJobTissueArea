@@ -617,13 +617,7 @@ process_TissueDetectionWorkflow <- function(image_groups,
 
   #________________
   #chipwise summary----
-  result_df_summary <- result_df%>%
-    dplyr::group_by(chip_ID, attenuation,noiseReduction,sigma, threshold, GS_window)%>%
-    dplyr::summarize(n_positions = dplyr::n(),
-                     perc_TissueArea = sum(perc_TissueArea)/dplyr::n(),
-                     TissueArea_mm2 = sum(TissueArea_mm2),
-                     .groups = "keep")%>%
-    dplyr::ungroup()
+  result_df_summary <- summarize_result_df(result_df)
 
   #________________
   #final resultList----
@@ -642,6 +636,39 @@ process_TissueDetectionWorkflow <- function(image_groups,
   #return result_df and summary_df----
   return(result)
 
+}
+
+#' summarizes tissue area results per chip_ID
+#'
+#'
+#' @param result_df dataframe containing columns \code{chip_ID)},\code{attenuation},\code{noiseReduction},\code{sigma},\code{threshold},\code{GS_window"},\code{perc_TissueArea},\code{TissueArea_mm2
+#'
+#' @return a dataframe containing additional columns, \code{n_positions}, \code{perc_TissueArea, \code{TissueArea_mm2
+#' @export
+#' @keywords internal
+#' @family ImageProcessing
+#'
+#' @examples
+summarize_result_df <- function(result_df){
+
+  result_df_summary <- vars_summary<- NULL
+
+  vars_summary <- c("chip_ID",
+                    "attenuation",
+                    "noiseReduction",
+                    "sigma",
+                    "threshold",
+                    "GS_window")
+
+  result_df_summary <- result_df%>%
+    dplyr::group_by_at(.vars = vars_summary)%>%
+    dplyr::summarize(n_positions = dplyr::n(),
+                     perc_TissueArea = sum(perc_TissueArea)/dplyr::n(),
+                     TissueArea_mm2 = sum(TissueArea_mm2),
+                     .groups = "keep")%>%
+    dplyr::ungroup()
+
+  return(result_df_summary)
 }
 
 #' Title
