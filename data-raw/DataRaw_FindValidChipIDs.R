@@ -1,5 +1,9 @@
 group_ID <- "P1761451"
 
+query_groupID_limslager <- query_mongoDB("limslager","UID",group_ID)
+
+EDL_groupID_limslager <- query_chipIDs_limslager%>%get_EDL_from_query_result()
+
 chip_IDs <- find_valid_group_chip_IDs(group_ID)
 # resulted the following chipIDs
 #c("M1730408", "M1730410", "M1730412", "M1730416", "M1730420",
@@ -13,8 +17,16 @@ EDL_chipIDs_limslager <- query_chipIDs_limslager%>%get_EDL_from_query_result()
 
 server_path <- find_server_path()
 
-usethis::use_data(chip_IDs,
-                  group_ID,
-                  query_chipIDs_limslager,
-                  EDL_chipIDs_limslager,
-                  server_path,  overwrite = TRUE)
+usethis::use_data(group_ID,
+                  chip_IDs,
+                  overwrite = TRUE)
+
+
+save(query_groupID_limslager,
+     EDL_groupID_limslager,
+     query_chipIDs_limslager,
+     EDL_chipIDs_limslager,
+     server_path,
+     file="data-raw/SysDataRaw_FindValidChipIDs")
+#load("data-raw/SysDataRaw_FindValidChipIDs")
+

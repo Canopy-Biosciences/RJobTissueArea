@@ -2,14 +2,26 @@
 % Please edit documentation in R/helpers_ImageProcessing.R
 \name{calculate_data_sum}
 \alias{calculate_data_sum}
-\title{calculate_data_sum}
+\title{calculates data_sum}
 \usage{
 calculate_data_sum(image_list)
 }
 \arguments{
-\item{image_group_list}{}
+\item{image_group_list}{dataframe containing columns \code{image_path}, \code{blob_filename}, \code{Tag}}
+}
+\value{
+a vector containing values
 }
 \description{
-calculate_data_sum
+\itemize{
+\item loops over several images of a  blob32-file-format and sums up all values pixel-wise
+\item prints a message if a image cant be found
+\item returns a vector containing the result values
 }
+}
+\seealso{
+Other ImageProcessing: 
+\code{\link{summarize_result_df}()}
+}
+\concept{ImageProcessing}
 \keyword{internal}

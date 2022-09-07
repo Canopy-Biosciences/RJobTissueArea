@@ -533,7 +533,6 @@ process_TissueDetectionWorkflow <- function(image_groups,
 
   #________________________
   #map through image groups----
-  j=1
   for(j in 1:dim(image_groups)[1]){
 
     #________________________
