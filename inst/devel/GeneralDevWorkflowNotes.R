@@ -34,6 +34,32 @@ usethis::use_package()
 usethis::use_version()
 renv::restore()
 
+#_________
+#sinew----
+pkg_dir <- usethis::proj_get()
+pkg_dir_R <- file.path(pkg_dir,'R')
+pkg_dir_r <- file.path(pkg_dir,'R')
+#Package Maintenance
+#
+#Update functions as needed
+#Run on updated functions:
+moga(file.path(pkg_dir_R,".R"),overwrite = TRUE)
+
+purrr::walk(list.files("R"),
+            ~sinew::moga(file.path(pkg_dir_r,.x),
+                 overwrite = TRUE))
+
+sinew::update_desc(path = pkg_dir_r, overwrite = TRUE)
+#Fill in the relevant descriptions and examples.
+#If needed create the correct Imports in the DESCRIPTION file.:
+sinew::make_import(pkg_dir_R,format = 'description',desc_loc = pkg_dir)
+sinew::make_import(script = file.path(pkg_dir,
+                                      ".R") ,format = 'oxygen')
+#get all params
+make_import(script = pkg_dir_r,format = 'oxygen')
+
+#Build the Package
+
 
 #__________________
 #dependencies----
