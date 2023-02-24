@@ -43,12 +43,13 @@ pkg_dir_r <- file.path(pkg_dir,'R')
 #
 #Update functions as needed
 #Run on updated functions:
-moga(file.path(pkg_dir_R,".R"),overwrite = TRUE)
+Rfiles <- list.files("R")
 
+sinew::moga(file.path(pkg_dir_r,"helpers_NameHarmonisation.R"),overwrite = FALSE)
 purrr::walk(list.files("R"),
             ~sinew::moga(file.path(pkg_dir_r,.x),
                  overwrite = TRUE))
-
+sinew::interOxyAddIn()
 sinew::update_desc(path = pkg_dir_r, overwrite = TRUE)
 #Fill in the relevant descriptions and examples.
 #If needed create the correct Imports in the DESCRIPTION file.:
@@ -56,7 +57,7 @@ sinew::make_import(pkg_dir_R,format = 'description',desc_loc = pkg_dir)
 sinew::make_import(script = file.path(pkg_dir,
                                       ".R") ,format = 'oxygen')
 #get all params
-make_import(script = pkg_dir_r,format = 'oxygen')
+sinew::make_import(script = pkg_dir_r,format = 'oxygen')
 
 #Build the Package
 
@@ -81,6 +82,7 @@ dget
 deparse
 dump
 dump(ls(as.environment("package:RJobTissueArea")))
+readLines()
 
 # daily work agreements
 #======================
@@ -119,6 +121,7 @@ dump(ls(as.environment("package:RJobTissueArea")))
 # roxygen @export und @keywords internal und @family ..., verlinkung des man.Rd files bei jenen funktionen in dem helpfile, die zur selben familie gehören und nicht internal
 # ohne @export: keine man.Rd erstellung, referenzierung über package:::function, auch in den examples
 
+# @seealso() [funktionname()] - verlinkung zur doc von dieser fkt
 # data
 # usethis::use_data(internal=TRUE) -> werden alle in einem sysdata.rda file im R folder abgespeichert und können einzelln mit package:::dataname aufgerufen werden
 # usethis::use_data() -> werden einzelln in data als .rds file abgespeichert, können über data("dataname") aufgerufen werden, benötigen jeweils einen eigenen roxygen abschnitt, im data.R file
