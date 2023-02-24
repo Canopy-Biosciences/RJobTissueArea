@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Parameter file for EDL-based R-Execution. Simplified format created automatically upon job execution.-->
+<Parameters>
+  <!--Created 2021-10-26 10:16:44Z with library version 1.1.16-1180-->
+  <Job UID="E1654427" Type="Distance calculation">
+    <!--The EDL R-job that this analysis is based on-->
+    <SpecificParameter Name="Priority" Unit="Text">Normal</SpecificParameter>
+    <SpecificParameter Name="Definition" Unit="Text">Calculation of single cell distances btw different gates</SpecificParameter>
+    <SpecificParameter Name="ReturnErrorMessage" Unit="Text">UNDEFINED</SpecificParameter>
+  </Job>
+  <Input>
+    <!--One or more input files, folders and/or objects-->
+    <DataFile Format="csv">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\M1142979_26102021101557.csv</DataFile>
+    <Object UID="DSTL1043449" Type="Gate" Name="All">
+      <!--Encapsulated EDL objects are not reflected here!-->
+      <SpecificParameter Name="Definition" Unit="Text">Is a collection of cells</SpecificParameter>
+      <SpecificParameter Name="DefinitionURL" Unit="URL or Database">-</SpecificParameter>
+      <SpecificParameter Name="StorageCSV" Unit="Filepath">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1043449.csv</SpecificParameter>
+      <SpecificParameter Name="Color" Unit="Color">42495</SpecificParameter>
+      <SpecificParameter Name="Parentgate" Unit="LIMSID"/>
+      <SpecificParameter Name="Parentsegmentation" Unit="LIMSID">ESTL1043416</SpecificParameter>
+      <SpecificParameter Name="Parentchannel" Unit="LIMSID">M1142979</SpecificParameter>
+      <SpecificParameter Name="X-origin" Unit="integer"/>
+      <SpecificParameter Name="Y-origin" Unit="integer"/>
+      <SpecificParameter Name="X-end" Unit="integer"/>
+      <SpecificParameter Name="Y-end" Unit="integer"/>
+      <SpecificParameter Name="rotation" Unit="integer"/>
+      <SpecificParameter Name="shape" Unit="EDLTerm-Single"/>
+      <SpecificParameter Name="markerspace" Unit="Text"/>
+      <SpecificParameter Name="x_marker_UID" Unit="Text"/>
+      <SpecificParameter Name="y_marker_UID" Unit="Text"/>
+      <SpecificParameter Name="InverseGate" Unit="boolean">false</SpecificParameter>
+    </Object>
+    <Object UID="DSTL1045994" Type="Gate" Name="Leukocytes">
+      <!--Encapsulated EDL objects are not reflected here!-->
+      <SpecificParameter Name="Definition" Unit="Text">Is a collection of cells</SpecificParameter>
+      <SpecificParameter Name="DefinitionURL" Unit="URL or Database">-</SpecificParameter>
+      <SpecificParameter Name="StorageCSV" Unit="Filepath">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1045994.csv</SpecificParameter>
+      <SpecificParameter Name="Color" Unit="Color">255</SpecificParameter>
+      <SpecificParameter Name="Parentgate" Unit="LIMSID">DSTL1045988+DSTL1045989+DSTL1045990</SpecificParameter>
+      <SpecificParameter Name="Parentsegmentation" Unit="LIMSID">ESTL1043416</SpecificParameter>
+      <SpecificParameter Name="Parentchannel" Unit="LIMSID">M1142979</SpecificParameter>
+      <SpecificParameter Name="X-origin" Unit="integer">-974</SpecificParameter>
+      <SpecificParameter Name="Y-origin" Unit="integer">-282</SpecificParameter>
+      <SpecificParameter Name="X-end" Unit="integer">452188</SpecificParameter>
+      <SpecificParameter Name="Y-end" Unit="integer">171413</SpecificParameter>
+      <SpecificParameter Name="rotation" Unit="integer">0</SpecificParameter>
+      <SpecificParameter Name="shape" Unit="EDLTerm-Single">rectangle</SpecificParameter>
+      <SpecificParameter Name="markerspace" Unit="Text">2D</SpecificParameter>
+      <SpecificParameter Name="x_marker_UID" Unit="Text">4523S</SpecificParameter>
+      <SpecificParameter Name="y_marker_UID" Unit="Text">368504</SpecificParameter>
+      <SpecificParameter Name="InverseGate" Unit="boolean">false</SpecificParameter>
+    </Object>
+    <Object UID="DSTL1045995" Type="Gate" Name="Tumor cells">
+      <!--Encapsulated EDL objects are not reflected here!-->
+      <SpecificParameter Name="Definition" Unit="Text">Is a collection of cells</SpecificParameter>
+      <SpecificParameter Name="DefinitionURL" Unit="URL or Database">-</SpecificParameter>
+      <SpecificParameter Name="StorageCSV" Unit="Filepath">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1045995.csv</SpecificParameter>
+      <SpecificParameter Name="Color" Unit="Color">16776960</SpecificParameter>
+      <SpecificParameter Name="Parentgate" Unit="LIMSID">DSTL1045991+DSTL1045992+DSTL1045993</SpecificParameter>
+      <SpecificParameter Name="Parentsegmentation" Unit="LIMSID">ESTL1043416</SpecificParameter>
+      <SpecificParameter Name="Parentchannel" Unit="LIMSID">M1142979</SpecificParameter>
+      <SpecificParameter Name="X-origin" Unit="integer">-718</SpecificParameter>
+      <SpecificParameter Name="Y-origin" Unit="integer">-821</SpecificParameter>
+      <SpecificParameter Name="X-end" Unit="integer">814026</SpecificParameter>
+      <SpecificParameter Name="Y-end" Unit="integer">120462</SpecificParameter>
+      <SpecificParameter Name="rotation" Unit="integer">0</SpecificParameter>
+      <SpecificParameter Name="shape" Unit="EDLTerm-Single">rectangle</SpecificParameter>
+      <SpecificParameter Name="markerspace" Unit="Text">2D</SpecificParameter>
+      <SpecificParameter Name="x_marker_UID" Unit="Text">4523S</SpecificParameter>
+      <SpecificParameter Name="y_marker_UID" Unit="Text">368504</SpecificParameter>
+      <SpecificParameter Name="InverseGate" Unit="boolean">false</SpecificParameter>
+    </Object>
+    <Object UID="DSTL1045996" Type="Gate" Name="Helper T cells">
+      <!--Encapsulated EDL objects are not reflected here!-->
+      <SpecificParameter Name="Definition" Unit="Text">Is a collection of cells</SpecificParameter>
+      <SpecificParameter Name="DefinitionURL" Unit="URL or Database">-</SpecificParameter>
+      <SpecificParameter Name="StorageCSV" Unit="Filepath">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1045996.csv</SpecificParameter>
+      <SpecificParameter Name="Color" Unit="Color">4259584</SpecificParameter>
+      <SpecificParameter Name="Parentgate" Unit="LIMSID">DSTL1045994</SpecificParameter>
+      <SpecificParameter Name="Parentsegmentation" Unit="LIMSID">ESTL1043416</SpecificParameter>
+      <SpecificParameter Name="Parentchannel" Unit="LIMSID">M1142979</SpecificParameter>
+      <SpecificParameter Name="X-origin" Unit="integer">-872</SpecificParameter>
+      <SpecificParameter Name="Y-origin" Unit="integer">10198</SpecificParameter>
+      <SpecificParameter Name="X-end" Unit="integer">1800</SpecificParameter>
+      <SpecificParameter Name="Y-end" Unit="integer">572067</SpecificParameter>
+      <SpecificParameter Name="rotation" Unit="integer">0</SpecificParameter>
+      <SpecificParameter Name="shape" Unit="EDLTerm-Single">rectangle</SpecificParameter>
+      <SpecificParameter Name="markerspace" Unit="Text">2D</SpecificParameter>
+      <SpecificParameter Name="x_marker_UID" Unit="Text">sc-53212</SpecificParameter>
+      <SpecificParameter Name="y_marker_UID" Unit="Text">ab196372</SpecificParameter>
+      <SpecificParameter Name="InverseGate" Unit="boolean">false</SpecificParameter>
+    </Object>
+    <Object UID="DSTL1045997" Type="Gate" Name="Cytotoxic T cells">
+      <!--Encapsulated EDL objects are not reflected here!-->
+      <SpecificParameter Name="Definition" Unit="Text">Is a collection of cells</SpecificParameter>
+      <SpecificParameter Name="DefinitionURL" Unit="URL or Database">-</SpecificParameter>
+      <SpecificParameter Name="StorageCSV" Unit="Filepath">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1045997.csv</SpecificParameter>
+      <SpecificParameter Name="Color" Unit="Color">33023</SpecificParameter>
+      <SpecificParameter Name="Parentgate" Unit="LIMSID">DSTL1045994+DSTL1045996</SpecificParameter>
+      <SpecificParameter Name="Parentsegmentation" Unit="LIMSID">ESTL1043416</SpecificParameter>
+      <SpecificParameter Name="Parentchannel" Unit="LIMSID">M1142979</SpecificParameter>
+      <SpecificParameter Name="X-origin" Unit="integer">1800</SpecificParameter>
+      <SpecificParameter Name="Y-origin" Unit="integer">-282</SpecificParameter>
+      <SpecificParameter Name="X-end" Unit="integer">702762</SpecificParameter>
+      <SpecificParameter Name="Y-end" Unit="integer">9902</SpecificParameter>
+      <SpecificParameter Name="rotation" Unit="integer">0</SpecificParameter>
+      <SpecificParameter Name="shape" Unit="EDLTerm-Single">rectangle</SpecificParameter>
+      <SpecificParameter Name="markerspace" Unit="Text">2D</SpecificParameter>
+      <SpecificParameter Name="x_marker_UID" Unit="Text">sc-53212</SpecificParameter>
+      <SpecificParameter Name="y_marker_UID" Unit="Text">ab196372</SpecificParameter>
+      <SpecificParameter Name="InverseGate" Unit="boolean">false</SpecificParameter>
+    </Object>
+    <Object UID="DSTL1045998" Type="Gate" Name="Regulatory T cells">
+      <!--Encapsulated EDL objects are not reflected here!-->
+      <SpecificParameter Name="Definition" Unit="Text">Is a collection of cells</SpecificParameter>
+      <SpecificParameter Name="DefinitionURL" Unit="URL or Database">-</SpecificParameter>
+      <SpecificParameter Name="StorageCSV" Unit="Filepath">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1045998.csv</SpecificParameter>
+      <SpecificParameter Name="Color" Unit="Color">16711935</SpecificParameter>
+      <SpecificParameter Name="Parentgate" Unit="LIMSID">DSTL1045996</SpecificParameter>
+      <SpecificParameter Name="Parentsegmentation" Unit="LIMSID">ESTL1043416</SpecificParameter>
+      <SpecificParameter Name="Parentchannel" Unit="LIMSID">M1142979</SpecificParameter>
+      <SpecificParameter Name="X-origin" Unit="integer">846</SpecificParameter>
+      <SpecificParameter Name="Y-origin" Unit="integer">3056</SpecificParameter>
+      <SpecificParameter Name="X-end" Unit="integer">347077</SpecificParameter>
+      <SpecificParameter Name="Y-end" Unit="integer">236847</SpecificParameter>
+      <SpecificParameter Name="rotation" Unit="integer">0</SpecificParameter>
+      <SpecificParameter Name="shape" Unit="EDLTerm-Single">rectangle</SpecificParameter>
+      <SpecificParameter Name="markerspace" Unit="Text">2D</SpecificParameter>
+      <SpecificParameter Name="x_marker_UID" Unit="Text">12-4777-42</SpecificParameter>
+      <SpecificParameter Name="y_marker_UID" Unit="Text">ab196372</SpecificParameter>
+      <SpecificParameter Name="InverseGate" Unit="boolean">false</SpecificParameter>
+    </Object>
+    <Object UID="DSTL1046012" Type="Gate" Name="Exhausted T cells">
+      <!--Encapsulated EDL objects are not reflected here!-->
+      <SpecificParameter Name="Definition" Unit="Text">Is a collection of cells</SpecificParameter>
+      <SpecificParameter Name="DefinitionURL" Unit="URL or Database">-</SpecificParameter>
+      <SpecificParameter Name="StorageCSV" Unit="Filepath">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1046012.csv</SpecificParameter>
+      <SpecificParameter Name="Color" Unit="Color">16711680</SpecificParameter>
+      <SpecificParameter Name="Parentgate" Unit="LIMSID">DSTL1045994</SpecificParameter>
+      <SpecificParameter Name="Parentsegmentation" Unit="LIMSID">ESTL1043416</SpecificParameter>
+      <SpecificParameter Name="Parentchannel" Unit="LIMSID">M1142979</SpecificParameter>
+      <SpecificParameter Name="X-origin" Unit="integer">3241</SpecificParameter>
+      <SpecificParameter Name="Y-origin" Unit="integer">1648</SpecificParameter>
+      <SpecificParameter Name="X-end" Unit="integer">229986</SpecificParameter>
+      <SpecificParameter Name="Y-end" Unit="integer">426371</SpecificParameter>
+      <SpecificParameter Name="rotation" Unit="integer">0</SpecificParameter>
+      <SpecificParameter Name="shape" Unit="EDLTerm-Single">rectangle</SpecificParameter>
+      <SpecificParameter Name="markerspace" Unit="Text">2D</SpecificParameter>
+      <SpecificParameter Name="x_marker_UID" Unit="Text">130-120-470</SpecificParameter>
+      <SpecificParameter Name="y_marker_UID" Unit="Text">368504</SpecificParameter>
+      <SpecificParameter Name="InverseGate" Unit="boolean">false</SpecificParameter>
+    </Object>
+    <Object UID="DSTL1046013" Type="Gate" Name="NK cells">
+      <!--Encapsulated EDL objects are not reflected here!-->
+      <SpecificParameter Name="Definition" Unit="Text">Is a collection of cells</SpecificParameter>
+      <SpecificParameter Name="DefinitionURL" Unit="URL or Database">-</SpecificParameter>
+      <SpecificParameter Name="StorageCSV" Unit="Filepath">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1046013.csv</SpecificParameter>
+      <SpecificParameter Name="Color" Unit="Color">16744576</SpecificParameter>
+      <SpecificParameter Name="Parentgate" Unit="LIMSID">DSTL1045994</SpecificParameter>
+      <SpecificParameter Name="Parentsegmentation" Unit="LIMSID">ESTL1043416</SpecificParameter>
+      <SpecificParameter Name="Parentchannel" Unit="LIMSID">M1142979</SpecificParameter>
+      <SpecificParameter Name="X-origin" Unit="integer">1423</SpecificParameter>
+      <SpecificParameter Name="Y-origin" Unit="integer">769</SpecificParameter>
+      <SpecificParameter Name="X-end" Unit="integer">493875</SpecificParameter>
+      <SpecificParameter Name="Y-end" Unit="integer">368093</SpecificParameter>
+      <SpecificParameter Name="rotation" Unit="integer">0</SpecificParameter>
+      <SpecificParameter Name="shape" Unit="EDLTerm-Single">rectangle</SpecificParameter>
+      <SpecificParameter Name="markerspace" Unit="Text">2D</SpecificParameter>
+      <SpecificParameter Name="x_marker_UID" Unit="Text">318305</SpecificParameter>
+      <SpecificParameter Name="y_marker_UID" Unit="Text">368504</SpecificParameter>
+      <SpecificParameter Name="InverseGate" Unit="boolean">false</SpecificParameter>
+    </Object>
+    <Object UID="DSTL1057806" Type="Gate" Name="AMPK+ cells">
+      <!--Encapsulated EDL objects are not reflected here!-->
+      <SpecificParameter Name="Definition" Unit="Text">Is a collection of cells</SpecificParameter>
+      <SpecificParameter Name="DefinitionURL" Unit="URL or Database">-</SpecificParameter>
+      <SpecificParameter Name="StorageCSV" Unit="Filepath">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057806.csv</SpecificParameter>
+      <SpecificParameter Name="Color" Unit="Color">16711680</SpecificParameter>
+      <SpecificParameter Name="Parentgate" Unit="LIMSID">DSTL1043449</SpecificParameter>
+      <SpecificParameter Name="Parentsegmentation" Unit="LIMSID">ESTL1043416</SpecificParameter>
+      <SpecificParameter Name="Parentchannel" Unit="LIMSID">M1142979</SpecificParameter>
+      <SpecificParameter Name="X-origin" Unit="integer">-26</SpecificParameter>
+      <SpecificParameter Name="Y-origin" Unit="integer">3147</SpecificParameter>
+      <SpecificParameter Name="X-end" Unit="integer">863317</SpecificParameter>
+      <SpecificParameter Name="Y-end" Unit="integer">682406</SpecificParameter>
+      <SpecificParameter Name="rotation" Unit="integer">0</SpecificParameter>
+      <SpecificParameter Name="shape" Unit="EDLTerm-Single">rectangle</SpecificParameter>
+      <SpecificParameter Name="markerspace" Unit="Text">2D</SpecificParameter>
+      <SpecificParameter Name="x_marker_UID" Unit="Text">H21492</SpecificParameter>
+      <SpecificParameter Name="y_marker_UID" Unit="Text">44-1150G</SpecificParameter>
+      <SpecificParameter Name="InverseGate" Unit="boolean">false</SpecificParameter>
+    </Object>
+    <Object UID="DSTL1057905" Type="Gate" Name="Naive CD4 T cells">
+      <!--Encapsulated EDL objects are not reflected here!-->
+      <SpecificParameter Name="Definition" Unit="Text">Is a collection of cells</SpecificParameter>
+      <SpecificParameter Name="DefinitionURL" Unit="URL or Database">-</SpecificParameter>
+      <SpecificParameter Name="StorageCSV" Unit="Filepath">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057905.csv</SpecificParameter>
+      <SpecificParameter Name="Color" Unit="Color">32896</SpecificParameter>
+      <SpecificParameter Name="Parentgate" Unit="LIMSID">DSTL1045996</SpecificParameter>
+      <SpecificParameter Name="Parentsegmentation" Unit="LIMSID">ESTL1043416</SpecificParameter>
+      <SpecificParameter Name="Parentchannel" Unit="LIMSID">M1142979</SpecificParameter>
+      <SpecificParameter Name="X-origin" Unit="integer">-827</SpecificParameter>
+      <SpecificParameter Name="Y-origin" Unit="integer">-365</SpecificParameter>
+      <SpecificParameter Name="X-end" Unit="integer">4780</SpecificParameter>
+      <SpecificParameter Name="Y-end" Unit="integer">3589</SpecificParameter>
+      <SpecificParameter Name="rotation" Unit="integer">0</SpecificParameter>
+      <SpecificParameter Name="shape" Unit="EDLTerm-Single">rectangle</SpecificParameter>
+      <SpecificParameter Name="markerspace" Unit="Text">2D</SpecificParameter>
+      <SpecificParameter Name="x_marker_UID" Unit="Text">304222</SpecificParameter>
+      <SpecificParameter Name="y_marker_UID" Unit="Text">sc-374650</SpecificParameter>
+      <SpecificParameter Name="InverseGate" Unit="boolean">false</SpecificParameter>
+    </Object>
+    <Object UID="DSTL1057906" Type="Gate" Name="Central Memory CD4 T cells">
+      <!--Encapsulated EDL objects are not reflected here!-->
+      <SpecificParameter Name="Definition" Unit="Text">Is a collection of cells</SpecificParameter>
+      <SpecificParameter Name="DefinitionURL" Unit="URL or Database">-</SpecificParameter>
+      <SpecificParameter Name="StorageCSV" Unit="Filepath">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057906.csv</SpecificParameter>
+      <SpecificParameter Name="Color" Unit="Color">12615935</SpecificParameter>
+      <SpecificParameter Name="Parentgate" Unit="LIMSID">DSTL1045996+DSTL1057905</SpecificParameter>
+      <SpecificParameter Name="Parentsegmentation" Unit="LIMSID">ESTL1043416</SpecificParameter>
+      <SpecificParameter Name="Parentchannel" Unit="LIMSID">M1142979</SpecificParameter>
+      <SpecificParameter Name="X-origin" Unit="integer">4780</SpecificParameter>
+      <SpecificParameter Name="Y-origin" Unit="integer">-250</SpecificParameter>
+      <SpecificParameter Name="X-end" Unit="integer">76766</SpecificParameter>
+      <SpecificParameter Name="Y-end" Unit="integer">3589</SpecificParameter>
+      <SpecificParameter Name="rotation" Unit="integer">0</SpecificParameter>
+      <SpecificParameter Name="shape" Unit="EDLTerm-Single">rectangle</SpecificParameter>
+      <SpecificParameter Name="markerspace" Unit="Text">2D</SpecificParameter>
+      <SpecificParameter Name="x_marker_UID" Unit="Text">304222</SpecificParameter>
+      <SpecificParameter Name="y_marker_UID" Unit="Text">sc-374650</SpecificParameter>
+      <SpecificParameter Name="InverseGate" Unit="boolean">false</SpecificParameter>
+    </Object>
+    <Object UID="DSTL1057907" Type="Gate" Name="Effector CD4 T cells">
+      <!--Encapsulated EDL objects are not reflected here!-->
+      <SpecificParameter Name="Definition" Unit="Text">Is a collection of cells</SpecificParameter>
+      <SpecificParameter Name="DefinitionURL" Unit="URL or Database">-</SpecificParameter>
+      <SpecificParameter Name="StorageCSV" Unit="Filepath">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057907.csv</SpecificParameter>
+      <SpecificParameter Name="Color" Unit="Color">16776960</SpecificParameter>
+      <SpecificParameter Name="Parentgate" Unit="LIMSID">DSTL1045996+DSTL1057905+DSTL1057906</SpecificParameter>
+      <SpecificParameter Name="Parentsegmentation" Unit="LIMSID">ESTL1043416</SpecificParameter>
+      <SpecificParameter Name="Parentchannel" Unit="LIMSID">M1142979</SpecificParameter>
+      <SpecificParameter Name="X-origin" Unit="integer">327</SpecificParameter>
+      <SpecificParameter Name="Y-origin" Unit="integer">3589</SpecificParameter>
+      <SpecificParameter Name="X-end" Unit="integer">4780</SpecificParameter>
+      <SpecificParameter Name="Y-end" Unit="integer">37927</SpecificParameter>
+      <SpecificParameter Name="rotation" Unit="integer">0</SpecificParameter>
+      <SpecificParameter Name="shape" Unit="EDLTerm-Single">rectangle</SpecificParameter>
+      <SpecificParameter Name="markerspace" Unit="Text">2D</SpecificParameter>
+      <SpecificParameter Name="x_marker_UID" Unit="Text">304222</SpecificParameter>
+      <SpecificParameter Name="y_marker_UID" Unit="Text">sc-374650</SpecificParameter>
+      <SpecificParameter Name="InverseGate" Unit="boolean">false</SpecificParameter>
+    </Object>
+    <Object UID="DSTL1057908" Type="Gate" Name="Effector Memory CD4 T cells">
+      <!--Encapsulated EDL objects are not reflected here!-->
+      <SpecificParameter Name="Definition" Unit="Text">Is a collection of cells</SpecificParameter>
+      <SpecificParameter Name="DefinitionURL" Unit="URL or Database">-</SpecificParameter>
+      <SpecificParameter Name="StorageCSV" Unit="Filepath">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057908.csv</SpecificParameter>
+      <SpecificParameter Name="Color" Unit="Color">255</SpecificParameter>
+      <SpecificParameter Name="Parentgate" Unit="LIMSID">DSTL1045996+DSTL1057905+DSTL1057906+DSTL1057907</SpecificParameter>
+      <SpecificParameter Name="Parentsegmentation" Unit="LIMSID">ESTL1043416</SpecificParameter>
+      <SpecificParameter Name="Parentchannel" Unit="LIMSID">M1142979</SpecificParameter>
+      <SpecificParameter Name="X-origin" Unit="integer">4886</SpecificParameter>
+      <SpecificParameter Name="Y-origin" Unit="integer">3589</SpecificParameter>
+      <SpecificParameter Name="X-end" Unit="integer">73456</SpecificParameter>
+      <SpecificParameter Name="Y-end" Unit="integer">50507</SpecificParameter>
+      <SpecificParameter Name="rotation" Unit="integer">0</SpecificParameter>
+      <SpecificParameter Name="shape" Unit="EDLTerm-Single">rectangle</SpecificParameter>
+      <SpecificParameter Name="markerspace" Unit="Text">2D</SpecificParameter>
+      <SpecificParameter Name="x_marker_UID" Unit="Text">304222</SpecificParameter>
+      <SpecificParameter Name="y_marker_UID" Unit="Text">sc-374650</SpecificParameter>
+      <SpecificParameter Name="InverseGate" Unit="boolean">false</SpecificParameter>
+    </Object>
+    <Object UID="DSTL1057909" Type="Gate" Name="Naive CD8 T cells">
+      <!--Encapsulated EDL objects are not reflected here!-->
+      <SpecificParameter Name="Definition" Unit="Text">Is a collection of cells</SpecificParameter>
+      <SpecificParameter Name="DefinitionURL" Unit="URL or Database">-</SpecificParameter>
+      <SpecificParameter Name="StorageCSV" Unit="Filepath">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057909.csv</SpecificParameter>
+      <SpecificParameter Name="Color" Unit="Color">65280</SpecificParameter>
+      <SpecificParameter Name="Parentgate" Unit="LIMSID">DSTL1045997</SpecificParameter>
+      <SpecificParameter Name="Parentsegmentation" Unit="LIMSID">ESTL1043416</SpecificParameter>
+      <SpecificParameter Name="Parentchannel" Unit="LIMSID">M1142979</SpecificParameter>
+      <SpecificParameter Name="X-origin" Unit="integer">-481</SpecificParameter>
+      <SpecificParameter Name="Y-origin" Unit="integer">-250</SpecificParameter>
+      <SpecificParameter Name="X-end" Unit="integer">4780</SpecificParameter>
+      <SpecificParameter Name="Y-end" Unit="integer">3589</SpecificParameter>
+      <SpecificParameter Name="rotation" Unit="integer">0</SpecificParameter>
+      <SpecificParameter Name="shape" Unit="EDLTerm-Single">rectangle</SpecificParameter>
+      <SpecificParameter Name="markerspace" Unit="Text">2D</SpecificParameter>
+      <SpecificParameter Name="x_marker_UID" Unit="Text">304222</SpecificParameter>
+      <SpecificParameter Name="y_marker_UID" Unit="Text">sc-374650</SpecificParameter>
+      <SpecificParameter Name="InverseGate" Unit="boolean">false</SpecificParameter>
+    </Object>
+    <Object UID="DSTL1057910" Type="Gate" Name="Central Memory CD8 T cells">
+      <!--Encapsulated EDL objects are not reflected here!-->
+      <SpecificParameter Name="Definition" Unit="Text">Is a collection of cells</SpecificParameter>
+      <SpecificParameter Name="DefinitionURL" Unit="URL or Database">-</SpecificParameter>
+      <SpecificParameter Name="StorageCSV" Unit="Filepath">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057910.csv</SpecificParameter>
+      <SpecificParameter Name="Color" Unit="Color">255</SpecificParameter>
+      <SpecificParameter Name="Parentgate" Unit="LIMSID">DSTL1045997+DSTL1057909</SpecificParameter>
+      <SpecificParameter Name="Parentsegmentation" Unit="LIMSID">ESTL1043416</SpecificParameter>
+      <SpecificParameter Name="Parentchannel" Unit="LIMSID">M1142979</SpecificParameter>
+      <SpecificParameter Name="X-origin" Unit="integer">4780</SpecificParameter>
+      <SpecificParameter Name="Y-origin" Unit="integer">-173</SpecificParameter>
+      <SpecificParameter Name="X-end" Unit="integer">85707</SpecificParameter>
+      <SpecificParameter Name="Y-end" Unit="integer">3589</SpecificParameter>
+      <SpecificParameter Name="rotation" Unit="integer">0</SpecificParameter>
+      <SpecificParameter Name="shape" Unit="EDLTerm-Single">rectangle</SpecificParameter>
+      <SpecificParameter Name="markerspace" Unit="Text">2D</SpecificParameter>
+      <SpecificParameter Name="x_marker_UID" Unit="Text">304222</SpecificParameter>
+      <SpecificParameter Name="y_marker_UID" Unit="Text">sc-374650</SpecificParameter>
+      <SpecificParameter Name="InverseGate" Unit="boolean">false</SpecificParameter>
+    </Object>
+    <Object UID="DSTL1057911" Type="Gate" Name="Effector Memory CD8 T cells">
+      <!--Encapsulated EDL objects are not reflected here!-->
+      <SpecificParameter Name="Definition" Unit="Text">Is a collection of cells</SpecificParameter>
+      <SpecificParameter Name="DefinitionURL" Unit="URL or Database">-</SpecificParameter>
+      <SpecificParameter Name="StorageCSV" Unit="Filepath">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057911.csv</SpecificParameter>
+      <SpecificParameter Name="Color" Unit="Color">16744576</SpecificParameter>
+      <SpecificParameter Name="Parentgate" Unit="LIMSID">DSTL1045997+DSTL1057909+DSTL1057910</SpecificParameter>
+      <SpecificParameter Name="Parentsegmentation" Unit="LIMSID">ESTL1043416</SpecificParameter>
+      <SpecificParameter Name="Parentchannel" Unit="LIMSID">M1142979</SpecificParameter>
+      <SpecificParameter Name="X-origin" Unit="integer">4780</SpecificParameter>
+      <SpecificParameter Name="Y-origin" Unit="integer">3589</SpecificParameter>
+      <SpecificParameter Name="X-end" Unit="integer">85707</SpecificParameter>
+      <SpecificParameter Name="Y-end" Unit="integer">45238</SpecificParameter>
+      <SpecificParameter Name="rotation" Unit="integer">0</SpecificParameter>
+      <SpecificParameter Name="shape" Unit="EDLTerm-Single">rectangle</SpecificParameter>
+      <SpecificParameter Name="markerspace" Unit="Text">2D</SpecificParameter>
+      <SpecificParameter Name="x_marker_UID" Unit="Text">304222</SpecificParameter>
+      <SpecificParameter Name="y_marker_UID" Unit="Text">sc-374650</SpecificParameter>
+      <SpecificParameter Name="InverseGate" Unit="boolean">false</SpecificParameter>
+    </Object>
+    <Object UID="DSTL1057913" Type="Gate" Name="PDL1-TIM3+ cells">
+      <!--Encapsulated EDL objects are not reflected here!-->
+      <SpecificParameter Name="Definition" Unit="Text">Is a collection of cells</SpecificParameter>
+      <SpecificParameter Name="DefinitionURL" Unit="URL or Database">-</SpecificParameter>
+      <SpecificParameter Name="StorageCSV" Unit="Filepath">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057913.csv</SpecificParameter>
+      <SpecificParameter Name="Color" Unit="Color">4227072</SpecificParameter>
+      <SpecificParameter Name="Parentgate" Unit="LIMSID">DSTL1043449</SpecificParameter>
+      <SpecificParameter Name="Parentsegmentation" Unit="LIMSID">ESTL1043416</SpecificParameter>
+      <SpecificParameter Name="Parentchannel" Unit="LIMSID">M1142979</SpecificParameter>
+      <SpecificParameter Name="X-origin" Unit="integer">2414</SpecificParameter>
+      <SpecificParameter Name="Y-origin" Unit="integer">-936</SpecificParameter>
+      <SpecificParameter Name="X-end" Unit="integer">93603</SpecificParameter>
+      <SpecificParameter Name="Y-end" Unit="integer">577</SpecificParameter>
+      <SpecificParameter Name="rotation" Unit="integer">0</SpecificParameter>
+      <SpecificParameter Name="shape" Unit="EDLTerm-Single">rectangle</SpecificParameter>
+      <SpecificParameter Name="markerspace" Unit="Text">2D</SpecificParameter>
+      <SpecificParameter Name="x_marker_UID" Unit="Text">54669S</SpecificParameter>
+      <SpecificParameter Name="y_marker_UID" Unit="Text">14123S</SpecificParameter>
+      <SpecificParameter Name="InverseGate" Unit="boolean">false</SpecificParameter>
+    </Object>
+  </Input>
+  <Output>
+    <!--A single output directory (must be created before running R)-->
+    <DataFolder UID="D1654426">\\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\E1654427</DataFolder>
+  </Output>
+</Parameters>

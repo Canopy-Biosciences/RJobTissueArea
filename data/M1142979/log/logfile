@@ -1,0 +1,207 @@
+RJobDistanceMetric/logging_paths 2023-01-09 15:44:42 INFO: The preprocessed input is located at C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/mainscript.
+RJobDistanceMetric/logging_paths 2023-01-09 15:44:42 INFO: The results of the distance calculation are located at C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/distance.
+RJobDistanceMetric/logging_paths 2023-01-09 15:44:42 INFO: The plots are located at C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/plots.
+RJobDistanceMetric/logging_paths 2023-01-09 15:44:42 INFO: The log file is located at C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/log.
+RJobDistanceMetric/logging_parameters 2023-01-09 15:44:42 INFO: 1 nearest neighbors will be calculated.
+RJobDistanceMetric/logging_parameters 2023-01-09 15:44:42 INFO: The radius that is considered to find neighbors is 300.
+RJobDistanceMetric/logging_parameters 2023-01-09 15:44:42 INFO: The average distances to all cells within the other gates will be calculated for a given cell.
+RJobDistanceMetric/create_XML_filepath_from_volume 2023-01-09 15:44:42 INFO: No server volume provided.
+RJobDistanceMetric/logging_UIDs 2023-01-09 15:44:42 INFO: The selected chip UID is M1142979.
+RJobDistanceMetric/logging_UIDs 2023-01-09 15:44:42 INFO: The selected segmentation UID is ESTL1043416.
+RJobDistanceMetric/logging_UIDs 2023-01-09 15:44:42 INFO: The selected RJob UID is E1654427.
+RJobDistanceMetric/logging_parameters 2023-01-09 15:44:42 INFO: 1 nearest neighbors will be calculated.
+RJobDistanceMetric/logging_parameters 2023-01-09 15:44:42 INFO: The radius that is considered to find neighbors is 300.
+RJobDistanceMetric/logging_parameters 2023-01-09 15:44:42 INFO: The average distances to all cells within the other gates will be calculated for a given cell.
+RJobDistanceMetric/logging_paths 2023-01-09 15:44:42 INFO: The preprocessed input is located at C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/mainscript.
+RJobDistanceMetric/logging_paths 2023-01-09 15:44:42 INFO: The results of the distance calculation are located at C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/distance.
+RJobDistanceMetric/logging_paths 2023-01-09 15:44:42 INFO: The plots are located at C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/plots.
+RJobDistanceMetric/logging_paths 2023-01-09 15:44:42 INFO: The log file is located at C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/log.
+RJobDistanceMetric/logging_selections 2023-01-09 15:44:42 INFO: The following positions will be processed: 1, 5.
+RJobDistanceMetric/logging_selections 2023-01-09 15:44:42 INFO: The following gates are selected: Leukocytes, Tumor cells, Helper T cells.
+RJobDistanceMetric/logging_entire_input 2023-01-09 15:44:42 DEBUG: No server volume provided.
+RJobDistanceMetric/validate_user_input 2023-01-09 15:44:42 SUCCESS: Input successfully validated.
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:42 DEBUG: Version x86_64-w64-mingw32.
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:42 DEBUG: Version x86_64.
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:42 DEBUG: Version mingw32.
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:42 DEBUG: Version x86_64, mingw32.
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:42 DEBUG: Version .
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:42 DEBUG: Version 3.
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:42 DEBUG: Version 6.3.
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:42 DEBUG: Version 2020.
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:42 DEBUG: Version 02.
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:42 DEBUG: Version 29.
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:42 DEBUG: Version 77875.
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:42 DEBUG: Version R.
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:42 DEBUG: Version R version 3.6.3 (2020-02-29).
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:42 DEBUG: Version Holding the Windsock.
+RJobDistanceMetric/create_working_directory 2023-01-09 15:44:42 DEBUG: Create path for the working directory, if necessary.
+RJobDistanceMetric/create_working_directory 2023-01-09 15:44:42 DEBUG: New working directory created.
+RJobDistanceMetric/find_chip_path 2023-01-09 15:44:43 DEBUG: Successfully found chip path: \\intern.chipcytometry.com\imagedata\volume13\M1142979
+RJobDistanceMetric/find_RService_XML_on_imageserver 2023-01-09 15:44:43 DEBUG: File path RJob EDL: \\intern.chipcytometry.com\imagedata\volume13\M1142979/Segments/ESTL1043416/E1654427/E1654427_parameters.xml.
+RJobDistanceMetric/import_R_Service_XML_file 2023-01-09 15:44:43 DEBUG: RService-XML file: E1654427_parameters.xml.
+RJobDistanceMetric/import_R_Service_XML_file 2023-01-09 15:44:43 DEBUG: XML file location: C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/mainscript.
+RJobDistanceMetric/extract_chip_IDs 2023-01-09 15:44:43 DEBUG: ChannelIDs of the gates: M1142979
+RJobDistanceMetric/extract_paths_of_gates 2023-01-09 15:44:43 DEBUG: Input gate file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1043449.csv.
+RJobDistanceMetric/extract_paths_of_gates 2023-01-09 15:44:43 DEBUG: Input gate file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1045994.csv.
+RJobDistanceMetric/extract_paths_of_gates 2023-01-09 15:44:43 DEBUG: Input gate file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1045995.csv.
+RJobDistanceMetric/extract_paths_of_gates 2023-01-09 15:44:43 DEBUG: Input gate file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1045996.csv.
+RJobDistanceMetric/extract_paths_of_gates 2023-01-09 15:44:43 DEBUG: Input gate file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1045997.csv.
+RJobDistanceMetric/extract_paths_of_gates 2023-01-09 15:44:43 DEBUG: Input gate file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1045998.csv.
+RJobDistanceMetric/extract_paths_of_gates 2023-01-09 15:44:43 DEBUG: Input gate file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1046012.csv.
+RJobDistanceMetric/extract_paths_of_gates 2023-01-09 15:44:43 DEBUG: Input gate file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1046013.csv.
+RJobDistanceMetric/extract_paths_of_gates 2023-01-09 15:44:43 DEBUG: Input gate file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057806.csv.
+RJobDistanceMetric/extract_paths_of_gates 2023-01-09 15:44:43 DEBUG: Input gate file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057905.csv.
+RJobDistanceMetric/extract_paths_of_gates 2023-01-09 15:44:43 DEBUG: Input gate file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057906.csv.
+RJobDistanceMetric/extract_paths_of_gates 2023-01-09 15:44:43 DEBUG: Input gate file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057907.csv.
+RJobDistanceMetric/extract_paths_of_gates 2023-01-09 15:44:43 DEBUG: Input gate file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057908.csv.
+RJobDistanceMetric/extract_paths_of_gates 2023-01-09 15:44:43 DEBUG: Input gate file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057909.csv.
+RJobDistanceMetric/extract_paths_of_gates 2023-01-09 15:44:43 DEBUG: Input gate file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057910.csv.
+RJobDistanceMetric/extract_paths_of_gates 2023-01-09 15:44:43 DEBUG: Input gate file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057911.csv.
+RJobDistanceMetric/extract_paths_of_gates 2023-01-09 15:44:43 DEBUG: Input gate file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057913.csv.
+RJobDistanceMetric/extract_paths_of_fl_files 2023-01-09 15:44:43 DEBUG: Input fl file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\M1142979_26102021101557.csv.
+RJobDistanceMetric/extract_gate_names 2023-01-09 15:44:43 DEBUG: Gate name: All
+RJobDistanceMetric/extract_gate_names 2023-01-09 15:44:43 DEBUG: Gate name: Leukocytes
+RJobDistanceMetric/extract_gate_names 2023-01-09 15:44:43 DEBUG: Gate name: Tumor cells
+RJobDistanceMetric/extract_gate_names 2023-01-09 15:44:43 DEBUG: Gate name: Helper T cells
+RJobDistanceMetric/extract_gate_names 2023-01-09 15:44:43 DEBUG: Gate name: Cytotoxic T cells
+RJobDistanceMetric/extract_gate_names 2023-01-09 15:44:43 DEBUG: Gate name: Regulatory T cells
+RJobDistanceMetric/extract_gate_names 2023-01-09 15:44:43 DEBUG: Gate name: Exhausted T cells
+RJobDistanceMetric/extract_gate_names 2023-01-09 15:44:43 DEBUG: Gate name: NK cells
+RJobDistanceMetric/extract_gate_names 2023-01-09 15:44:43 DEBUG: Gate name: AMPK+ cells
+RJobDistanceMetric/extract_gate_names 2023-01-09 15:44:43 DEBUG: Gate name: Naive CD4 T cells
+RJobDistanceMetric/extract_gate_names 2023-01-09 15:44:43 DEBUG: Gate name: Central Memory CD4 T cells
+RJobDistanceMetric/extract_gate_names 2023-01-09 15:44:43 DEBUG: Gate name: Effector CD4 T cells
+RJobDistanceMetric/extract_gate_names 2023-01-09 15:44:43 DEBUG: Gate name: Effector Memory CD4 T cells
+RJobDistanceMetric/extract_gate_names 2023-01-09 15:44:43 DEBUG: Gate name: Naive CD8 T cells
+RJobDistanceMetric/extract_gate_names 2023-01-09 15:44:43 DEBUG: Gate name: Central Memory CD8 T cells
+RJobDistanceMetric/extract_gate_names 2023-01-09 15:44:43 DEBUG: Gate name: Effector Memory CD8 T cells
+RJobDistanceMetric/extract_gate_names 2023-01-09 15:44:43 DEBUG: Gate name: PDL1-TIM3+ cells
+RJobDistanceMetric/tidy_up_XML_file_content 2023-01-09 15:44:43 DEBUG: Tidied up gate names.
+RJobDistanceMetric/tidy_up_XML_file_content 2023-01-09 15:44:43 DEBUG: Removed empty gates.
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: BG, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: *, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: BG, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: *, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: BG, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: BG, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: *, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: BG, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: BG, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: BG, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: *, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: BG, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: BG, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: *, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: BG, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: BG, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: BG, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: BG, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: *, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: BG, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: BG, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: *, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: BG, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: BG, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 INFO: Column(s) containing only 0's were deleted.   Marker names: BG, Chip ID: M1142979
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: CellID
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: Position
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: XPos
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: YPos
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: Size
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: pAMPK
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: CD4
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: CD56
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: CD45
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: CD38
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: FoxP3
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: GITR
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: CD45RO
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: CD8a
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: TIM3
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: CD223
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: panCK
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: PDL1
+RJobDistanceMetric/check.if.valid 2023-01-09 15:44:44 DEBUG: Names of input data: DNA
+RJobDistanceMetric/function (file_path, csv_type, chip_ID, jobtype) { content_temp <- data.table::fread(file_path) fl_file <- check.if.valid(content_temp, chip_ID, jobtype) log_debug("Successfully imported fl file {file_path}.") return(fl_file) } 2023-01-09 15:44:44 DEBUG: Successfully imported fl file \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\M1142979_26102021101557.csv.
+RJobDistanceMetric/import_all_fl_files 2023-01-09 15:44:44 SUCCESS: All fl value files successfully imported.
+RJobDistanceMetric/FUN 2023-01-09 15:44:44 DEBUG: Successfully imported gate file \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1043449.csv.
+RJobDistanceMetric/FUN 2023-01-09 15:44:44 DEBUG: Successfully imported gate file \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1045994.csv.
+RJobDistanceMetric/FUN 2023-01-09 15:44:44 DEBUG: Successfully imported gate file \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1045995.csv.
+RJobDistanceMetric/FUN 2023-01-09 15:44:44 DEBUG: Successfully imported gate file \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1045996.csv.
+RJobDistanceMetric/FUN 2023-01-09 15:44:44 DEBUG: Successfully imported gate file \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1045997.csv.
+RJobDistanceMetric/FUN 2023-01-09 15:44:44 DEBUG: Successfully imported gate file \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1045998.csv.
+RJobDistanceMetric/FUN 2023-01-09 15:44:44 DEBUG: Successfully imported gate file \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1046012.csv.
+RJobDistanceMetric/FUN 2023-01-09 15:44:44 DEBUG: Successfully imported gate file \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1046013.csv.
+RJobDistanceMetric/FUN 2023-01-09 15:44:44 DEBUG: Successfully imported gate file \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057806.csv.
+RJobDistanceMetric/FUN 2023-01-09 15:44:44 DEBUG: Successfully imported gate file \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057905.csv.
+RJobDistanceMetric/FUN 2023-01-09 15:44:44 DEBUG: Successfully imported gate file \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057906.csv.
+RJobDistanceMetric/FUN 2023-01-09 15:44:44 DEBUG: Successfully imported gate file \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057907.csv.
+RJobDistanceMetric/FUN 2023-01-09 15:44:44 DEBUG: Successfully imported gate file \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057908.csv.
+RJobDistanceMetric/FUN 2023-01-09 15:44:44 DEBUG: Successfully imported gate file \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057909.csv.
+RJobDistanceMetric/FUN 2023-01-09 15:44:44 DEBUG: Successfully imported gate file \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057910.csv.
+RJobDistanceMetric/FUN 2023-01-09 15:44:44 DEBUG: Successfully imported gate file \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057911.csv.
+RJobDistanceMetric/FUN 2023-01-09 15:44:44 DEBUG: Successfully imported gate file \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\Gates\DSTL1057913.csv.
+RJobDistanceMetric/import_all_gate_files 2023-01-09 15:44:44 SUCCESS: All gate files successfully imported.
+RJobDistanceMetric/export_full_input 2023-01-09 15:44:45 DEBUG: Exported the following file: C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/mainscript/input_M1142979_E1654427.qs.
+RJobDistanceMetric/export_full_input 2023-01-09 15:44:45 DEBUG: Exported the following file: C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/mainscript/flvalues_M1142979_E1654427.qs.
+RJobDistanceMetric/export_full_input 2023-01-09 15:44:45 DEBUG: Exported the following file: C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/mainscript/gate_M1142979_E1654427.qs.
+RJobDistanceMetric/extract_paths_of_fl_files 2023-01-09 15:44:45 DEBUG: Input fl file: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\M1142979_26102021101557.csv.
+RJobDistanceMetric/copy_file_positionCSV 2023-01-09 15:44:45 DEBUG: Paths of fl files: \\intern.chipcytometry.com\imagedata\volume13\M1142979\segments\ESTL1043416\M1142979_26102021101557.csv
+RJobDistanceMetric/copy_file_positionCSV 2023-01-09 15:44:45 DEBUG: Positions path: //intern.chipcytometry.com/imagedata/volume13//M1142979/positions.csv
+RJobDistanceMetric/copy_file_positionCSV 2023-01-09 15:44:45 DEBUG: Assertion on position path passed.
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:45 DEBUG: Execute main script finished RJob mainscript execution.
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:45 DEBUG: Elapsed time: 2.8 sec
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:45 DEBUG: Executing version: x86_64-w64-mingw32
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:45 DEBUG: Executing version: x86_64
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:45 DEBUG: Executing version: mingw32
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:45 DEBUG: Executing version: x86_64, mingw32
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:45 DEBUG: Executing version: 
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:45 DEBUG: Executing version: 3
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:45 DEBUG: Executing version: 6.3
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:45 DEBUG: Executing version: 2020
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:45 DEBUG: Executing version: 02
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:45 DEBUG: Executing version: 29
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:45 DEBUG: Executing version: 77875
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:45 DEBUG: Executing version: R
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:45 DEBUG: Executing version: R version 3.6.3 (2020-02-29)
+RJobDistanceMetric/execute_RJob_mainscript 2023-01-09 15:44:45 DEBUG: Executing version: Holding the Windsock
+RJobDistanceMetric/subset_gates 2023-01-09 15:44:45 INFO: The following gate will not be used: All.
+RJobDistanceMetric/subset_gates 2023-01-09 15:44:45 INFO: The following gate will not be used: Cytotoxic T cells.
+RJobDistanceMetric/subset_gates 2023-01-09 15:44:45 INFO: The following gate will not be used: Regulatory T cells.
+RJobDistanceMetric/subset_gates 2023-01-09 15:44:45 INFO: The following gate will not be used: Exhausted T cells.
+RJobDistanceMetric/subset_gates 2023-01-09 15:44:45 INFO: The following gate will not be used: NK cells.
+RJobDistanceMetric/subset_gates 2023-01-09 15:44:45 INFO: The following gate will not be used: AMPKplus cells.
+RJobDistanceMetric/subset_gates 2023-01-09 15:44:45 INFO: The following gate will not be used: Naive CD4 T cells.
+RJobDistanceMetric/subset_gates 2023-01-09 15:44:45 INFO: The following gate will not be used: Central Memory CD4 T cells.
+RJobDistanceMetric/subset_gates 2023-01-09 15:44:45 INFO: The following gate will not be used: Effector CD4 T cells.
+RJobDistanceMetric/subset_gates 2023-01-09 15:44:45 INFO: The following gate will not be used: Effector Memory CD4 T cells.
+RJobDistanceMetric/subset_gates 2023-01-09 15:44:45 INFO: The following gate will not be used: Naive CD8 T cells.
+RJobDistanceMetric/subset_gates 2023-01-09 15:44:45 INFO: The following gate will not be used: Central Memory CD8 T cells.
+RJobDistanceMetric/subset_gates 2023-01-09 15:44:45 INFO: The following gate will not be used: Effector Memory CD8 T cells.
+RJobDistanceMetric/subset_gates 2023-01-09 15:44:45 INFO: The following gate will not be used: PDL1minusTIM3plus cells.
+RJobDistanceMetric/remove_values_from_vector 2023-01-09 15:44:45 TRACE: - nothing removed 
+RJobDistanceMetric/remove_values_from_vector 2023-01-09 15:44:45 TRACE: - nothing removed 
+RJobDistanceMetric/create_gate_combinations 2023-01-09 15:44:45 TRACE: Created 6 gate_combinations
+RJobDistanceMetric/split_gate_combinations 2023-01-09 15:44:45 TRACE: Successfully determined all gate combinations. Need to split 0 comparisons.
+RJobDistanceMetric/create_distance_input 2023-01-09 15:44:45 TRACE: Successfully finished distance input generation. Elapsed time: 0.3 sec. Executing version: x86_64-w64-mingw32.
+RJobDistanceMetric/create_distance_input 2023-01-09 15:44:45 TRACE: Successfully finished distance input generation. Elapsed time: 0.3 sec. Executing version: x86_64.
+RJobDistanceMetric/create_distance_input 2023-01-09 15:44:45 TRACE: Successfully finished distance input generation. Elapsed time: 0.3 sec. Executing version: mingw32.
+RJobDistanceMetric/create_distance_input 2023-01-09 15:44:45 TRACE: Successfully finished distance input generation. Elapsed time: 0.3 sec. Executing version: x86_64, mingw32.
+RJobDistanceMetric/create_distance_input 2023-01-09 15:44:45 TRACE: Successfully finished distance input generation. Elapsed time: 0.3 sec. Executing version: .
+RJobDistanceMetric/create_distance_input 2023-01-09 15:44:45 TRACE: Successfully finished distance input generation. Elapsed time: 0.3 sec. Executing version: 3.
+RJobDistanceMetric/create_distance_input 2023-01-09 15:44:45 TRACE: Successfully finished distance input generation. Elapsed time: 0.3 sec. Executing version: 6.3.
+RJobDistanceMetric/create_distance_input 2023-01-09 15:44:45 TRACE: Successfully finished distance input generation. Elapsed time: 0.3 sec. Executing version: 2020.
+RJobDistanceMetric/create_distance_input 2023-01-09 15:44:45 TRACE: Successfully finished distance input generation. Elapsed time: 0.3 sec. Executing version: 02.
+RJobDistanceMetric/create_distance_input 2023-01-09 15:44:45 TRACE: Successfully finished distance input generation. Elapsed time: 0.3 sec. Executing version: 29.
+RJobDistanceMetric/create_distance_input 2023-01-09 15:44:45 TRACE: Successfully finished distance input generation. Elapsed time: 0.3 sec. Executing version: 77875.
+RJobDistanceMetric/create_distance_input 2023-01-09 15:44:45 TRACE: Successfully finished distance input generation. Elapsed time: 0.3 sec. Executing version: R.
+RJobDistanceMetric/create_distance_input 2023-01-09 15:44:45 TRACE: Successfully finished distance input generation. Elapsed time: 0.3 sec. Executing version: R version 3.6.3 (2020-02-29).
+RJobDistanceMetric/create_distance_input 2023-01-09 15:44:45 TRACE: Successfully finished distance input generation. Elapsed time: 0.3 sec. Executing version: Holding the Windsock.
+RJobDistanceMetric/doTryCatch 2023-01-09 15:44:45 SUCCESS: Distance input written in: C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/distance/distance_input.qs
+RJobDistanceMetric/calculate_distance 2023-01-09 15:44:51 DEBUG: All distances calculated.
+RJobDistanceMetric/export_distance_results 2023-01-09 15:44:51 DEBUG: Trying to write results in C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/distance/DistanceResults_radius_300_knn_1.csv and C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/distance/Attributes_DistanceResults_radius_300_knn_1.csv.
+RJobDistanceMetric/execute_RJob_distance_calculation 2023-01-09 15:44:51 TRACE: Finished RJob distance calculation within - elapsed time: 6.4 sec with version 111121
+RJobDistanceMetric/remove_values_from_vector 2023-01-09 15:44:51 TRACE: - All removed 
+RJobDistanceMetric/plot_distance_results 2023-01-09 15:44:52 DEBUG: Output directory for plots was changed to C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/plots.
+RJobDistanceMetric/doTryCatch 2023-01-09 15:45:00 TRACE: Total distance calculation time: 6 min
+RJobDistanceMetric/plot_distance_results 2023-01-09 15:45:00 TRACE: Total plotting time: 8.1.

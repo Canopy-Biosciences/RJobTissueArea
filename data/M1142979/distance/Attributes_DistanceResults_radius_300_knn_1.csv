@@ -1,0 +1,7 @@
+time_elapsed_sec,total_dist_values,result_filename,knn,radius,n_cells_in_both_gates,amount.zero.distances,removed_zero_distances,From_gate,To_gate
+4.66,9075,C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/distance/Helper T cells/Leukocytes/DistanceResults_Helper T cells_Leukocytes_knn_1.csv,1,300,55,55,TRUE,Helper T cells,Leukocytes
+0.25,7260,C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/distance/Helper T cells/Tumor cells/DistanceResults_Helper T cells_Tumor cells_knn_1.csv,1,300,0,0,TRUE,Helper T cells,Tumor cells
+0.279999999999999,9075,C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/distance/Leukocytes/Helper T cells/DistanceResults_Leukocytes_Helper T cells_knn_1.csv,1,300,55,55,TRUE,Leukocytes,Helper T cells
+0.280000000000001,21912,C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/distance/Leukocytes/Tumor cells/DistanceResults_Leukocytes_Tumor cells_knn_1.csv,1,300,0,0,TRUE,Leukocytes,Tumor cells
+0.27,7260,C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/distance/Tumor cells/Helper T cells/DistanceResults_Tumor cells_Helper T cells_knn_1.csv,1,300,0,0,TRUE,Tumor cells,Helper T cells
+0.279999999999999,21912,C:/Users/ortmann/Documents/GitHub/RJobTissueArea/data/M1142979/distance/Tumor cells/Leukocytes/DistanceResults_Tumor cells_Leukocytes_knn_1.csv,1,300,0,0,TRUE,Tumor cells,Leukocytes
