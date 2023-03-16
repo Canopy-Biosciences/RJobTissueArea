@@ -23,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE,
 library(RJobTissueArea)
 ```
 
-# intro 
+# issue
 
 **Jennys findings**
 
@@ -51,6 +51,32 @@ Ich hab mir Chip M2183864 einmal genauer angeschaut. Hier sind bei einigen Posit
 Die Chips wurden in Hannover auf dem Zellscanner gemessen. Da scheint noch irgendwo was in dem Script fehlerhaft zu sein.
 
 ![Auszug Ergebnistabelle](image.png)
+
+# reply
+
+
+Hey Jenny,
+
+zunächst, die angegeben Infos zu chipIDs-FOV kann ich nicht in den Daten wiederfinden. ("M2183864_40" "M2183872_43" "M2183874_34" "M2183878_30" "M2183880_40" "M2183882_43" "M2183884_39" "M2183890_43" "M2183896_31", gibt es nicht)
+
+Ich habe mir den chip M2183864_219 und 249 genauer angeschaut und habe dann die Parameter ein wenig variiert und würde ohne attenuation aber mit noise reduction empfehlen.
+
+process_TissueDetectionWorkflow(image_groups,
+                                output_dir,
+                                sigma = 15,
+                                threshold = 1,
+                                window = 50,
+                                attenuation = 0,
+                                noiseReduction = TRUE,
+                                plot_image =TRUE,
+                                export_result = TRUE,
+                                result_ID = "noiseReduction")
+
+Schau mal ob es damit im Gesamten besser ist.
+
+LG
+ANhang: SummaryResultTissueArea_noiseReduction.csv
+
 
 # prepare input
 
